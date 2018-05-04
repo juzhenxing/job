@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>找回密码</title>
+    <!-- 新 Bootstrap 核心 CSS 文件 -->
+    <link th:href="@{~/bootstrap/css/bootstrap.min.css}" rel="stylesheet" type="text/css"/>
+    <!-- 可选的Bootstrap主题文件（一般不使用） -->
+    <link th:href="@{~/bootstrap/css/bootstrap-theme.min.css}" rel="stylesheet" type="text/css"/>
+    <!-- jQuery文件。务必在bootstrap.min.js 之前引入 -->
+    <script type="text/javascript" th:src="@{~/js/jquery-3.3.1.min.js}"></script>
+    <!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
+    <script type="text/javascript" th:src="@{~/bootstrap/js/bootstrap.min.js}"></script>
+</head>
+<body style="padding: 200px">
+<nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <a class="navbar-brand">大学生求职网</a>
+        </div>
+    </div>
+</nav>
+<div style="width: 60%; padding-left: 10%; padding-right: 10%;margin-left: 20%;margin-right: 20%;">
+    <h2 class="text-center">完成</h2>
+    <br>
+    <div class="success-msg">
+        <h3>密码设置成功！</h3>
+        <p>你可以使用新密码登录大学生求职网管理员系统</p>
+        <a class='btn btn-default col-sm-12' th:href="@{/administrator/login}">立即登录</a>
+    </div>
+</div>
+<script th:inline="javascript">
+    toastr.options.positionClass = 'toast-top-center';
+    toastr.options.timeOut = "1000";
+    /*[+
+        if([[${errorMessage}]] != null){
+            toastr.error([[${errorMessage}]]);
+            toastr.cancel();
+        }
+    +]*/
+</script>
+</body>
+</html>
