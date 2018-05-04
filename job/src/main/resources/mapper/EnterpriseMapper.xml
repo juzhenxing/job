@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zxkj.job.mapper.EnterpriseMapper">
+
+    <resultMap id="BaseResultMap" type="com.zxkj.job.bean.po.EnterprisePo">
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="fullname" jdbcType="VARCHAR" property="fullname"/>
+        <result column="shortname" jdbcType="VARCHAR" property="shortname"/>
+        <result column="org_code" jdbcType="VARCHAR" property="orgCode"/>
+        <result column="recommend" jdbcType="VARCHAR" property="recommend"/>
+        <result column="nature" jdbcType="TINYINT" property="nature"/>
+        <result column="industry_involved" jdbcType="TINYINT" property="industryInvolved"/>
+        <result column="worker_number" jdbcType="TINYINT" property="workerNumber"/>
+        <result column="name" jdbcType="VARCHAR" property="name"/>
+        <result column="phone" jdbcType="VARCHAR" property="phone"/>
+        <result column="telephone" jdbcType="VARCHAR" property="telephone"/>
+        <result column="homepage_url" jdbcType="VARCHAR" property="homepageUrl"/>
+        <result column="province" jdbcType="TINYINT" property="province"/>
+        <result column="city" jdbcType="VARCHAR" property="city"/>
+        <result column="address" jdbcType="VARCHAR" property="address"/>
+        <result column="postcode" jdbcType="VARCHAR" property="postcode"/>
+        <result column="license_file_name" jdbcType="VARCHAR" property="licenseFileName"/>
+        <result column="email" jdbcType="VARCHAR" property="email"/>
+        <result column="user_name" jdbcType="VARCHAR" property="userName"/>
+        <result column="password" jdbcType="VARCHAR" property="password"/>
+        <result column="check_state" jdbcType="TINYINT" property="checkState"/>
+        <result column="is_legal" jdbcType="TINYINT" property="legal"/>
+        <result column="is_activate" jdbcType="BIT" property="activate"/>
+        <result column="gmt_create" jdbcType="TIMESTAMP" property="gmtCreate"/>
+        <result column="gmt_modified" jdbcType="TIMESTAMP" property="gmtModified"/>
+    </resultMap>
+
+    <select id="selectOneByEmail" resultMap="BaseResultMap">
+        SELECT *
+        FROM t_job_enterprise
+        where email = #{email};
+    </select>
+
+    <select id="selectOneByUserName" resultMap="BaseResultMap">
+        SELECT *
+        FROM t_job_enterprise
+        where user_name = #{userName};
+    </select>
+
+    <select id="selectOneByUsernameOrEmail" resultMap="BaseResultMap">
+        SELECT *
+        FROM t_job_enterprise
+        where user_name = #{loginEnterpriseDto.usernameOrEmail} or email = #{loginEnterpriseDto.usernameOrEmail};
+    </select>
+
+    <select id="selectPageByQueryEnterpriseDto" resultMap="BaseResultMap">
+        SELECT *
+        FROM t_job_enterprise
+        WHERE is_activate = 1
+        limit #{startLine}, #{pageSize};
+    </select>
+
+    <select id="selectCountByQueryEnterpriseDto" resultType="int">
+        SELECT count(*)
+        FROM t_job_enterprise
+        WHERE is_activate = 1;
+    </select>
+
+</mapper>

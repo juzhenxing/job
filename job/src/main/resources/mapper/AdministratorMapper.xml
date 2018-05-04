@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zxkj.job.mapper.AdministratorMapper">
+
+    <resultMap id="BaseResultMap" type="com.zxkj.job.bean.po.AdministratorPo">
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="phone" jdbcType="VARCHAR" property="phone"/>
+        <result column="email" jdbcType="VARCHAR" property="email"/>
+        <result column="user_name" jdbcType="VARCHAR" property="userName"/>
+        <result column="password" jdbcType="VARCHAR" property="password"/>
+        <result column="check_state" jdbcType="TINYINT" property="checkState"/>
+        <result column="is_activate" jdbcType="BIT" property="activate"/>
+        <result column="gmt_create" jdbcType="TIMESTAMP" property="gmtCreate"/>
+        <result column="gmt_modified" jdbcType="TIMESTAMP" property="gmtModified"/>
+    </resultMap>
+
+    <select id="selectOneByUserName" resultMap="BaseResultMap">
+        SELECT *
+        FROM t_job_administrator
+        where user_name = #{userName};
+    </select>
+
+    <select id="selectOneByEmail" resultMap="BaseResultMap">
+        SELECT *
+        FROM t_job_administrator
+        where email = #{email};
+    </select>
+
+    <select id="selectOneByUsernameOrEmail" resultMap="BaseResultMap">
+        SELECT *
+        FROM t_job_administrator
+        where user_name = #{loginAdministratorDto.usernameOrEmail} or email = #{loginAdministratorDto.usernameOrEmail};
+    </select>
+
+</mapper>

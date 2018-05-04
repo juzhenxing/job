@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zxkj.job.mapper.ProfessionalMapper">
+
+    <select id="selectPageByEnterpriseId" resultType="com.zxkj.job.bean.po.ProfessionalPo">
+        SELECT *
+        FROM t_job_professional
+        WHERE enterprise_id = #{enterpriseId}
+        limit #{startLine}, #{pageSize};
+    </select>
+
+    <select id="selectCountByEnterpriseId" resultType="int">
+        SELECT COUNT(*)
+        FROM t_job_professional
+        WHERE enterprise_id = #{enterpriseId};
+    </select>
+
+    <select id="selectOneById" resultType="com.zxkj.job.bean.po.ProfessionalPo">
+        SELECT *
+        FROM t_job_professional
+        WHERE enterprise_id = #{enterpriseId} AND id = #{id};
+    </select>
+
+    <select id="selectByEnterpriseId" resultType="com.zxkj.job.bean.po.ProfessionalPo">
+        SELECT *
+        FROM t_job_professional
+        WHERE enterprise_id = #{enterpriseId};
+    </select>
+
+</mapper>

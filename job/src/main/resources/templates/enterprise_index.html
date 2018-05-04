@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>企业后台-大学生求职网</title>
+    <!-- 新 Bootstrap 核心 CSS 文件 -->
+    <link th:href="@{~/bootstrap/css/bootstrap.min.css}" rel="stylesheet" type="text/css"/>
+    <!-- 可选的Bootstrap主题文件（一般不使用） -->
+    <link th:href="@{~/bootstrap/css/bootstrap-theme.min.css}" rel="stylesheet" type="text/css"/>
+    <!-- jQuery文件。务必在bootstrap.min.js 之前引入 -->
+    <script type="text/javascript" th:src="@{~/js/jquery-3.3.1.min.js}"></script>
+    <!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
+    <script type="text/javascript" th:src="@{~/bootstrap/js/bootstrap.min.js}"></script>
+</head>
+<body style="padding: 70px">
+<nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <a class="navbar-brand">企业后台</a>
+        </div>
+        <div th:if="${session.userName ne null}" class='navbar-right'>
+            <div style="margin-right: 20px">
+                <a th:href="@{/enterprise/logout}" class="btn btn-default navbar-btn navbar-right">
+                    <span class="glyphicon glyphicon-off"></span>注销
+                </a>
+            </div>
+        </div>
+        <div th:if="${session.userName eq null}">
+            <div>
+                <a th:href="@{/enterprise/login}" class="btn btn-default navbar-btn navbar-right" style="margin-right: 20px">
+                    <span class="glyphicon glyphicon-log-in"></span> 登录
+                </a>
+            </div>
+            <div>
+                <a th:href="@{/enterprise/pre-register}" class="btn btn-default navbar-btn navbar-right" style="margin-right: 20px">
+                    <span class="glyphicon glyphicon-user"></span> 注册
+                </a>
+            </div>
+        </div>
+    </div>
+</nav>
+<div class="blank-box">
+
+    <div class="row">
+        <div class="col-xs-8">
+            <div class="login-panel panel panel-default">
+                <div class="panel-body">
+                    <h1 class="text-center">大学生求职网 企业后台系统</h1>
+                    <hr/>
+                    <p class="lead">
+                        　　大学生求职网企业后台系统是给企业招聘方量身打造的一套管理系统，可在线发布宣讲会信息、企业职位信息、图片广告信息等。
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xs-4">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <div class="panel-title">
+                        注册/登录
+                    </div>
+                </div>
+                <div th:if="${session.userName ne null}">
+                    <div class="panel-body">
+                        <p th:text="'欢迎您，' + ${session.userName}"></p>
+                        <a class="btn btn-danger" th:href="@{/enterprise/hr-info-complete}">进入管理后台</a>
+                    </div>
+                    <div class="panel-body">
+                        <a class="btn btn-success" th:href="@{/enterprise/logout}">退出登录</a>
+                    </div>
+                </div>
+                <div th:if="${session.userName eq null}">
+                    <div class="panel-body">
+                        <p>如果您还没有注册，点击按钮注册。</p>
+                        <a class="btn btn-danger" th:href="@{/enterprise/pre-register}">企业注册</a>
+                    </div>
+                    <div class="panel-body">
+                        <p>如果您已经注册，点击按钮登录。</p>
+                        <a class="btn btn-success" th:href="@{/enterprise/login}">企业登录</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-xs-4">
+            <div class="panel panel-default panel-success">
+                <div class="panel-heading">
+                    <div class="panel-title">
+                        <h2>丰富实用功能</h2>
+                    </div>
+                </div>
+                <div class="panel-body">
+                    <ul>
+                        <li><h4>发布宣讲会吸纳更多听众</h4></li>
+                        <li><h4>发布招聘职位智能筛选简历</h4></li>
+                        <li><h4>大量广告位增加企业曝光度</h4></li>
+                        <li><h4>海量简历库，人才在线搜索</h4></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="col-xs-4">
+            <div class="panel panel-default panel-success">
+                <div class="panel-heading">
+                    <div class="panel-title">
+                        <h2>广泛目标群体</h2>
+                    </div>
+                </div>
+                <div class="panel-body">
+                    <ul>
+                        <li><h4>专注大学毕业生求职服务</h4></li>
+                        <li><h4>单日点击量突破350万人次</h4></li>
+                        <li><h4>覆盖全国百万大学毕业生</h4></li>
+                        <li><h4>求职关键词搜索排名第一</h4></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="col-xs-4">
+            <div class="panel panel-default panel-success">
+                <div class="panel-heading">
+                    <div class="panel-title">
+                        <h2>众多HR的选择</h2>
+                    </div>
+                </div>
+                <div class="panel-body">
+                    <h4>
+                        <p>10000多家企业已陆续入驻 ———</p>
+                        <p>腾讯科技、德邦、网易游戏、中原地</p>
+                        <p>产、雨润集团、携程、华硕、康师傅、</p>
+                        <p>银联数据等</p>
+                    </h4>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<ul class="nav navbar-nav navbar-fixed-bottom" style="left: 43.5%">
+    <li class="">
+        <a th:href="@{/undergraduate/index}">首页</a>
+    </li>
+    <li class="">
+        <a th:href="@{/undergraduate/campus-recruitment}">校招</a>
+    </li>
+    <li class="">
+        <a th:href="@{/undergraduate/career-talk}">宣讲会</a>
+    </li>
+</ul>
+<link th:href="@{~/css/toastr.min.css}" rel="stylesheet"/>
+<script th:src="@{~/js/toastr.min.js}"></script>
+<script th:inline="javascript">
+    toastr.options.positionClass = 'toast-top-center';
+    /*[+
+        if([[${email}]] != null){
+            toastr.success([['我们已向您的邮箱'+${email}+'发送了一封激活邮件,请点击邮箱中的链接来激活您的账户！']]);
+            toastr.cancel();
+        }
+    +]*/
+    /*[+
+        if([[${errorMessage}]] != null){
+            toastr.error([[${errorMessage}]]);
+            toastr.clear();
+        }
+    +]*/
+    /*[+
+        if([[${message}]] != null){
+            toastr.success([[${message}]]);
+            toastr.cancel();
+        }
+    +]*/
+</script>
+</body>
+</html>
