@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zxkj.job.mapper.CareerTalkMapper">
+
+    <resultMap id="BaseResultMap" type="com.zxkj.job.bean.po.CareerTalkPo">
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="start_time" jdbcType="TIMESTAMP" property="startTime"/>
+        <result column="end_time" jdbcType="TIMESTAMP" property="endTime"/>
+        <result column="province" jdbcType="TINYINT" property="province"/>
+        <result column="city" jdbcType="VARCHAR" property="city"/>
+        <result column="location" jdbcType="VARCHAR" property="location"/>
+        <result column="school" jdbcType="VARCHAR" property="school"/>
+        <result column="name" jdbcType="VARCHAR" property="name"/>
+        <result column="enterprise_id" jdbcType="BIGINT" property="enterpriseId"/>
+        <result column="hits" jdbcType="BIGINT" property="hits"/>
+        <result column="operation_type" jdbcType="TINYINT" property="operationType"/>
+        <result column="gmt_create" jdbcType="TIMESTAMP" property="gmtCreate"/>
+        <result column="gmt_modified" jdbcType="TIMESTAMP" property="gmtModified"/>
+    </resultMap>
+
+    <select id="selectPageByEnterpriseId" resultMap="BaseResultMap">
+        SELECT *
+        FROM t_job_career_talk
+        WHERE enterprise_id = #{enterpriseId}
+        limit #{startLine}, #{pageSize};
+    </select>
+
+    <select id="selectCountByEnterpriseId" resultType="int">
+        SELECT COUNT(*)
+        FROM t_job_career_talk
+        WHERE enterprise_id = #{enterpriseId};
+    </select>
+
+    <select id="selectOneById" resultMap="BaseResultMap">
+        SELECT *
+        FROM t_job_career_talk
+        WHERE enterprise_id = #{enterpriseId} AND id = #{id};
+    </select>
+
+</mapper>

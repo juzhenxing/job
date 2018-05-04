@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>修改宣讲会</title>
+    <link th:href="@{~/layui/css/layui.css}" rel="stylesheet" type="text/css"/>
+</head>
+<body class="layui-layout-body">
+<div style="margin-top: 10px;padding: 10px" id="update_form">
+    <form class="layui-form" th:action="@{/enterprise/update-career-talk}" method="post">
+        <div class="layui-form-item">
+            <label class="layui-form-label">所在高校</label>
+            <div class="layui-input-block">
+                <div class="layui-input-inline" style="width: 200px;">
+                    <select id="province" name="province" lay-filter="province" disabled>
+                        <!--<option value="">省份</option>-->
+                    </select>
+                </div>
+                <div class="layui-input-inline" style="width: 200px;">
+                    <select id="city" name="city" lay-filter="city" disabled>
+                        <!--<option value="">城市</option>-->
+                    </select>
+                </div>
+                <div class="layui-input-inline" style="width: 200px;">
+                    <select id="school" name="school" lay-filter="school" disabled>
+                        <!--<option value="">学校</option>-->
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">宣讲时间</label>
+            <div class="layui-input-block">
+                <div class="layui-input-inline" style="width: 200px;">
+                    <input type="text" class="layui-input" id="startTime" name="startTime" placeholder="请输入宣讲开始时间"
+                           required lay-verify="required" th:value="${careerTalkUpdateVo.startTime}">
+                </div>
+                <div class="layui-input-inline" style="width: 200px;">
+                    <input type="text" class="layui-input" id="endTime" name="endTime" placeholder="请输入宣讲结束时间" required
+                           lay-verify="required" th:value="${careerTalkUpdateVo.endTime}">
+                </div>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">举办地点</label>
+            <div class="layui-input-block">
+                <div class="layui-input-inline" style="width: 400px;">
+                    <input type="text" name="location" required lay-verify="required" placeholder="请输入举办地点"
+                           autocomplete="off" class="layui-input" th:value="${careerTalkUpdateVo.location}">
+                </div>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">申请方式</label>
+            <div class="layui-input-block">
+                <span th:if="${careerTalkUpdateVo.operationType eq 1}">
+                    <input type="radio" name="operationType" value="1" title="投简历" checked>
+                </span>
+                <span th:if="${careerTalkUpdateVo.operationType ne 1}">
+                    <input type="radio" name="operationType" value="1" title="投简历">
+                </span>
+                <span th:if="${careerTalkUpdateVo.operationType eq 2}">
+                    <input type="radio" name="operationType" value="2" title="网申" checked>
+                </span>
+                <span th:if="${careerTalkUpdateVo.operationType ne 2}">
+                    <input type="radio" name="operationType" value="2" title="网申">
+                </span>
+            </div>
+        </div>
+        <input type="hidden" name="id" th:value="${careerTalkUpdateVo.id}">
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button class="layui-btn" lay-submit lay-filter="formDemo">修改</button>
+            </div>
+        </div>
+    </form>
+</div>
+<script type="text/javascript" th:src="@{~/layui/layui.all.js}"></script>
+<script type="text/javascript" th:src="@{~/js/jquery-3.3.1.min.js}"></script>
+<script th:src="@{~/js/AllSchool.js}"></script>
+<script>
+    layui.form.on('select(province)', function (data) {
+        var selectCity = $("#province").val();
+        var citylist = city[selectCity];
+        var cityArray = "";
+        var citySelectStr = "";
+        if (citylist != null) {
+            for (var i = 0, len = citylist.length; i < len; i++) {
+                cityArray = citylist[i];
+                citySelectStr = citySelectStr + "<option value='" + cityArray[0] + "'>" + cityArray[1] + "</option>"
+            }
+        }
+        $("#city").html(citySelectStr);
+        var selectschool = $("#city").val();
+        var schoolUlStr = "";
+        var schoolListStr = allschool[selectschool];
+        for (var i = 0, len = schoolListStr.length; i < len; i++) {
+            schoolUlStr = schoolUlStr + "<option >" + schoolListStr[i][2] + "</option>";
+        }
+        schoolUlStr = schoolUlStr + "<option value='999'>其它</option>";
+        $("#school").html(schoolUlStr);
+        layui.form.render();
+    });
+    layui.form.on('select(city)', function (data) {
+        var selectschool = $("#city").val();
+        var schoolUlStr = "";
+        var schoolListStr = allschool[selectschool];
+        for (var i = 0, len = schoolListStr.length; i < len; i++) {
+            schoolUlStr = schoolUlStr + "<option >" + schoolListStr[i][2] + "</option>";
+        }
+        schoolUlStr = schoolUlStr + "<option value='999'>其它</option>";
+        $("#school").html(schoolUlStr);
+        layui.form.render('select');
+    });
+//    layui.form.on('select(school)', function (data) {
+//        layui.form.render('select');
+//    });
+    //监听提交
+    layui.form.on('submit(formDemo)', function(data){
+//        layui.layer.msg(JSON.stringify(data.field));
+//        alert("关闭当前页面");
+        var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+        parent.layer.close(index); //再执行关闭
+        return true;
+    });
+</script>
+<script  th:inline="javascript">
+    window.onload = function () {
+        var provinceArray = "";
+        var provicneSelectStr = "";
+        console.log([[${careerTalkUpdateVo.province}]]);
+        console.log([[${careerTalkUpdateVo.city}]]);
+        console.log([[${careerTalkUpdateVo.school}]]);
+        console.log([[${careerTalkUpdateVo.operationType}]])
+        for (var i = 0, len = province.length; i < len; i++) {
+            provinceArray = province[i];
+            if(provinceArray[0] == [[${careerTalkUpdateVo.province}]]){
+                provicneSelectStr = provicneSelectStr + "<option value='" + provinceArray[0] + "' selected=\"selected\">" + provinceArray[1] + "</option>"
+            }else{
+                provicneSelectStr = provicneSelectStr + "<option value='" + provinceArray[0] + "'>" + provinceArray[1] + "</option>"
+            }
+        }
+        $("#province").html(provicneSelectStr);
+
+        var selectCity = $("#province").val();
+        var citylist = city[selectCity];
+        var cityArray = "";
+        var citySelectStr = "";
+        for (var i = 0, len = citylist.length; i < len; i++) {
+            cityArray = citylist[i];
+            if(cityArray[0] == [[${careerTalkUpdateVo.city}]]){
+                citySelectStr = citySelectStr + "<option value='" + cityArray[0] + "' selected=\"selected\">" + cityArray[1] + "</option>"
+            }else{
+                citySelectStr = citySelectStr + "<option value='" + cityArray[0] + "'>" + cityArray[1] + "</option>";
+            }
+        }
+        $("#city").html(citySelectStr);
+
+        var selectschool = $("#city").val();
+        var schoolUlStr = "";
+        var schoolListStr = allschool[selectschool];
+        for (var i = 0, len = schoolListStr.length; i < len; i++) {
+            if(schoolListStr[i][2] == [[${careerTalkUpdateVo.school}]]){
+                schoolUlStr = schoolUlStr + "<option selected=\"selected\">" + schoolListStr[i][2] + "</option>";
+            }else{
+                schoolUlStr = schoolUlStr + "<option >" + schoolListStr[i][2] + "</option>";
+            }
+        }
+        schoolUlStr = schoolUlStr + "<option value='999'>其它</option>";
+        $("#school").html(schoolUlStr);
+        var start = {
+            elem: '#startTime',
+            format: 'yyyy-MM-dd HH:mm', //可任意组合
+            type: 'datetime',
+            calendar: true,
+            min: 0, //设定最小日期为当前日期
+            max: '2099-03-14 23:59', //最大日期
+            istime: true,
+            istoday: false,
+            change: function (value, date) {
+                end.min = value; //开始日选好后，重置结束日的最小日期
+            }
+        };
+        var end = {
+            elem: '#endTime',
+            format: 'yyyy-MM-dd HH:mm', //可任意组合
+            type: 'datetime',
+            calendar: true,
+            min: 0,
+            max: '2099-03-14 23:59',
+            istime: true,
+            istoday: false,
+            change: function (value, date) {
+                start.max = value; //结束日选好后，重置开始日的最大日期
+            }
+        };
+        layui.laydate.render(start);
+        layui.laydate.render(end);
+        layui.form.render();
+    }
+</script>
+</body>
+</html>
