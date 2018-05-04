@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <title>查看校招网申</title>
+    <link th:href="@{~/layui/css/layui.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{~/css/toastr.min.css}" rel="stylesheet"/>
+</head>
+<body class="layui-layout-body" style="padding: 15px;">
+        <table class="layui-table">
+            <colgroup>
+                <col width="30%">
+                <col width="70%">
+            </colgroup>
+            <!-- 提示：如果你不想用form，你可以换成div等任何一个普通元素 -->
+            <tbody>
+            <tr>
+                <td>公司标题</td>
+                <td><p th:text="${campusRecruitmentVo.title}"></p></td>
+            </tr>
+            <tr>
+                <td>发布时间</td>
+                <td><p th:text="${{campusRecruitmentVo.releaseTime}}"></p></td>
+            </tr>
+            <tr>
+                <td>涉及城市</td>
+                <td><p th:text="${campusRecruitmentVo.workplace}"></p></td>
+            </tr>
+            <tr>
+                <td>文章标签</td>
+                <td><p th:text="${campusRecruitmentVo.tags}"></p></td>
+            </tr>
+            <tr>
+                <td>职位列表</td>
+                <td>
+                    <table class="layui-table">
+                        <tbody>
+                            <tr th:each="professionalVo : ${campusRecruitmentVo.professionalVoList}">
+                                <td style="width: 100%"><p th:text="${professionalVo.name}"></p></td>
+                                <!--<td style="width: 20%"><a class="layui-btn layui-btn-xs" lay-event="detail" style="width: 100%; height: 100%">详情</a></td>-->
+                            </tr>
+                        </tbody>
+                    </table>
+                </td>
+            </tr>
+            <tr>
+                <td>简章正文</td>
+                <td><a th:href="'/enterprise/download-general-regulation?generalRegulationFileName=' + ${campusRecruitmentVo.generalRegulationFileName}"><p th:text=" ${campusRecruitmentVo.generalRegulationFileName}"/></a></td>
+            </tr>
+            </tbody>
+        </table>
+<script type="text/javascript" th:src="@{~/layui/layui.all.js}"></script>
+<script th:src="@{~/js/toastr.min.js}"></script>
+<script th:inline="javascript">
+    toastr.options.positionClass = 'toast-top-center';
+    toastr.options.timeOut = "1000";
+    /*[+
+        if([[${errorMessage}]] != null){
+            toastr.error([[${errorMessage}]]);
+            toastr.cancel();
+            console.log([[${errorMessage}]]);
+        }
+    +]*/
+    /*[+
+        if([[${message}]] != null){
+            toastr.success([[${message}]]);
+            toastr.cancel();
+            console.log([[${message}]]);
+        }
+    +]*/
+</script>
+</body>
+</html>

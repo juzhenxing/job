@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <title>宣讲会主页</title>
+    <link th:href="@{~/layui/css/layui.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{~/css/toastr.min.css}" rel="stylesheet"/>
+</head>
+<body class="layui-layout-body">
+<div class="layui-layout layui-layout-admin">
+    <div class="layui-header">
+        <div class="layui-logo">企业后台</div>
+        <!-- 头部区域（可配合layui已有的水平导航） -->
+        <ul class="layui-nav layui-layout-left">
+            <li class="layui-nav-item">
+                <a class="" th:href="@{/enterprise/career-talk-index}">宣讲会</a>
+            </li>
+            <li class="layui-nav-item">
+                <a href="javascript:;">校招网申</a>
+            </li>
+            <li class="layui-nav-item">
+                <a th:href="@{/enterprise/enterprise-professional-index}">招聘岗位</a>
+            </li>
+        </ul>
+        <ul class="layui-nav layui-layout-right">
+            <li class="layui-nav-item">
+                <a href="javascript:;">
+                    <span th:text="${session.userName}"></span>
+                </a>
+                <dl class="layui-nav-child">
+                    <dd><a href="">基本资料</a></dd>
+                    <dd><a href="">安全设置</a></dd>
+                </dl>
+            </li>
+            <li class="layui-nav-item"><a th:href="@{/enterprise/logout}">注销</a></li>
+        </ul>
+    </div>
+
+    <div class="layui-side layui-bg-black">
+        <div class="layui-side-scroll">
+            <!-- 左侧导航区域（可配合layui已有的垂直导航） -->
+            <ul class="layui-nav layui-nav-tree">
+                <li class="layui-nav-item layui-nav-itemed">
+                    <a class="" href="javascript:;">宣讲会</a>
+                </li>
+                <li class="layui-nav-item">
+                    <a href="javascript:;">校招网申</a>
+                </li>
+                <li class="layui-nav-item">
+                    <a th:href="@{/enterprise/enterprise-professional-index}">招聘岗位</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="layui-body">
+        <!-- 内容主体区域 -->
+        <div style="padding: 15px;">
+            <blockquote class="layui-elem-quote">
+                <button id="add_btn" type="button" class="layui-btn layui-btn-small" onclick="">添加</button>
+            </blockquote>
+            <table class="layui-table"
+                   lay-data="{height:'full', url:'/enterprise/list-career-talk', page:true, id:'test', even:true, text: {none: '您还未登录'}}"
+                   lay-filter="roles">
+                <thead>
+                <tr>
+                    <th lay-data="{align: 'center', field:'school', width:120, sort: true, unresize:true, rowspan: 2}">
+                        所在高校
+                    </th>
+                    <th lay-data="{align: 'center', colspan: 2, unresize:true}">宣讲时间</th>
+                    <th lay-data="{align: 'center', field:'location', width:120, unresize:true, rowspan: 2}">举办地点</th>
+                    <th lay-data="{align: 'center', field:'operationType', width:120, sort: true, unresize:true, rowspan: 2}">
+                        申请方式
+                    </th>
+                    <th lay-data="{align: 'center', field:'createTime', width:200, sort: true, unresize:true, rowspan: 2, templet: '#create_time'}">
+                        发布时间
+                    </th>
+                    <th lay-data="{align: 'center', width:150, toolbar: '#barDemo', unresize:true, rowspan: 2}">操作</th>
+                </tr>
+                <tr>
+                    <th lay-data="{align: 'center', field:'startTime', width:200, sort: true, unresize:true, templet: '#start_time'}">
+                        开始时间
+                    </th>
+                    <th lay-data="{align: 'center', field:'endTime', width:200, sort: true, unresize:true, templet: '#end_time'}">
+                        结束时间
+                    </th>
+                </tr>
+                </thead>
+            </table>
+            <i class="layui-icon">&#xe60c;</i>
+        </div>
+    </div>
+    <div class="layui-footer">
+        <!-- 底部固定区域 -->
+        © layui.com - 底部固定区域
+    </div>
+</div>
+<script type="text/javascript" th:src="@{~/layui/layui.all.js}"></script>
+<script type="text/javascript" th:src="@{~/js/jquery-3.3.1.min.js}"></script>
+<!--<script type="text/javascript" th:src="@{~/js/jquery.min.js}"></script>-->
+<script type="text/html" id="barDemo">
+    <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+    <a class="layui-btn layui-btn-xs layui-btn-danger" lay-event="del">删除</a>
+</script>
+<script th:inline="javascript" type="text/html" id="create_time">
+    {{#
+    return layui.util.toDateString(d.createTime, 'yyyy-MM-dd HH:mm')
+    }}
+</script>
+<script th:inline="javascript" type="text/html" id="start_time">
+    {{#
+    return layui.util.toDateString(d.startTime, 'yyyy-MM-dd HH:mm')
+    }}
+</script>
+<script th:inline="javascript" type="text/html" id="end_time">
+    {{#
+    return layui.util.toDateString(d.endTime, 'yyyy-MM-dd HH:mm')
+    }}
+</script>
+<script th:src="@{~/js/toastr.min.js}"></script>
+<script th:inline="javascript">
+    toastr.options.positionClass = 'toast-top-center';
+    toastr.options.timeOut = "1000";
+    /*[+
+        if([[${errorMessage}]] != null){
+            toastr.error([[${errorMessage}]]);
+            toastr.cancel();
+        }
+    +]*/
+    /*[+
+        if([[${message}]] != null){
+            toastr.success([[${message}]]);
+            toastr.cancel();
+        }
+    +]*/
+</script>
+<script th:src="@{~/js/AllSchool.js}"></script>
+<script>
+    //    layui.form.render('select');
+    //    layui.form.on('select(filter)', function(data){
+    //        console.log(data.elem); //得到select原始DOM对象
+    //        console.log(data.value); //得到被选中的值
+    //        console.log(data.othis); //得到美化后的DOM对象
+    //    });
+    layui.form.on('select(province)', function (data) {
+        var selectCity = $("#province").val();
+        var citylist = city[selectCity];
+        var cityArray = "";
+        var citySelectStr = "";
+        if (citylist != null) {
+            for (var i = 0, len = citylist.length; i < len; i++) {
+                cityArray = citylist[i];
+                citySelectStr = citySelectStr + "<option value='" + cityArray[0] + "'>" + cityArray[1] + "</option>"
+            }
+        }
+        $("#city").html(citySelectStr);
+        $("#school1").show();
+        $("#school2").hide();
+        var selectschool = $("#city").val();
+//        alert(selectschool);
+        var schoolUlStr = "";
+        var schoolListStr = allschool[selectschool];
+//        alert(schoolListStr);
+        for (var i = 0, len = schoolListStr.length; i < len; i++) {
+            schoolUlStr = schoolUlStr + "<option >" + schoolListStr[i][2] + "</option>";
+        }
+//        alert($("#city").html());
+        schoolUlStr = schoolUlStr + "<option value='999'>其它</option>";
+        $("#school").html(schoolUlStr);
+        layui.form.render();
+    });
+    layui.form.on('select(city)', function (data) {
+        $("#school1").show();
+        $("#school2").hide();
+        var selectschool = $("#city").val();
+        var schoolUlStr = "";
+        var schoolListStr = allschool[selectschool];
+        for (var i = 0, len = schoolListStr.length; i < len; i++) {
+            schoolUlStr = schoolUlStr + "<option >" + schoolListStr[i][2] + "</option>";
+        }
+        schoolUlStr = schoolUlStr + "<option value='999'>其它</option>";
+        $("#school").html(schoolUlStr);
+        layui.form.render('select');
+    });
+    layui.form.on('select(school)', function (data) {
+        if ($("#school").val() == "999") {
+            $("#school1").hide();
+            $("#school2").show();
+        }
+        layui.form.render('select');
+    });
+</script>
+<script>
+    window.onload = function () {
+        var provinceArray = "";
+        var provicneSelectStr = "";
+        for (var i = 0, len = province.length; i < len; i++) {
+            provinceArray = province[i];
+            provicneSelectStr = provicneSelectStr + "<option value='" + provinceArray[0] + "'>" + provinceArray[1] + "</option>"
+        }
+        $("#province").html(provicneSelectStr);
+
+        var selectCity = $("#province").val();
+        var citylist = city[selectCity];
+        var cityArray = "";
+        var citySelectStr = "";
+        for (var i = 0, len = citylist.length; i < len; i++) {
+            cityArray = citylist[i];
+            citySelectStr = citySelectStr + "<option value='" + cityArray[0] + "'>" + cityArray[1] + "</option>"
+        }
+        $("#city").html(citySelectStr);
+
+        var selectschool = $("#city").val();
+        var schoolUlStr = "";
+        var schoolListStr = allschool[selectschool];
+        for (var i = 0, len = schoolListStr.length; i < len; i++) {
+            schoolUlStr = schoolUlStr + "<option >" + schoolListStr[i][2] + "</option>";
+        }
+        schoolUlStr = schoolUlStr + "<option value='999'>其它</option>";
+        $("#school").html(schoolUlStr);
+        $("#second").show();
+        $("#restart").css("backgorund", "url('assets/images/chongxintijiao.jpg') no-repeat");
+//        layui.laydate.render({
+//            elem: '#startTime',
+//            type: 'datetime',
+//            min: 0,
+//            format: 'yyyy-MM-dd HH:mm' //可任意组合
+//        });
+//        layui.laydate.render({
+//            elem: '#endTime',
+//            type: 'datetime',
+//            min: 0,
+//            format: 'yyyy-MM-dd HH:mm' //可任意组合
+//        });
+        var start = {
+            elem: '#startTime',
+            format: 'yyyy-MM-dd HH:mm', //可任意组合
+            type: 'datetime',
+            calendar: true,
+            min: 0, //设定最小日期为当前日期
+            max: '2099-03-14 23:59', //最大日期
+            istime: true,
+            istoday: false,
+            change: function (value, date) {
+                end.min = value; //开始日选好后，重置结束日的最小日期
+            }
+        };
+        var end = {
+            elem: '#endTime',
+            format: 'yyyy-MM-dd HH:mm', //可任意组合
+            type: 'datetime',
+            calendar: true,
+            min: 0,
+            max: '2099-03-14 23:59',
+            istime: true,
+            istoday: false,
+            change: function (value, date) {
+                start.max = value; //结束日选好后，重置开始日的最大日期
+            }
+        };
+        layui.laydate.render(start);
+        layui.laydate.render(end);
+        layui.form.render();
+//        $.ajaxSetup({
+//            async : false
+//        });
+        $(document).on('click', '#add_form_btn', function () {
+            var province = document.getElementById("province").value;
+            var city = document.getElementById("city").value;
+            var school = document.getElementById("school").value;
+            var startTime = document.getElementById("startTime").value;
+            var endTime = document.getElementById("endTime").value;
+            var location = document.getElementById("location").value;
+            var operationType = $('#add_form input[name="operationType"]:checked ').val();
+            $.ajaxSettings.async = false;
+            $.post("/enterprise/add-career-talk",
+//                decodeURIComponent($('#add_form').serialize(),true),
+//                $('#add_form').serialize(),
+                {
+                    province: province,
+                    city: city,
+                    school: school,
+                    startTime: startTime,
+                    endTime: endTime,
+                    location: location,
+                    operationType: operationType
+                },
+                function (data, status) {
+//                        alert("Data: " + data + "\nStatus: " + status);
+                    console.log("Data: " + data + "\nStatus: " + status);
+                    if (data.message != null) {
+                        toastr.success(data.message);
+                    } else if (data.errorMessage != null) {
+                        toastr.error(data.errorMessage);
+                    }
+                });
+//            $("#add_form").css("display", "none");
+//            layui.table.reload('test', {
+//                url: '/enterprise/list-career-talk'
+//                , where: {} //设定异步数据接口的额外参数
+//                //,height: 300
+//            });
+        });
+    }
+
+    //监听工具条
+    layui.table.on('tool(roles)', function (obj) { //注：tool是工具条事件名，test是table原始容器的属性 lay-filter="对应的值"
+        var data = obj.data; //获得当前行数据
+        var layEvent = obj.event; //获得 lay-event 对应的值（也可以是表头的 event 参数对应的值）
+        var tr = obj.tr; //获得当前行 tr 的DOM对象
+        var layer = layui.layer;
+        if (layEvent === 'edit') {
+            $.get("/enterprise/check-update-career-talk?careerTalkId=" + data.id,
+                function (result, status) {
+                    console.log("Data: " + result + "\nStatus: " + status);
+                    var json = result;
+                    if (json.errorMessage != null) {
+                        toastr.error(json.errorMessage);
+                        toastr.clear();
+                    } else {
+                        console.log(data.id);
+                        layer.open({
+                            title: '修改宣讲会',
+                            type: 2,
+                            maxmin: true,
+                            area: ['900px', '400px'],
+                            content: ['http://localhost:8080/enterprise/update-career-talk?careerTalkId=' + data.id, 'no'], //这里content是一个URL，如果你不想让iframe出现滚动条，你还可以content: ['http://sentsin.com', 'no']
+                            end: function () {
+                                layui.table.reload('test', {
+                                    url: '/enterprise/list-career-talk'
+                                    , where: {} //设定异步数据接口的额外参数
+                                    //,height: 300
+                                });
+                            }
+                        });
+                    }
+                });
+        } else if (layEvent === 'del') {
+            layer.confirm('您真的要删除吗？', function (index) {
+//                obj.del(); //删除对应行（tr）的DOM结构，并更新缓存
+                layer.close(index);
+                //向服务端发送删除指令
+//                $.ajax({
+//                    url : '/enterprise/delete-career-talk',
+//                    data:{careerTalkId: data.id},
+//                    cache : false,
+//                    async : false,
+//                    type : "POST",
+//                    success : function (result){
+//
+//                    }
+//                });
+                console.log(data.id);
+                $.post("/enterprise/delete-career-talk",
+                    {
+                        careerTalkId: data.id
+                    },
+                    function (data, status) {
+//                        alert("Data: " + data + "\nStatus: " + status);
+                        console.log("Data: " + data + "\nStatus: " + status);
+//                        var obj = eval('(' + data + ')');
+//                        var obj = JSON.parse(data);
+//                        alert(obj.message);
+                        if (data.message != null) {
+                            toastr.success(data.message);
+                        } else if (data.errorMessage != null) {
+                            toastr.error(data.errorMessage);
+                        }
+                    });
+                layui.table.reload('test', {
+                    url: '/enterprise/list-career-talk'
+                    , where: {} //设定异步数据接口的额外参数
+                    //,height: 300
+                });
+            });
+        }
+    });
+    //页面层
+    $('#add_btn').on('click', function () {
+        layer.open({
+            type: 1,
+            title: "添加宣讲会",
+            maxmin: true,
+            area: '800px',
+            content: $('#add_form'),
+            cancel: function () {
+//                alert("关闭窗口");
+                $("#add_form").css("display", "none");
+
+                //return false 开启该代码可禁止点击该按钮关闭
+            }
+        });
+    });
+    //    layui.form.on('radio(filter)', function(data){
+    //        console.log(data.elem); //得到radio原始DOM对象
+    //        console.log(data.value); //被点击的radio的value值
+    //        layui.form.render();
+    //    });
+</script>
+</body>
+<div style="display: none;margin-top: 10px;padding: 10px" id="add_form" name="add_form">
+    <form class="layui-form">
+        <div class="layui-form-item">
+            <label class="layui-form-label">所在高校</label>
+            <div class="layui-input-block">
+                <div class="layui-input-inline" style="width: 200px;">
+                    <select id="province" name="province" lay-filter="province">
+                        <!--<option value="">省份</option>-->
+                    </select>
+                </div>
+                <div class="layui-input-inline" style="width: 200px;">
+                    <select id="city" name="city" lay-filter="city">
+                        <!--<option value="">城市</option>-->
+                    </select>
+                </div>
+                <div class="layui-input-inline" style="width: 200px;">
+                    <select id="school" name="school" lay-filter="school">
+                        <!--<option value="">学校</option>-->
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">宣讲时间</label>
+            <div class="layui-input-block">
+                <div class="layui-input-inline" style="width: 200px;">
+                    <input type="text" class="layui-input" id="startTime" name="startTime" placeholder="请输入宣讲开始时间"
+                           required lay-verify="required">
+                </div>
+                <div class="layui-input-inline" style="width: 200px;">
+                    <input type="text" class="layui-input" id="endTime" name="endTime" placeholder="请输入宣讲结束时间" required
+                           lay-verify="required">
+                </div>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">举办地点</label>
+            <div class="layui-input-block">
+                <div class="layui-input-inline" style="width: 400px;">
+                    <input type="text" name="location" id="location" required lay-verify="required" placeholder="请输入举办地点"
+                           autocomplete="off" class="layui-input">
+                </div>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">申请方式</label>
+            <div class="layui-input-block">
+                <input type="radio" name="operationType" value="1" title="投简历">
+                <input type="radio" name="operationType" value="2" title="网申" checked>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button class="layui-btn layui-btn-primary" id="add_form_btn">添加</button>
+                <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+            </div>
+        </div>
+    </form>
+</div>
+</html>
