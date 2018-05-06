@@ -1,15 +1,15 @@
 package com.zxkj.job.service.impl;
 
+import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.zxkj.job.bean.dto.SimpleUndergraduateDto;
+import com.zxkj.job.bean.dto.UndergraduateDto;
 import com.zxkj.job.bean.po.UndergraduatePo;
+import com.zxkj.job.bean.vo.UndergraduateVo;
 import com.zxkj.job.common.BaseServiceImpl;
 import com.zxkj.job.exp.JobException;
 import com.zxkj.job.mapper.UndergraduateMapper;
 import com.zxkj.job.service.UndergraduateService;
-import com.zxkj.job.util.BeanUtil;
-import com.zxkj.job.util.EmailUtil;
-import com.zxkj.job.util.IdUtil;
-import com.zxkj.job.util.LongUtils;
+import com.zxkj.job.util.*;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -20,6 +20,8 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.ModelAndView;
 import javax.servlet.http.HttpSession;
+import java.io.IOException;
+import java.text.ParseException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.mail.*;
@@ -35,6 +37,9 @@ public class UndergraduateServiceImpl extends BaseServiceImpl<UndergraduateMappe
 
     @Autowired
     RedisTemplate<String, Object> redisTemplate;
+
+    @Autowired
+    FileUtil fileUtil;
 
     @Override
     public String add(SimpleUndergraduateDto simpleUndergraduateDto) {
@@ -58,6 +63,7 @@ public class UndergraduateServiceImpl extends BaseServiceImpl<UndergraduateMappe
             throw JobException.WRONG_PASSWORD_EXCEPTION;
         } else {
             httpSession.setAttribute("email", undergraduatePo.getEmail());
+            httpSession.setAttribute("undergraduatePo", undergraduatePo);
         }
         return true;
     }
@@ -96,6 +102,39 @@ public class UndergraduateServiceImpl extends BaseServiceImpl<UndergraduateMappe
         undergraduatePo.setPassword(password);
         httpSession.removeAttribute("emailKey");
         return super.updateById(undergraduatePo);
+    }
+
+    @Override
+    public UndergraduateVo getByEmail(String email) {
+        checkEmailMatcher(email);
+        EntityWrapper entityWrapper = new EntityWrapper();
+        entityWrapper.eq("email", email);
+        UndergraduatePo undergraduatePo = super.selectOne(entityWrapper);
+        UndergraduateVo undergraduateVo = new UndergraduateVo();
+        BeanUtil.copyProperties(undergraduatePo, undergraduateVo);
+        return undergraduateVo;
+    }
+
+    @Override
+    public Boolean infoUpdate(UndergraduateDto undergraduateDto, HttpSession httpSession) throws IOException, ParseException {
+       String email = httpSession.getAttribute("email").toString();
+       EntityWrapper entityWrapper = new EntityWrapper();
+       entityWrapper.eq("email", email);
+       UndergraduatePo undergraduatePo = super.selectOne(entityWrapper);
+       if(undergraduatePo == null){
+           throw JobException.NULL_UNDERGRADUATE_EXCEPTION;
+       }
+       BeanUtil.copyProperties(undergraduateDto, undergraduatePo);
+       String headUrl = fileUtil.saveFile(undergraduateDto.getHeadFile());
+       undergraduatePo.setHeadUrl(headUrl);
+       undergraduatePo.setGraduateYear(DateUtil.formatDate(undergraduateDto.getGraduateYear(), "yyyy-MM"));
+       return super.updateById(undergraduatePo);
+    }
+
+    private void checkId(Long id){
+        if(StringUtils.isEmpty(id)){
+            throw JobException.NULL_ID_EXCEPTION;
+        }
     }
 
     private String checkEmailKey(HttpSession httpSession){

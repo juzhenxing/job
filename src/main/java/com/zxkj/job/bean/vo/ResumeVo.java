@@ -1,9 +1,8 @@
-package com.zxkj.job.bean.po;
+package com.zxkj.job.bean.vo;
 
-import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.annotations.TableName;
 import com.zxkj.job.common.bean.BasePo;
-import com.zxkj.job.enums.EducationBackgroundType;
+import com.zxkj.job.common.bean.BaseVo;
 import com.zxkj.job.enums.PoliticsStatusType;
 import lombok.Data;
 
@@ -13,15 +12,11 @@ import java.util.Date;
  * 简历类
  */
 @Data
-@TableName("t_job_resume")
-public class ResumePo extends BasePo<ResumePo> {
+public class ResumeVo extends BaseVo {
 
     private String name;
 
-    /**
-     * 0表示在线简历，1表示附件简历
-     */
-    private Integer type;
+    private Boolean type;
 
     private Float completeness;
 
@@ -35,6 +30,8 @@ public class ResumePo extends BasePo<ResumePo> {
 
     private String url;
 
-    private Long undergraduateId;
+    private Boolean acquiescence;
+
+    private Date createTime;
 
 }

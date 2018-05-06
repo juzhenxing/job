@@ -30,4 +30,8 @@ public interface CampusRecruitmentService extends IService<CampusRecruitmentPo> 
     ResponseEntity<InputStreamResource> downloadGeneralRegulation(String generalRegulationFileName) throws IOException;
 
     Boolean updateById(CampusRecruitmentDto campusRecruitmentDto, HttpSession httpSession) throws IOException;
+
+    PagedResult list(PageDto pageDto);
+
+    CampusRecruitmentVo getById(Long campusRecruitmentId);
 }

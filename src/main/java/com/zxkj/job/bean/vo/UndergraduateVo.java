@@ -1,11 +1,11 @@
-package com.zxkj.job.bean.dto;
+package com.zxkj.job.bean.vo;
 
+import com.baomidou.mybatisplus.annotations.TableName;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.zxkj.job.common.bean.BasePo;
+import com.zxkj.job.common.bean.BaseVo;
 import com.zxkj.job.enums.EducationBackgroundType;
 import lombok.Data;
-import lombok.Getter;
-import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Date;
 
@@ -13,9 +13,9 @@ import java.util.Date;
  * 学生类
  */
 @Data
-public class UndergraduateDto {
+public class UndergraduateVo extends BaseVo {
 
-    private MultipartFile headFile;
+    private String headUrl;
 
     private String name;
 
@@ -27,14 +27,11 @@ public class UndergraduateDto {
 
     private String profession;
 
-    @DateTimeFormat(pattern = "yyyy-MM")
-    @JsonFormat(pattern = "yyyy-MM")
-    private String graduateYear;
+//    @JsonFormat(pattern = "yyyy-MM")
+    private Date graduateYear;
 
     private String phone;
 
     private String email;
-
-    private String password;
 
 }

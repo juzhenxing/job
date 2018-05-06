@@ -28,7 +28,11 @@ public interface ProfessionalService extends IService<ProfessionalPo> {
 
     Boolean updateById(ProfessionalDto professionalDto, HttpSession httpSession);
 
+    PagedResult listProfessionalByCampusRecruitmentId(PageDto pageDto, Long campusRecruitmentId);
+
     List<ProfessionalVo> list(Long enterpriseId);
 
     List<ProfessionalVo> listByProfessionalIds(List<Long> professionalIds);
+
+    ProfessionalVo getById(Long professionalId);
 }

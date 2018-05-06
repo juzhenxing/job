@@ -14,6 +14,8 @@ import java.util.Date;
 @TableName("t_job_undergraduate")
 public class UndergraduatePo extends BasePo<UndergraduatePo> {
 
+    private static final long serialVersionUID = 2015229907224556910L;
+
     private String headUrl;
 
     private String name;
@@ -33,5 +35,7 @@ public class UndergraduatePo extends BasePo<UndergraduatePo> {
     private String email;
 
     private String password;
+
+    private Long acquiescenceResumeId;
 
 }

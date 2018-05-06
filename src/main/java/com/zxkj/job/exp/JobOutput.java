@@ -75,6 +75,10 @@ public enum JobOutput {
     CAMPUS_RECRUITMENT_DELETE(131, "校招网申记录删除失败"),
 
     CAMPUS_RECRUITMENT_UPDATE(132, "校招网申记录更新失败"),
+
+    UNDERGRADUATE_UPDATE(133, "用户更新失败"),
+
+    NULL_RESUME(134, "该简历不存在")
     ;
 
     private int code;

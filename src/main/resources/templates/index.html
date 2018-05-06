@@ -186,7 +186,7 @@
 </div>
 <div class="panel panel-success">
     <div class="panel-heading">
-        <h3 class="panel-title">热门宣讲会 <a href="//xyzp.haitou.cc/" class="pull-right glyphicon glyphicon-chevron-right">查看更多</a></h3>
+        <h3 class="panel-title">热门宣讲会 <a th:href="@{/undergraduate/career-talk}" class="pull-right glyphicon glyphicon-chevron-right">查看更多</a></h3>
     </div>
     <div class="panel-body">
         <table class="layui-table"
@@ -226,15 +226,20 @@
 </div>
 <div class="panel panel-success">
     <div class="panel-heading">
-        <h3 class="panel-title">热门校招网申 <a href="//xyzp.haitou.cc/" class="pull-right glyphicon glyphicon-chevron-right">查看更多</a></h3>
+        <h3 class="panel-title">热门校招网申 <a th:href="@{/undergraduate/campus-recruitment}" class="pull-right glyphicon glyphicon-chevron-right">查看更多</a></h3>
     </div>
     <div class="panel-body">
-        <table border="3">
-            <tr>
-                <td>涉及城市</td>
-                <td>公司名称</td>
-                <td>发布时间</td>
-            </tr>
+        <table class="layui-table"
+               lay-data="{height:'full', url:'/undergraduate/list-campus-recruitment', id:'test', even:true, text: {none: '您还未登录'}}"
+               lay-filter="roles">
+            <thead>
+                <tr class="layui-colla-item">
+                    <th lay-data="{align: 'center', field:'title', unresize:true}">公司标题</th>
+                    <th lay-data="{align: 'center', field:'professionalVoList', unresize:true, templet: '#job_name_s'}">招聘职位</th>
+                    <th lay-data="{align: 'center', field:'workplace', width:200, unresize:true}">涉及城市</th>
+                    <th lay-data="{align: 'center', field:'releaseTime', width:200, sort: true, unresize:true}">发布时间</th>
+                </tr>
+            </thead>
         </table>
     </div>
 </div>
@@ -278,6 +283,16 @@
             toastr.cancel();
         }
     +]*/
+</script>
+<script th:inline="javascript" type="text/html" id="job_name_s">
+    {{#
+    var jobNames = '';
+    layui.each(d.professionalVoList, function(index, item){
+    jobNames = jobNames + item.name;
+    jobNames = jobNames + ',';
+    });
+    return jobNames.substr(0, jobNames.length-1);
+    }}
 </script>
 </body>
 </html>

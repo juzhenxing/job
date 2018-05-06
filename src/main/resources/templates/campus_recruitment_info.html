@@ -2,19 +2,9 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>校招</title>
+    <title>校招详情</title>
     <link th:href="@{~/layui/css/layui.css}" rel="stylesheet" type="text/css"/>
     <link th:href="@{~/css/toastr.min.css}" rel="stylesheet"/>
-    <style>
-        #myInput {
-            background-image: url('https://static.runoob.com/images/mix/searchicon.png'); /* 搜索按钮 */
-            background-position: 10px 12px; /* 定位搜索按钮 */
-            background-repeat: no-repeat; /* 不重复图片*/
-            font-size: 16px; /* 加大字体 */
-            padding: 12px 20px 12px 40px;
-            border: 1px solid #ddd;
-        }
-    </style>
 </head>
 <body class="layui-layout-body">
 <div class="layui-layout layui-layout-admin">
@@ -81,7 +71,7 @@
                         <p th:text="'hi, ' + ${session.email}"></p>
                     </a>
                     <dl class="layui-nav-child">
-                        <dd><a>个人中心</a></dd>
+                        <dd><a th:href="@{/undergraduate/personal-center}">个人中心</a></dd>
                         <dd><a th:href="@{/undergraduate/logout}">退出登录</a></dd>
                     </dl>
                 </li>
@@ -105,33 +95,36 @@
     <div class="layui-body">
         <!-- 内容主体区域 -->
         <div style="padding: 15px;">
-            <blockquote class="layui-elem-quote">
-                <form class="layui-form">
-                    <input type="text" id="myInput" onkeyup="myFunction()" placeholder="搜索...">
-                </form>
-            </blockquote>
-            <blockquote class="layui-elem-quote">
-                <form class="layui-form" method="post">
-                    <select name="type">
-                        <tr th:each="provinceType : ${provinceType}">
-                            <option th:value="${provinceType.type}"><span th:text="${provinceType.name}"></span></option>
-                        </tr>
-                    </select>
-                </form>
-            </blockquote>
-            <table class="layui-table"
-                   lay-data="{height:'full', url:'/undergraduate/list-campus-recruitment', page:true, id:'test', even:true, text: {none: '您还未登录'}}"
-                   lay-filter="roles">
-                <thead>
-                <tr class="layui-colla-item">
-                    <th lay-data="{align: 'center', field:'title', unresize:true}">公司标题</th>
-                    <th lay-data="{align: 'center', field:'professionalVoList', unresize:true, templet: '#job_name_s'}">招聘职位</th>
-                    <th lay-data="{align: 'center', field:'workplace', width:200, unresize:true}">涉及城市</th>
-                    <th lay-data="{align: 'center', field:'releaseTime', width:200, sort: true, unresize:true}">发布时间</th>
-                    <th lay-data="{align: 'center', toolbar: '#barDemo', unresize:true}">操作</th>
+            <table class="layui-table">
+                <colgroup>
+                    <col width="30%">
+                    <col width="70%">
+                </colgroup>
+                <!-- 提示：如果你不想用form，你可以换成div等任何一个普通元素 -->
+                <tbody>
+                <tr>
+                    <td>公司标题</td>
+                    <td><p th:text="${campusRecruitmentVo.title}"></p></td>
                 </tr>
-                </thead>
+                <tr>
+                    <td>发布时间</td>
+                    <td><p th:text="${{campusRecruitmentVo.releaseTime}}"></p></td>
+                </tr>
+                <tr>
+                    <td>涉及城市</td>
+                    <td><p th:text="${campusRecruitmentVo.workplace}"></p></td>
+                </tr>
+                <tr>
+                    <td>文章标签</td>
+                    <td><p th:text="${campusRecruitmentVo.tags}"></p></td>
+                </tr>
+                <tr>
+                    <td>简章正文</td>
+                    <td><a th:href="'/enterprise/download-general-regulation?generalRegulationFileName=' + ${campusRecruitmentVo.generalRegulationFileName}"><p th:text=" ${campusRecruitmentVo.generalRegulationFileName}"/></a></td>
+                </tr>
+                </tbody>
             </table>
+            <table id="professional_table" class="layui-table" lay-filter="roles"></table>
             <i class="layui-icon">&#xe60c;</i>
         </div>
     </div>
@@ -172,7 +165,23 @@
         var tr = obj.tr; //获得当前行 tr 的DOM对象
         var layer = layui.layer;
         if(layEvent === 'detail'){ //查看
-            window.location.href = 'http://localhost:8080/undergraduate/get-campus-recruitment-by-id?campusRecruitmentId='+ data.id;
+            $.get("/enterprise/check-get-campus-recruitment-by-id?campusRecruitmentId="+ data.id,
+                function (result, status) {
+                    console.log("Data: " + result + "\nStatus: " + status);
+                    var json = result;
+                    if (json.errorMessage != null) {
+                        toastr.error(json.errorMessage);
+                    } else {
+                        console.log(data.id);
+                        //do somehing
+                        layer.open({
+                            title: ['详情', 'font-size:18px;'],
+                            type: 2,
+                            content: 'http://localhost:8080/enterprise/get-campus-recruitment-by-id?campusRecruitmentId='+ data.id,
+                            area: ['500px', '600px']
+                        });
+                    }
+                });
         }
     });
 </script>
@@ -185,6 +194,60 @@
     });
     return jobNames.substr(0, jobNames.length-1);
     }}
+</script>
+<script th:inline="javascript">
+    layui.table.render({
+        elem: '#professional_table'
+        ,height: 'full'
+        ,url: '/undergraduate/list-professional-by-campus-recruitment-id' //数据接口
+        ,page: true //开启分页
+        ,even:true
+        ,text: {none: '您还未登录'}
+        ,where: {campusRecruitmentId: [[${campusRecruitmentVo.id}]]}
+        ,cols: [[ //表头
+            {align: 'center', field:'type', width:120, sort: true, unresize:true, title: '职位类别'}
+            ,{align: 'center', field:'name', width:150, sort: true, unresize:true, title: '招聘职位'}
+            ,{align: 'center', field:'hiring', width:120, sort: true, unresize:true, title: '招聘人数'}
+            ,{align: 'center', field:'educationBackground', width:120, sort: true, unresize:true, title: '学历要求'}
+            ,{align: 'center', field:'majorField', width:200, sort: true, unresize:true, title: '专业要求'}
+            ,{align: 'center', field:'workplace', width:267, sort: true, unresize:true, title: '工作地点'}
+            ,{align: 'center', toolbar: '#professionalBar', width:150, unresize:true, title: '操作'}
+        ]]
+    });
+</script>
+<script type="text/html" id="professionalBar">
+    <a class="layui-btn layui-btn-xs" lay-event="professional_detail">详情</a>
+    <a class="layui-btn layui-btn-xs" lay-event="professional_resumes" >投递简历</a>
+</script>
+<script>
+    //监听工具条
+    layui.table.on('tool(roles)', function (obj) { //注：tool是工具条事件名，test是table原始容器的属性 lay-filter="对应的值"
+        var data = obj.data; //获得当前行数据
+        var layEvent = obj.event; //获得 lay-event 对应的值（也可以是表头的 event 参数对应的值）
+        var tr = obj.tr; //获得当前行 tr 的DOM对象
+        var layer = layui.layer;
+        if(layEvent === 'professional_detail'){ //查看
+            $.get("/undergraduate/check-get-professional-by-id?professionalId="+ data.id,
+                function (result, status) {
+                    console.log("Data: " + result + "\nStatus: " + status);
+                    var json = result;
+                    if (json.errorMessage != null) {
+                        toastr.error(json.errorMessage);
+                    } else {
+                        console.log(data.id);
+                        //do somehing
+                        layer.open({
+                            title: ['详情', 'font-size:18px;'],
+                            type: 2,
+                            content: 'http://localhost:8080/undergraduate/get-professional-by-id?professionalId='+ data.id,
+                            area: ['500px', '600px']
+                        });
+                    }
+                });
+        }else if (layEvent === 'professional_resumes') {
+            window.location.href = 'http://localhost:8080/undergraduate/update-professional?professionalId='+ data.id;
+        }
+    });
 </script>
 </body>
 </html>

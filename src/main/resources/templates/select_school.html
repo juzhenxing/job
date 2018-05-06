@@ -1,0 +1,191 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <script type="text/javascript"></script>
+    <title>Js选择大学的弹出框 JSON数据格式</title>
+    <script src="http://files.cnblogs.com/technology/school.js" type="text/javascript"></script>
+    <style type="text/css">
+        *{margin:0;padding:0;font-size: 12px;font-family: 'Microsoft YaHei',arial,tahoma,宋体b8b\4f53,sans-serif;}
+        #exp{line-height: 1.8;padding: 5px;margin-bottom: 10px;background: #ececec;color: #3777bc;}
+        #school{color: #666;}
+        #school-box{
+            width:500px;
+            border:1px solid #3777bc;
+            box-shadow:2px 3px 0 rgba(190,190,190,0.3);
+            background-color: #fff;
+            z-index: 100;
+            position: absolute;
+            display: none;
+        }
+        #school-box a{
+            color:#3777bc;
+            text-decoration: none;
+            padding: 5px;
+            text-align: center;
+            display: inline-block;
+        }
+        #school-box a:hover{
+            background-color:#3777bc;
+            color: #fff;
+            cursor: pointer;
+        }
+        #school-box a.active{
+            background-color:#3777bc;
+            color:#fff;
+        }
+        #school-box a:hover{
+            background-color:#3777bc;
+            color: #fff;
+            cursor: pointer;
+        }
+        #school-box h1{
+            background: #3777bc;
+            color: #fff;
+            line-height: 2;
+            padding-left: 10px;
+        }
+        #school-box #province, #school-box #school{
+            border: 1px solid #ccc;
+            margin:10px;
+            padding: 2px;
+            line-height: 2;
+        }
+        #school-box #school {
+            overflow-x: hidden;
+            overflow-y: auto;
+            height: 200px;
+        }
+        #school-box #school a{
+            display: inline-block;
+            width: 200px;
+            text-align: left;
+        }
+    </style>
+
+<body>
+<div id="exp">
+    <h1>Js选择大学的弹出框 JSON数据格式 制作过程
+        <br />看别人用jquery做的 自己再用原生的写一个 js数据地址 http://files.cnblogs.com/technology/school.js</h1>
+    <p>1.创建html css</p>
+    <p>2.点击input显示学校div</p>
+    <p>3.控制学校div的位置</p>
+    <p>4.读取数据</p>
+</div>
+选择大学:<input type="text" name="school" id="input-school" value="点击选择大学" />
+<div id="school-box">
+    <h1>选择学校</h1>
+    <div id="province"></div>
+    <div id="school"></div>
+</div>
+
+<script type="text/javascript">
+    (function(){
+        var box = document.getElementById("school-box"),
+            input_school = document.getElementById("input-school");
+
+        //点击input
+        input_school.onclick = function(){
+            box.style.top = getPosition(input_school).top + getPosition(input_school).height + "px";
+            box.style.left = getPosition(input_school).left + "px";
+            box.style.display = "block";
+
+            addProvince();
+        }
+
+        //添加城市列表
+        function addProvince(){
+            var province = document.getElementById("province"),
+                items = province.getElementsByTagName("a");
+            province.innerHTML = "";    //清空城市列表
+
+            for(var i=0; i<schoolList.length; i++){
+                var a = document.createElement("a");
+                a.id = schoolList[i].id;
+                a.innerHTML = schoolList[i].name;
+                if(i==0){    //给第一个城市添加样式
+                    a.className = "active";
+                    addSchool(1);
+                }
+                province.appendChild(a);
+            }
+
+            //给城市列表添加onclick事件
+            for(var i=0; i<items.length; i++) {
+                items[i].onclick = function(){
+
+                    //清除同级别a链接的active样式
+                    var as = this.parentNode.childNodes;
+                    for(var a=0; a < as.length; a++){
+                        as[a].className = "";
+                    }
+                    this.className = "active";
+                    addSchool(this.id);
+                }
+            }
+        }
+
+        //添加学校列表
+        function addSchool(id){
+            var school = document.getElementById("school"),
+                items = school.getElementsByTagName("a"),
+                schools = schoolList[id-1].school;
+            school.innerHTML = "";
+
+            for(var i=0; i<schools.length; i++) {
+                var a = document.createElement("a");
+                a.id = schools.id;
+                a.innerHTML = schools[i].name;
+                school.appendChild(a);
+            }
+
+            //给学校列表添加onclick事件 修改input内容
+            for(var i=0; i<items.length; i++) {
+                items[i].onclick = function(){
+                    box.style.display = "none";
+                    input_school.value= this.innerHTML;
+                }
+            }
+        }
+
+        //点击box阻止事件冒泡
+        box.onclick = function(e){
+            e = e || window.event;
+            if(window.event){    //阻止事件冒泡
+                e.cancelBubble = true;
+            } else {
+                e.stopPropagation();
+            }
+        }
+
+        //点击body隐藏box
+        document.body.onclick = function(e){
+            e = e || window.event;
+            var target = e.target || e.srcElement;
+            if(target.id === "school-box" || target.id === "input-school") {
+                return;
+            } else {
+                box.style.display = "none";
+            }
+        }
+    }())
+
+
+    //获取元素在页面里的位置和宽高
+    function getPosition(obj) {
+        var top = 0;
+        var left = 0;
+        var width = obj.offsetWidth;
+        var height = obj.offsetHeight;
+        while(obj.offsetParent){
+            top += obj.offsetTop;
+            left += obj.offsetLeft;
+            obj = obj.offsetParent;
+        }
+        return {"top":top,"left":left,"width":width,"height":height};
+    }
+
+</script>
+
+</body>
+</html>

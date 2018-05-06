@@ -1,6 +1,10 @@
 package com.zxkj.job.service.impl;
 
+import com.baomidou.mybatisplus.mapper.EntityWrapper;
+import com.baomidou.mybatisplus.mapper.Wrapper;
+import com.baomidou.mybatisplus.plugins.Page;
 import com.zxkj.job.bean.dto.*;
+import com.zxkj.job.bean.po.CampusRecruitmentProfessionalRPo;
 import com.zxkj.job.bean.po.EnterprisePo;
 import com.zxkj.job.bean.po.ProfessionalPo;
 import com.zxkj.job.bean.vo.EnterpriseVo;
@@ -12,6 +16,7 @@ import com.zxkj.job.enums.CheckStateType;
 import com.zxkj.job.exp.JobException;
 import com.zxkj.job.mapper.EnterpriseMapper;
 import com.zxkj.job.mapper.ProfessionalMapper;
+import com.zxkj.job.service.CampusRecruitmentProfessionalRService;
 import com.zxkj.job.service.EnterpriseService;
 import com.zxkj.job.service.ProfessionalService;
 import com.zxkj.job.util.BeanUtil;
@@ -41,6 +46,9 @@ import java.util.stream.Collectors;
 public class ProfessionalServiceImpl extends BaseServiceImpl<ProfessionalMapper, ProfessionalPo> implements ProfessionalService {
 
     private Logger logger = LoggerFactory.getLogger(getClass());
+
+    @Autowired
+    CampusRecruitmentProfessionalRService campusRecruitmentProfessionalRService;
 
     @Override
     public Boolean add(ProfessionalDto professionalDto, HttpSession httpSession) {
@@ -95,6 +103,23 @@ public class ProfessionalServiceImpl extends BaseServiceImpl<ProfessionalMapper,
     }
 
     @Override
+    public PagedResult listProfessionalByCampusRecruitmentId(PageDto pageDto, Long campusRecruitmentId) {
+        Page page = new Page(pageDto.getPage(), pageDto.getLimit());
+//        logger.error("起始页：" + pageDto.getPage() + ", 页面大小：" + pageDto.getLimit());
+        Wrapper wrapper = new EntityWrapper();
+        wrapper.eq("campus_recruitment_id", campusRecruitmentId);
+        Page campusRecruitmentProfessionalRPoPage = campusRecruitmentProfessionalRService.selectPage(page, wrapper);
+        List<CampusRecruitmentProfessionalRPo> campusRecruitmentProfessionalRPos = campusRecruitmentProfessionalRPoPage.getRecords();
+         List<Long> professionalIds = campusRecruitmentProfessionalRPos.parallelStream().map(e -> e.getProfessionalId()).collect(Collectors.toList());
+        List<ProfessionalPo> professionalPos = super.selectBatchIds(professionalIds);
+        List<ProfessionalVo> professionalVos = professionalPos.parallelStream().map(e -> professionalPoToVo(e)).collect(Collectors.toList());
+        PagedResult pagedResult = new PagedResult();
+        pagedResult.setData(professionalVos);
+        pagedResult.setCount(campusRecruitmentProfessionalRPoPage.getTotal());
+        return pagedResult;
+    }
+
+    @Override
     public List<ProfessionalVo> list(Long enterpriseId) {
         List<ProfessionalPo> professionalPoList = super.baseMapper.selectByEnterpriseId(enterpriseId);
         return professionalPoList.parallelStream().map(e -> professionalPoToVo(e)).collect(Collectors.toList());
@@ -104,6 +129,12 @@ public class ProfessionalServiceImpl extends BaseServiceImpl<ProfessionalMapper,
     public List<ProfessionalVo> listByProfessionalIds(List<Long> professionalIds) {
         List<ProfessionalPo> professionalPos = super.selectBatchIds(professionalIds);
         return professionalPos.parallelStream().map(e -> professionalPoToVo(e)).collect(Collectors.toList());
+    }
+
+    @Override
+    public ProfessionalVo getById(Long professionalId) {
+        ProfessionalPo professionalPo = super.selectById(professionalId);
+        return professionalPoToVo(professionalPo);
     }
 
     private ProfessionalVo professionalPoToVo(ProfessionalPo professionalPo){

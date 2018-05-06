@@ -74,5 +74,9 @@ public class JobException extends BaseException {
     public static final JobException CAMPUS_RECRUITMENT_DELETE_EXCEPTION = new JobException(JobOutput.CAMPUS_RECRUITMENT_DELETE);
 
     public static final JobException CAMPUS_RECRUITMENT_UPDATE_EXCEPTION = new JobException(JobOutput.CAMPUS_RECRUITMENT_UPDATE);
+
+    public static final JobException UNDERGRADUATE_UPDATE_EXCEPTION = new JobException(JobOutput.UNDERGRADUATE_UPDATE);
+
+    public static final JobException NULL_RESUME_EXCEPTION = new JobException(JobOutput.NULL_RESUME);
 }
 

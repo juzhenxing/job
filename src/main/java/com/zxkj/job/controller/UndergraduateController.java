@@ -1,11 +1,13 @@
 package com.zxkj.job.controller;
 
 import com.zxkj.job.bean.dto.PageDto;
+import com.zxkj.job.bean.dto.ResumeDto;
 import com.zxkj.job.bean.dto.SimpleUndergraduateDto;
 import com.zxkj.job.bean.dto.UndergraduateDto;
 import com.zxkj.job.common.bean.PagedResult;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcProperties;
 import org.springframework.ui.Model;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
@@ -34,7 +36,7 @@ public interface UndergraduateController {
     String index();
 
     @GetMapping("campus-recruitment")
-    String campusRecruitment();
+    ModelAndView campusRecruitment();
 
     @GetMapping("career-talk")
     String careerTalk();
@@ -72,4 +74,51 @@ public interface UndergraduateController {
     @ResponseBody
     PagedResult listCareerTalk(PageDto pageDto);
 
+    @GetMapping("list-campus-recruitment")
+    @ResponseBody
+    PagedResult listCampusRecruitment(PageDto pageDto);
+
+    @GetMapping("logout")
+    String logout(HttpSession httpSession);
+
+    @GetMapping("get-campus-recruitment-by-id")
+    ModelAndView getCampusRecruitmentById(Long campusRecruitmentId);
+
+    @GetMapping("list-professional-by-campus-recruitment-id")
+    @ResponseBody
+    PagedResult listProfessionalByCampusRecruitmentId(PageDto pageDto, Long campusRecruitmentId);
+
+    @GetMapping("check-get-campus-recruitment-by-id")
+    @ResponseBody
+    ModelMap checkGetCampusRecruitmentById(Long campusRecruitmentId);
+
+    @GetMapping("get-professional-by-id")
+    ModelAndView getProfessionalById(Long professionalId);
+
+    @GetMapping("check-get-professional-by-id")
+    @ResponseBody
+    ModelMap checkGetProfessionalById(Long professionalId);
+
+    @GetMapping("personal-center")
+    ModelAndView personalCenter(HttpSession httpSession);
+
+    @GetMapping("info-update")
+    ModelAndView infoUpdate(HttpSession httpSession);
+
+    @PostMapping("info-update")
+    ModelAndView infoUpdate(UndergraduateDto undergraduateDto, HttpSession httpSession);
+
+    @GetMapping("resume-add")
+    ModelAndView resumeAdd();
+
+    @PostMapping("resume-add")
+    ModelAndView resumeAdd(@Valid ResumeDto resumeDto, HttpSession httpSession);
+
+    @GetMapping("list-resume")
+    @ResponseBody
+    PagedResult listResume(PageDto pageDto, HttpSession httpSession);
+
+    @PostMapping("delete-resume")
+    @ResponseBody
+    ModelMap deleteResume(Long resumeId, HttpSession httpSession);
 }

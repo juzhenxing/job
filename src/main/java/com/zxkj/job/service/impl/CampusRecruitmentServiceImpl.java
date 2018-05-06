@@ -1,5 +1,6 @@
 package com.zxkj.job.service.impl;
 
+import com.baomidou.mybatisplus.plugins.Page;
 import com.zxkj.job.bean.dto.CampusRecruitmentDto;
 import com.zxkj.job.bean.dto.PageDto;
 import com.zxkj.job.bean.dto.ProfessionalDto;
@@ -175,6 +176,18 @@ public class CampusRecruitmentServiceImpl extends BaseServiceImpl<CampusRecruitm
         return campusRecruitmentProfessionalRService.insertBatch(addCampusRecruitmentProfessionalRPos);
     }
 
+    @Override
+    public PagedResult list(PageDto pageDto) {
+        Page page = new Page(pageDto.getPage(), pageDto.getLimit());
+        Page<CampusRecruitmentPo> campusRecruitmentPoPage = super.selectPage(page);
+        List<CampusRecruitmentVo> campusRecruitmentVoList = campusRecruitmentPoPage.getRecords().parallelStream().map(e -> campusRecruitmentPoToVo(e)).collect(Collectors.toList());
+        PagedResult<CampusRecruitmentVo> pagedResult = new PagedResult<>();
+        pagedResult.setData(campusRecruitmentVoList);
+//        logger.error("总数：" + careerTalkPoPage.getTotal());
+        pagedResult.setCount(campusRecruitmentPoPage.getTotal());
+        return pagedResult;
+    }
+
     private CampusRecruitmentPo checkCampusRecruitmentPo(Long campusRecruitmentId, Long enterpriseId){
         CampusRecruitmentPo campusRecruitmentPo = super.baseMapper.selectOneById(campusRecruitmentId, enterpriseId);
         if(campusRecruitmentPo == null){
@@ -222,5 +235,11 @@ public class CampusRecruitmentServiceImpl extends BaseServiceImpl<CampusRecruitm
             throw JobException.NOT_LOGGED_IN_EXCEPTION;
         }
         return (EnterpriseVo) enterpriseObj;
+    }
+
+    @Override
+    public CampusRecruitmentVo getById(Long campusRecruitmentId) {
+        CampusRecruitmentPo campusRecruitmentPo = super.selectById(campusRecruitmentId);
+        return campusRecruitmentPoToVo(campusRecruitmentPo);
     }
 }

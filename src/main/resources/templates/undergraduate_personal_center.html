@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>个人中心</title>
+    <link th:href="@{~/layui/css/layui.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{~/css/toastr.min.css}" rel="stylesheet"/>
+
+    <!-- 新 Bootstrap 核心 CSS 文件 -->
+    <link th:href="@{~/bootstrap/css/bootstrap.min.css}" rel="stylesheet" type="text/css" />
+    <!-- 可选的Bootstrap主题文件（一般不使用） -->
+    <link th:href="@{~/bootstrap/css/bootstrap-theme.min.css}" rel="stylesheet" type="text/css"/>
+    <!-- jQuery文件。务必在bootstrap.min.js 之前引入 -->
+    <script type="text/javascript" th:src="@{~/js/jquery-3.3.1.min.js}"></script>
+    <!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
+    <script type="text/javascript" th:src="@{~/bootstrap/js/bootstrap.min.js}"></script>
+</head>
+<body class="layui-layout-body">
+<div class="layui-layout layui-layout-admin">
+    <div class="layui-header">
+        <div class="layui-logo">
+            <a th:href="@{/undergraduate/index}"><img th:src="@{~/img/logo.png}" alt="通用的占位符缩略图" width="100px"/></a>
+        </div>
+        <!-- 头部区域（可配合layui已有的水平导航） -->
+        <ul class="layui-nav layui-layout-left">
+            <li class="layui-nav-item">
+                <a href="javascript:;">
+                    广东
+                </a>
+                <dl class="layui-nav-child">
+                    <dd><a href="">北京</a></dd>
+                    <dd><a>上海</a></dd>
+                    <dd><a>广东</a></dd>
+                    <dd><a>湖北</a></dd>
+                    <dd><a>陕西</a></dd>
+                    <dd><a>四川</a></dd>
+                    <dd><a>江苏</a></dd>
+                    <dd><a>安徽</a></dd>
+                    <dd><a>山东</a></dd>
+                    <dd><a>湖南</a></dd>
+                    <dd><a>天津</a></dd>
+                    <dd><a>河南</a></dd>
+                    <dd><a>浙江</a></dd>
+                    <dd><a>重庆</a></dd>
+                    <dd><a>辽宁</a></dd>
+                    <dd><a>福建</a></dd>
+                    <dd><a>江西</a></dd>
+                    <dd><a>吉林</a></dd>
+                    <dd><a>黑龙江</a></dd>
+                    <dd><a>河北</a></dd>
+                    <dd><a>山西</a></dd>
+                    <dd><a>云南</a></dd>
+                    <dd><a>甘肃</a></dd>
+                    <dd><a>广西</a></dd>
+                </dl>
+            </li>
+            <li class="layui-nav-item">
+                <a th:href="@{/undergraduate/career-talk}">宣讲会</a>
+            </li>
+            <li class="layui-nav-item">
+                <a th:href="@{/undergraduate/campus-recruitment}">校招网申</a>
+            </li>
+        </ul>
+        <div th:if="${session.email eq null}">
+            <ul class="layui-nav layui-layout-right">
+                <a th:href="@{/enterprise/index}">企业登录</a>
+                <a>学生登录</a>
+            </ul>
+        </div>
+        <div th:if="${session.email ne null}">
+            <ul class="layui-nav layui-layout-right">
+                <li class="layui-nav-item">
+                    <a >我的消息</a>
+                </li>
+                <li class="layui-nav-item">
+                    <a >我的简历</a>
+                </li>
+                <li class="layui-nav-item">
+                    <a href="javascript:;">
+                        <p th:text="'hi, ' + ${session.email}"></p>
+                    </a>
+                    <dl class="layui-nav-child">
+                        <dd><a>个人中心</a></dd>
+                        <dd><a th:href="@{/undergraduate/logout}">退出登录</a></dd>
+                    </dl>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="layui-side layui-bg-black">
+        <div class="layui-side-scroll">
+            <!-- 左侧导航区域（可配合layui已有的垂直导航） -->
+            <ul class="layui-nav layui-nav-tree">
+                <li class="layui-nav-item layui-nav-itemed">
+                    <a >我的简历</a>
+                </li>
+                <li class="layui-nav-item">
+                    <a >简历投递记录</a>
+                </li>
+                <li class="layui-nav-item">
+                    <a >我的收藏</a>
+                </li>
+                <li class="layui-nav-item">
+                    <a >我的消息</a>
+                </li>
+                <li class="layui-nav-item">
+                    <a >修改密码</a>
+                </li>
+                <li class="layui-nav-item">
+                    <a >账号绑定</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="layui-body">
+        <!-- 内容主体区域 -->
+        <div style="padding: 15px;">
+            <div class="header">
+                <h3 style="display: inline-block;">我的简历</h3>
+                <span class="text-ellipsis" style="margin-left: 10px">完善的简历可提高求职成功率</span>
+            </div>
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">
+                        小名片
+                        <a th:href="@{/undergraduate/info-update}" class="pull-right">
+                            <i class="layui-icon">&#xe642;</i>编辑
+                        </a>
+                    </h3>
+                </div>
+                <div class="panel-body">
+                    <table class="layui-table">
+                        <colgroup>
+                            <col width="20%">
+                            <col width="40%">
+                            <col width="40%">
+                        </colgroup>
+                        <tbody>
+                            <tr>
+                                <td rowspan="4" align="center">
+                                    <div th:if="${undergraduateVo.headUrl ne null}">
+                                        <img th:src="@{'~/' + ${undergraduateVo.headUrl} }">
+                                    </div>
+                                    <div th:if="${undergraduateVo.headUrl eq null}">
+                                        <img th:src="@{~/img/user-face-male.png}">
+                                    </div>
+                                </td>
+                                <td>姓名：<span th:text="${undergraduateVo.name}"></span></td>
+                                <td>毕业院校：<span th:text="${undergraduateVo.school}"></span></td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    性别：
+                                    <span th:if="${undergraduateVo.sex eq 1}">
+                                        女
+                                    </span>
+                                    <span th:if="${undergraduateVo.sex eq 0}">
+                                        男
+                                    </span>
+                                    <span th:if="${undergraduateVo.sex ne 0 and undergraduateVo.sex ne 1}">
+                                        <span th:text="${undergraduateVo.sex}"></span>
+                                    </span>
+                                </td>
+                                <td>专业院系：<span th:text="${undergraduateVo.profession}"></span></td>
+                            </tr>
+                            <tr>
+                                <td>电话：<span th:text="${undergraduateVo.phone}"></span></td>
+                                <td>
+                                    最高学历：
+                                    <span th:if="${undergraduateVo.educationBackground eq null}">
+                                        <span th:text="${undergraduateVo.educationBackground}"></span>
+                                    </span>
+                                    <span th:if="${undergraduateVo.educationBackground ne null}">
+                                        <span th:text="${undergraduateVo.educationBackground.name}"></span>
+                                    </span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>邮箱：<span th:text="${undergraduateVo.email}"></span></td>
+                                <td>毕业年份：<span th:text="${#dates.format(undergraduateVo.graduateYear,'yyyy-MM')}"></span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">
+                        我的简历
+                        <a th:href="@{/undergraduate/resume-add}" class="pull-right">
+                            <i class="layui-icon">&#xe654;</i>上传附件简历
+                        </a>
+                        <a th:href="@{/undergraduate/resume-add}" class="pull-right">
+                            <i class="layui-icon">&#xe654;</i>新增在线简历
+                        </a>
+                    </h3>
+                </div>
+                <div class="panel-body">
+                    <table class="layui-table"
+                           lay-data="{height:'full', url:'/undergraduate/list-resume', page:true, id:'test', even:true, text: {none: '您还未登录'}}"
+                           lay-filter="roles">
+                        <thead>
+                            <tr class="layui-colla-item">
+                                <th lay-data="{align: 'center', field:'name', width:200, unresize:true}">简历名称</th>
+                                <th lay-data="{align: 'center', field:'acquiescence', width:200, sort: true, unresize:true, templet: '#acquiescence'}">是否默认</th>
+                                <th lay-data="{align: 'center', field:'type', width:200, sort: true, unresize:true, templet: '#type'}">类型</th>
+                                <th lay-data="{align: 'center', field:'createTime', width:200, sort: true, unresize:true, templet: '#create_time'}">创建日期</th>
+                                <th lay-data="{align: 'center', toolbar: '#barDemo', width:280, unresize:true}">操作</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>
+            <i class="layui-icon">&#xe60c;</i>
+        </div>
+    </div>
+    <div class="layui-footer">
+        <!-- 底部固定区域 -->
+        © layui.com - 底部固定区域
+    </div>
+</div>
+<script type="text/html" id="barDemo">
+    <a class="layui-btn layui-btn-xs" lay-event="detail">预览</a>
+    <a class="layui-btn layui-btn-xs" lay-event="edit" >编辑</a>
+    <a class="layui-btn layui-btn-xs layui-btn-danger" lay-event="del">删除</a>
+</script>
+<script type="text/javascript" th:src="@{~/layui/layui.all.js}"></script>
+<script type="text/javascript" th:src="@{~/js/jquery-3.3.1.min.js}"></script>
+<!--<script type="text/javascript" th:src="@{~/js/jquery.min.js}"></script>-->
+<script th:src="@{~/js/toastr.min.js}"></script>
+<script th:inline="javascript">
+    toastr.options.positionClass = 'toast-top-center';
+    //    toastr.options.timeOut = "5000";
+    /*[+
+        if([[${errorMessage}]] != null){
+            toastr.error([[${errorMessage}]]);
+            toastr.cancel();
+        }
+    +]*/
+    /*[+
+        if([[${message}]] != null){
+            toastr.success([[${message}]]);
+            toastr.cancel();
+        }
+    +]*/
+</script>
+<script th:inline="javascript" type="text/html" id="acquiescence">
+    {{#
+        if(d.acquiescence === 0){
+            return "否";
+        }else{
+            return "是";
+        }
+    }}
+</script>
+<script th:inline="javascript" type="text/html" id="type">
+    {{#
+        if(d.acquiescence === 0){
+            return "在线简历";
+        }else{
+            return "附件简历";
+        }
+    }}
+</script>
+<script th:inline="javascript" type="text/html" id="create_time">
+    {{#
+    return layui.util.toDateString(d.createTime, 'yyyy-MM-dd')
+    }}
+</script>
+<script>
+    //监听工具条
+    layui.table.on('tool(roles)', function (obj) { //注：tool是工具条事件名，test是table原始容器的属性 lay-filter="对应的值"
+        var data = obj.data; //获得当前行数据
+        var layEvent = obj.event; //获得 lay-event 对应的值（也可以是表头的 event 参数对应的值）
+        var tr = obj.tr; //获得当前行 tr 的DOM对象
+        var layer = layui.layer;
+        if(layEvent === 'detail'){ //查看
+            $.get("/enterprise/check-get-professional-by-id?professionalId="+ data.id,
+                function (result, status) {
+                    console.log("Data: " + result + "\nStatus: " + status);
+                    var json = result;
+                    if (json.errorMessage != null) {
+                        toastr.error(json.errorMessage);
+                    } else {
+                        console.log(data.id);
+                        //do somehing
+                        layer.open({
+                            title: ['详情', 'font-size:18px;'],
+                            type: 2,
+                            content: 'http://localhost:8080/enterprise/get-professional-by-id?professionalId='+ data.id,
+                            area: ['500px', '600px']
+                        });
+                    }
+                });
+        }else if (layEvent === 'edit') {
+            window.location.href = 'http://localhost:8080/enterprise/update-professional?professionalId='+ data.id;
+        } else if (layEvent === 'del') {
+            layer.confirm('您真的要删除吗？', function (index) {
+//                obj.del(); //删除对应行（tr）的DOM结构，并更新缓存
+                layer.close(index);
+                //向服务端发送删除指令
+                console.log(data.id);
+                $.post("/undergraduate/delete-resume",
+                    {
+                        resumeId: data.id
+                    },
+                    function (data, status) {
+                        if (data.message != null) {
+                            toastr.success(data.message);
+                            toastr.clear();
+                        } else if (data.errorMessage != null) {
+                            toastr.error(data.errorMessage);
+                            toastr.clear();
+                        }
+                    });
+                layui.table.reload('test', {
+                    url: '/undergraduate/list-resume'
+                    , where: {} //设定异步数据接口的额外参数
+                    //,height: 300
+                });
+            });
+        }
+    });
+</script>
+</body>
+</html>

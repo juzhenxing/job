@@ -2,12 +2,16 @@ package com.zxkj.job.service;
 
 import com.baomidou.mybatisplus.service.IService;
 import com.zxkj.job.bean.dto.SimpleUndergraduateDto;
+import com.zxkj.job.bean.dto.UndergraduateDto;
 import com.zxkj.job.bean.po.UndergraduatePo;
+import com.zxkj.job.bean.vo.UndergraduateVo;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.mail.MessagingException;
 import javax.servlet.http.HttpSession;
+import java.io.IOException;
+import java.text.ParseException;
 
 public interface UndergraduateService extends IService<UndergraduatePo> {
 
@@ -37,5 +41,9 @@ public interface UndergraduateService extends IService<UndergraduatePo> {
     Boolean resetPassword(String code, HttpSession httpSession);
 
     Boolean setSuccess(String password, HttpSession httpSession);
+
+    UndergraduateVo getByEmail(String email);
+
+    Boolean infoUpdate(UndergraduateDto undergraduateDto, HttpSession httpSession) throws IOException, ParseException;
 
 }
