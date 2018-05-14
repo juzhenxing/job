@@ -199,7 +199,7 @@
                 </div>
                 <div class="panel-body">
                     <table class="layui-table"
-                           lay-data="{height:'full', url:'/undergraduate/list-resume', page:true, id:'test', even:true, text: {none: '您还未登录'}}"
+                           lay-data="{height:'full', url:'/undergraduate/list-resume', page:true, id:'test', even:true}"
                            lay-filter="roles">
                         <thead>
                             <tr class="layui-colla-item">
@@ -248,7 +248,7 @@
 </script>
 <script th:inline="javascript" type="text/html" id="acquiescence">
     {{#
-        if(d.acquiescence === 0){
+        if(d.acquiescence === false){
             return "否";
         }else{
             return "是";
@@ -257,7 +257,7 @@
 </script>
 <script th:inline="javascript" type="text/html" id="type">
     {{#
-        if(d.acquiescence === 0){
+        if(d.type === 0){
             return "在线简历";
         }else{
             return "附件简历";
@@ -295,7 +295,7 @@
                     }
                 });
         }else if (layEvent === 'edit') {
-            window.location.href = 'http://localhost:8080/enterprise/update-professional?professionalId='+ data.id;
+            window.location.href = 'http://localhost:8080/undergraduate/update-resume?resumeId='+ data.id;
         } else if (layEvent === 'del') {
             layer.confirm('您真的要删除吗？', function (index) {
 //                obj.del(); //删除对应行（tr）的DOM结构，并更新缓存

@@ -1,9 +1,6 @@
 package com.zxkj.job.controller;
 
-import com.zxkj.job.bean.dto.PageDto;
-import com.zxkj.job.bean.dto.ResumeDto;
-import com.zxkj.job.bean.dto.SimpleUndergraduateDto;
-import com.zxkj.job.bean.dto.UndergraduateDto;
+import com.zxkj.job.bean.dto.*;
 import com.zxkj.job.common.bean.PagedResult;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcProperties;
 import org.springframework.ui.Model;
@@ -121,4 +118,28 @@ public interface UndergraduateController {
     @PostMapping("delete-resume")
     @ResponseBody
     ModelMap deleteResume(Long resumeId, HttpSession httpSession);
+
+    @GetMapping("update-resume")
+    ModelAndView updateResume(Long resumeId, HttpSession httpSession, ModelAndView modelAndView);
+
+    @GetMapping("resume-education-background-add")
+    ModelAndView resumeEducationBackgroundAdd(Long resumeId);
+
+    @PostMapping("resume-education-background-add")
+    ModelAndView resumeEducationBackgroundAdd(EducationBackgroundDto educationBackgroundDto, HttpSession httpSession);
+
+    @GetMapping("list-resume-education-background")
+    @ResponseBody
+    PagedResult listResumeEducationBackground(PageDto pageDto, Long resumeId);
+
+    @PostMapping("delete-resume-education-background")
+    @ResponseBody
+    ModelMap deleteResumeEducationBackground(Long educationBackgroundId);
+
+    @GetMapping("update-resume-education-background")
+    ModelAndView updateResumeEducationBackground(Long educationBackgroundId);
+
+    @PostMapping("update-resume-education-background")
+    ModelAndView updateResumeEducationBackground(EducationBackgroundDto educationBackgroundDto, HttpSession httpSession);
+
 }

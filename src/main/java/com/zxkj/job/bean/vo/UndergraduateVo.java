@@ -27,7 +27,7 @@ public class UndergraduateVo extends BaseVo {
 
     private String profession;
 
-//    @JsonFormat(pattern = "yyyy-MM")
+    @JsonFormat(pattern = "yyyy-MM")
     private Date graduateYear;
 
     private String phone;

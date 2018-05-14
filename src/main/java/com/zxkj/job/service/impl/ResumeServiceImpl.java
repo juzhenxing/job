@@ -71,22 +71,22 @@ public class ResumeServiceImpl extends BaseServiceImpl<ResumeMapper, ResumePo> i
         Page page1 = super.selectPage(page, entityWrapper);
         PagedResult pagedResult = new PagedResult();
         Long acquiescenceResumeId = undergraduatePo.getAcquiescenceResumeId();
-        List<ResumeVo> resumeVos = (List<ResumeVo>) page1.getRecords().parallelStream().map(e -> {
-            ResumePo resumePo = (ResumePo)e;
-            ResumeVo resumeVo = new ResumeVo();
-            BeanUtil.copyProperties(resumePo, resumeVo);
-            if(resumeVo.getId().equals(acquiescenceResumeId)){
-                resumeVo.setAcquiescence(true);
-            }else{
-                resumeVo.setAcquiescence(false);
-            }
-            resumeVo.setCreateTime(resumePo.getGmtCreate());
-
-            return resumeVo;
-        }).collect(Collectors.toList());
+        List<ResumeVo> resumeVos = (List<ResumeVo>) page1.getRecords().parallelStream().map(e -> resumePoToVo((ResumePo) e, acquiescenceResumeId)).collect(Collectors.toList());
         pagedResult.setData(resumeVos);
         pagedResult.setCount(page1.getTotal());
         return pagedResult;
+    }
+
+    private ResumeVo resumePoToVo(ResumePo resumePo, Long acquiescenceResumeId){
+        ResumeVo resumeVo = new ResumeVo();
+        BeanUtil.copyProperties(resumePo, resumeVo);
+        if(resumeVo.getId().equals(acquiescenceResumeId)){
+            resumeVo.setAcquiescence(true);
+        }else{
+            resumeVo.setAcquiescence(false);
+        }
+        resumeVo.setCreateTime(resumePo.getGmtCreate());
+        return resumeVo;
     }
 
     @Override
@@ -94,6 +94,14 @@ public class ResumeServiceImpl extends BaseServiceImpl<ResumeMapper, ResumePo> i
         UndergraduatePo undergraduatePo = (UndergraduatePo) httpSession.getAttribute("undergraduatePo");
         checkResumePo(resumeId, undergraduatePo.getId());
         return super.deleteById(resumeId);
+    }
+
+    @Override
+    public ResumeVo selectOneById(Long resumeId, HttpSession httpSession) {
+        UndergraduatePo undergraduatePo = (UndergraduatePo) httpSession.getAttribute("undergraduatePo");
+        ResumePo resumePo = checkResumePo(resumeId, undergraduatePo.getId());
+        Long acquiescenceResumeId = undergraduatePo.getAcquiescenceResumeId();
+        return resumePoToVo(resumePo, acquiescenceResumeId);
     }
 
     private ResumePo checkResumePo(Long resumeId, Long undergraduateId){

@@ -54,8 +54,8 @@
         </ul>
         <div th:if="${session.email eq null}">
             <ul class="layui-nav layui-layout-right">
-                <a th:href="@{/enterprise/index}">企业登录</a>
                 <a>学生登录</a>
+                <a th:href="@{/enterprise/index}">企业登录</a>
             </ul>
         </div>
         <div th:if="${session.email ne null}">

@@ -16,7 +16,7 @@ public class ResumeVo extends BaseVo {
 
     private String name;
 
-    private Boolean type;
+    private Integer type;
 
     private Float completeness;
 

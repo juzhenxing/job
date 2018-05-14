@@ -1,4 +1,4 @@
-package com.zxkj.job.bean.po;
+package com.zxkj.job.bean.dto;
 
 import com.baomidou.mybatisplus.annotations.TableName;
 import com.zxkj.job.common.bean.BasePo;
@@ -13,8 +13,9 @@ import java.util.Date;
  * 教育背景类
  */
 @Data
-@TableName("t_job_education_background")
-public class EducationBackgroundPo extends BasePo<EducationBackgroundPo> {
+public class EducationBackgroundDto {
+
+    private Long id;
 
     private ProvinceType province;
 
@@ -24,9 +25,9 @@ public class EducationBackgroundPo extends BasePo<EducationBackgroundPo> {
 
     private EducationBackgroundType educationBackground;
 
-    private Date startTime;
+    private String startTime;
 
-    private Date endTime;
+    private String endTime;
 
     private String profession;
 

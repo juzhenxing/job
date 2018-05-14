@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <title>修改教育背景</title>
+    <link th:href="@{~/layui/css/layui.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{~/css/toastr.min.css}" rel="stylesheet"/>
+
+    <link rel="stylesheet" type="text/css" th:href="@{~/select/css.css}"/>
+    <link rel="stylesheet" type="text/css" th:href="@{~/select/alpha.css}"/>
+
+    <script type="text/javascript" th:src="@{~/select/drag.js}"></script>
+    <script type="text/javascript" th:src="@{~/select/city_arr.js}"></script>
+    <script type="text/javascript" th:src="@{~/select/nationality_arr.js}"></script>
+    <script type="text/javascript" th:src="@{~/select/funtype_arr.js}"></script>
+    <script type="text/javascript" th:src="@{~/select/industry_arr.js}"></script>
+    <script type="text/javascript" th:src="@{~/select/major_arr.js}"></script>
+</head>
+<body class="layui-layout-body">
+<div class="layui-layout layui-layout-admin">
+    <div class="layui-header">
+        <div class="layui-logo">
+            <a th:href="@{/undergraduate/index}"><img th:src="@{~/img/logo.png}" alt="通用的占位符缩略图" width="100px"/></a>
+        </div>
+        <!-- 头部区域（可配合layui已有的水平导航） -->
+        <ul class="layui-nav layui-layout-left">
+            <li class="layui-nav-item">
+                <a href="javascript:;">
+                    广东
+                </a>
+                <dl class="layui-nav-child">
+                    <dd><a href="">北京</a></dd>
+                    <dd><a>上海</a></dd>
+                    <dd><a>广东</a></dd>
+                    <dd><a>湖北</a></dd>
+                    <dd><a>陕西</a></dd>
+                    <dd><a>四川</a></dd>
+                    <dd><a>江苏</a></dd>
+                    <dd><a>安徽</a></dd>
+                    <dd><a>山东</a></dd>
+                    <dd><a>湖南</a></dd>
+                    <dd><a>天津</a></dd>
+                    <dd><a>河南</a></dd>
+                    <dd><a>浙江</a></dd>
+                    <dd><a>重庆</a></dd>
+                    <dd><a>辽宁</a></dd>
+                    <dd><a>福建</a></dd>
+                    <dd><a>江西</a></dd>
+                    <dd><a>吉林</a></dd>
+                    <dd><a>黑龙江</a></dd>
+                    <dd><a>河北</a></dd>
+                    <dd><a>山西</a></dd>
+                    <dd><a>云南</a></dd>
+                    <dd><a>甘肃</a></dd>
+                    <dd><a>广西</a></dd>
+                </dl>
+            </li>
+            <li class="layui-nav-item">
+                <a th:href="@{/undergraduate/career-talk}">宣讲会</a>
+            </li>
+            <li class="layui-nav-item">
+                <a th:href="@{/undergraduate/campus-recruitment}">校招网申</a>
+            </li>
+        </ul>
+        <div th:if="${session.email eq null}">
+            <ul class="layui-nav layui-layout-right">
+                <a th:href="@{/enterprise/index}">企业登录</a>
+                <a>学生登录</a>
+            </ul>
+        </div>
+        <div th:if="${session.email ne null}">
+            <ul class="layui-nav layui-layout-right">
+                <li class="layui-nav-item">
+                    <a>我的消息</a>
+                </li>
+                <li class="layui-nav-item">
+                    <a>我的简历</a>
+                </li>
+                <li class="layui-nav-item">
+                    <a href="javascript:;">
+                        <p th:text="'hi, ' + ${session.email}"></p>
+                    </a>
+                    <dl class="layui-nav-child">
+                        <dd><a>个人中心</a></dd>
+                        <dd><a th:href="@{/undergraduate/logout}">退出登录</a></dd>
+                    </dl>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="layui-side layui-bg-black">
+        <div class="layui-side-scroll">
+            <!-- 左侧导航区域（可配合layui已有的垂直导航） -->
+            <ul class="layui-nav layui-nav-tree">
+                <li class="layui-nav-item layui-nav-itemed">
+                    <a>我的简历</a>
+                </li>
+                <li class="layui-nav-item">
+                    <a>简历投递记录</a>
+                </li>
+                <li class="layui-nav-item">
+                    <a>我的收藏</a>
+                </li>
+                <li class="layui-nav-item">
+                    <a>我的消息</a>
+                </li>
+                <li class="layui-nav-item">
+                    <a>修改密码</a>
+                </li>
+                <li class="layui-nav-item">
+                    <a>账号绑定</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="layui-body">
+        <!-- 内容主体区域 -->
+        <div style="padding: 15px;">
+            <div class="layui-col-md9">
+                <form class="layui-form" th:action="@{/undergraduate/update-resume-education-background}" method="post">
+                    <!-- 提示：如果你不想用form，你可以换成div等任何一个普通元素 -->
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">学校</label>
+                        <div class="layui-input-block">
+                            <div class="layui-input-inline" style="width: 200px;">
+                                <select id="province" name="province" lay-filter="province">
+                                    <!--<option value="">省份</option>-->
+                                </select>
+                            </div>
+                            <div class="layui-input-inline" style="width: 200px;">
+                                <select id="city" name="city" lay-filter="city">
+                                    <!--<option value="">城市</option>-->
+                                </select>
+                            </div>
+                            <div class="layui-input-inline" style="width: 200px;">
+                                <select id="school" name="school" lay-filter="school">
+                                    <!--<option value="">学校</option>-->
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">学历</label>
+                        <div class="layui-input-block">
+                            <select name="educationBackground">
+                                <tr th:each="educationBackgroundType : ${educationBackgroundType}">
+                                    <span th:if="${educationBackgroundVo.educationBackground eq educationBackgroundType.name}">
+                                        <option th:value="${educationBackgroundType.type}" selected><span th:text="${educationBackgroundType.name}"></span></option>
+                                    </span>
+                                    <span th:if="${educationBackgroundVo.educationBackground ne educationBackgroundType.name}">
+                                        <option th:value="${educationBackgroundType.type}"><span th:text="${educationBackgroundType.name}"></span></option>
+                                    </span>
+                                </tr>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">就读时间</label>
+                        <div class="layui-input-block">
+                            <div class="layui-input-inline" style="width: 200px;">
+                                <input type="text" class="layui-input" id="startTime" name="startTime"
+                                       th:value="${educationBackgroundVo.startTime}"
+                                       required lay-verify="required">
+                            </div>
+                            <div class="layui-input-inline" style="width: 200px;">
+                                <input type="text" class="layui-input" id="endTime" name="endTime"
+                                       th:value="${educationBackgroundVo.endTime}"
+                                       required lay-verify="required">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">专业名称</label>
+                        <div class="layui-input-block">
+                            <script type="text/javascript" th:src="@{~/select/major_func.js}"></script>
+                            <input id="btn_MajorID_2" type="text" th:value="${educationBackgroundVo.profession}" onclick="majorSelect_2()"
+                                   class="layui-input" lay-verify="required"/>
+                            <input id="MajorID_2" type="hidden" name="profession" th:value="${educationBackgroundVo.profession}" class="layui-input"/>
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">专业排名</label>
+                        <div class="layui-input-block">
+                            <select name="ranking">
+                                <tr th:each="rankType : ${rankType}">
+                                    <span th:if="${educationBackgroundVo.ranking eq rankType.name}">
+                                        <option th:value="${rankType.type}" selected><span th:text="${rankType.name}"></span></option>
+                                    </span>
+                                    <span th:if="${educationBackgroundVo.ranking ne rankType.name}">
+                                        <option th:value="${rankType.type}"><span th:text="${rankType.name}"></span></option>
+                                    </span>
+                                </tr>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">专业描述</label>
+                        <div class="layui-input-block">
+                            <textarea rows="3" cols="20" class="layui-input" name="description" style="resize: none;"
+                                      th:text="${educationBackgroundVo.description}"></textarea>
+                        </div>
+                    </div>
+                    <input type="hidden" name="id" th:value="${educationBackgroundVo.id}">
+                    <input type="hidden" name="resumeId" th:value="${educationBackgroundVo.resumeId}">
+                    <div class="layui-form-item">
+                        <div class="layui-input-block">
+                            <button class="layui-btn" lay-submit lay-filter="*">修改</button>
+                            <a class="layui-btn layui-btn-primary" id="cancel_btn">取消</a>
+                        </div>
+                    </div>
+                    <!-- 更多表单结构排版请移步文档左侧【页面元素-表单】一项阅览 -->
+                </form>
+            </div>
+            <div class="layui-col-md3"></div>
+        </div>
+    </div>
+    <div class="layui-footer">
+        <!-- 底部固定区域 -->
+        © layui.com - 底部固定区域
+    </div>
+</div>
+<!-- alpha div -->
+<div id="maskLayer" style="display:none">
+    <iframe id="maskLayer_iframe" frameBorder=0 scrolling=no style="filter:alpha(opacity=50)"></iframe>
+    <div id="alphadiv" style="filter:alpha(opacity=50);-moz-opacity:0.5;opacity:0.5"></div>
+    <div id="drag">
+        <h3 id="drag_h"></h3>
+        <div id="drag_con"></div><!-- drag_con end -->
+    </div>
+</div><!-- maskLayer end -->
+<!-- alpha div end -->
+<div id="sublist" style="display:none"></div>
+<script type="text/javascript" th:src="@{~/layui/layui.all.js}"></script>
+<script type="text/javascript" th:src="@{~/js/jquery-3.3.1.min.js}"></script>
+<script th:src="@{~/js/toastr.min.js}"></script>
+
+<!--<script type="text/javascript" th:src="@{~/select/jquery.js}"></script>-->
+<script th:inline="javascript">
+    toastr.options.positionClass = 'toast-top-center';
+    toastr.options.timeOut = "2000";
+    /*[+
+        if([[${errorMessage}]] != null){
+            toastr.error([[${errorMessage}]]);
+            toastr.cancel();
+            console.log([[${errorMessage}]]);
+        }
+    +]*/
+    /*[+
+        if([[${message}]] != null){
+            toastr.success([[${message}]]);
+            toastr.cancel();
+            console.log([[${message}]]);
+        }
+    +]*/
+</script>
+<script>
+    layui.form.on('submit(*)', function (data) {
+        console.log(data.elem) //被执行事件的元素DOM对象，一般为button对象
+        console.log(data.form) //被执行提交的form对象，一般在存在form标签时才会返回
+        console.log(data.field) //当前容器的全部表单字段，名值对形式：{name: value}
+        return true; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+    });
+    document.onkeypress = function () {
+        if (event.keyCode == 13) {
+            return false;
+        }
+    }
+</script>
+<script th:src="@{~/js/AllSchool.js}"></script>
+<script th:inline="javascript">
+    layui.form.on('select(province)', function (data) {
+        var selectCity = $("#province").val();
+        var citylist = city[selectCity];
+        var cityArray = "";
+        var citySelectStr = "";
+        if (citylist != null) {
+            for (var i = 0, len = citylist.length; i < len; i++) {
+                cityArray = citylist[i];
+                citySelectStr = citySelectStr + "<option value='" + cityArray[0] + "'>" + cityArray[1] + "</option>"
+            }
+        }
+        $("#city").html(citySelectStr);
+        $("#school1").show();
+        $("#school2").hide();
+        var selectschool = $("#city").val();
+//        alert(selectschool);
+        var schoolUlStr = "";
+        var schoolListStr = allschool[selectschool];
+//        alert(schoolListStr);
+        for (var i = 0, len = schoolListStr.length; i < len; i++) {
+            schoolUlStr = schoolUlStr + "<option >" + schoolListStr[i][2] + "</option>";
+        }
+//        alert($("#city").html());
+        schoolUlStr = schoolUlStr + "<option value='999'>其它</option>";
+        $("#school").html(schoolUlStr);
+        layui.form.render();
+    });
+    layui.form.on('select(city)', function (data) {
+        $("#school1").show();
+        $("#school2").hide();
+        var selectschool = $("#city").val();
+        var schoolUlStr = "";
+        var schoolListStr = allschool[selectschool];
+        for (var i = 0, len = schoolListStr.length; i < len; i++) {
+            schoolUlStr = schoolUlStr + "<option >" + schoolListStr[i][2] + "</option>";
+        }
+        schoolUlStr = schoolUlStr + "<option value='999'>其它</option>";
+        $("#school").html(schoolUlStr);
+        layui.form.render('select');
+    });
+    layui.form.on('select(school)', function (data) {
+        if ($("#school").val() == "999") {
+            $("#school1").hide();
+            $("#school2").show();
+        }
+        layui.form.render('select');
+    });
+    window.onload = function () {
+        var provinceArray = "";
+        var provicneSelectStr = "";
+        for (var i = 0, len = province.length; i < len; i++) {
+            provinceArray = province[i];
+            if (provinceArray[1] == [[${educationBackgroundVo.province}]]) {
+                provicneSelectStr = provicneSelectStr + "<option value='" + provinceArray[0] + "' selected=\"selected\">" + provinceArray[1] + "</option>"
+            } else {
+                provicneSelectStr = provicneSelectStr + "<option value='" + provinceArray[0] + "'>" + provinceArray[1] + "</option>"
+            }
+        }
+        $("#province").html(provicneSelectStr);
+
+        var selectCity = $("#province").val();
+        var citylist = city[selectCity];
+        var cityArray = "";
+        var citySelectStr = "";
+        for (var i = 0, len = citylist.length; i < len; i++) {
+            cityArray = citylist[i];
+            if (cityArray[0] == [[${educationBackgroundVo.city}]]) {
+                citySelectStr = citySelectStr + "<option value='" + cityArray[0] + "' selected=\"selected\">" + cityArray[1] + "</option>"
+            } else {
+                citySelectStr = citySelectStr + "<option value='" + cityArray[0] + "'>" + cityArray[1] + "</option>";
+            }
+        }
+        $("#city").html(citySelectStr);
+
+        var selectschool = $("#city").val();
+        var schoolUlStr = "";
+        var schoolListStr = allschool[selectschool];
+        for (var i = 0, len = schoolListStr.length; i < len; i++) {
+            if (schoolListStr[i][2] == [[${educationBackgroundVo.school}]]) {
+                schoolUlStr = schoolUlStr + "<option selected=\"selected\">" + schoolListStr[i][2] + "</option>";
+            } else {
+                schoolUlStr = schoolUlStr + "<option >" + schoolListStr[i][2] + "</option>";
+            }
+        }
+        schoolUlStr = schoolUlStr + "<option value='999'>其它</option>";
+        $("#school").html(schoolUlStr);
+        $("#second").show();
+        var start = {
+            elem: '#startTime',
+            type: 'month',
+            calendar: true,
+            max: 0, //最大日期
+            change: function (value, date) {
+                end.min = value; //开始日选好后，重置结束日的最小日期
+            }
+        };
+        var end = {
+            elem: '#endTime',
+            type: 'month',
+            calendar: true,
+            change: function (value, date) {
+                start.max = value; //结束日选好后，重置开始日的最大日期
+            }
+        };
+        layui.laydate.render(start);
+        layui.laydate.render(end);
+        layui.form.render();
+    }
+    $(document).ready(function () {
+        $("#cancel_btn").click(function () {
+            window.location.href = 'http://localhost:8080/undergraduate/update-resume?resumeId=' + [[${educationBackgroundVo.resumeId}]];
+
+        });
+    });
+</script>
+<script type="text/javascript">
+    // 是否在数组内
+    function in_array(needle, haystack) {
+        if (typeof needle == 'string' || typeof needle == 'number') {
+            for (var i in haystack) {
+                if (haystack[i] == needle) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+</script>
+</body>
+</html>

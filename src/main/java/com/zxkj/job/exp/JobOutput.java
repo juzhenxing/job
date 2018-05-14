@@ -78,7 +78,9 @@ public enum JobOutput {
 
     UNDERGRADUATE_UPDATE(133, "用户更新失败"),
 
-    NULL_RESUME(134, "该简历不存在")
+    NULL_RESUME(134, "该简历不存在"),
+
+    NULL_EDUCATION_BACKGROUND(135, "该教育背景记录不存在")
     ;
 
     private int code;

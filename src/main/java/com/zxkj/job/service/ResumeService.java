@@ -7,6 +7,8 @@ import com.zxkj.job.bean.dto.PageDto;
 import com.zxkj.job.bean.dto.ResumeDto;
 import com.zxkj.job.bean.po.AdministratorPo;
 import com.zxkj.job.bean.po.ResumePo;
+import com.zxkj.job.bean.vo.CareerTalkUpdateVo;
+import com.zxkj.job.bean.vo.ResumeVo;
 import com.zxkj.job.common.bean.PagedResult;
 import com.zxkj.job.enums.CheckStateType;
 
@@ -21,5 +23,7 @@ public interface ResumeService extends IService<ResumePo> {
     PagedResult list(PageDto pageDto, HttpSession httpSession);
 
     Boolean deleteByResumeId(Long resumeId, HttpSession httpSession);
+
+    ResumeVo selectOneById(Long resumeId, HttpSession httpSession);
 
 }

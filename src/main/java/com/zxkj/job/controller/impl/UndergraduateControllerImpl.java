@@ -1,17 +1,12 @@
 package com.zxkj.job.controller.impl;
 
-import com.zxkj.job.bean.dto.PageDto;
-import com.zxkj.job.bean.dto.ResumeDto;
-import com.zxkj.job.bean.dto.SimpleUndergraduateDto;
-import com.zxkj.job.bean.dto.UndergraduateDto;
+import com.zxkj.job.bean.dto.*;
 import com.zxkj.job.bean.po.UndergraduatePo;
+import com.zxkj.job.bean.vo.ResumeVo;
 import com.zxkj.job.common.BaseControllerImpl;
 import com.zxkj.job.common.bean.PagedResult;
 import com.zxkj.job.controller.UndergraduateController;
-import com.zxkj.job.enums.EducationBackgroundType;
-import com.zxkj.job.enums.JobCategoryType;
-import com.zxkj.job.enums.PoliticsStatusType;
-import com.zxkj.job.enums.ProvinceType;
+import com.zxkj.job.enums.*;
 import com.zxkj.job.exp.JobException;
 import com.zxkj.job.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,6 +38,9 @@ public class UndergraduateControllerImpl extends BaseControllerImpl<Undergraduat
 
     @Autowired
     ResumeService resumeService;
+
+    @Autowired
+    EducationBackgroundService educationBackgroundService;
 
     @Override
     public ModelAndView add(SimpleUndergraduateDto simpleUndergraduateDto, HttpSession httpSession) {
@@ -361,6 +359,120 @@ public class UndergraduateControllerImpl extends BaseControllerImpl<Undergraduat
             modelMap.addAttribute("errorMessage", e.getMessage());
         }
         return modelMap;
+    }
+
+    @Override
+    public ModelAndView updateResume(Long resumeId, HttpSession httpSession, ModelAndView modelAndView) {
+        String email = checkLogin(modelAndView, httpSession);
+        if(org.springframework.util.StringUtils.isEmpty(email)){
+            return modelAndView;
+        }
+        modelAndView.addObject("undergraduateVo", service.getByEmail(email));
+        try {
+            ResumeVo resumeVo = resumeService.selectOneById(resumeId, httpSession);
+            modelAndView.addObject("resumeVo", resumeVo);
+            modelAndView.setViewName("undergraduate_resume_update");
+            return modelAndView;
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            modelAndView.addObject("errorMessage", e.getMessage());
+        }
+        modelAndView.setViewName("undergraduate_personal_center");
+        return modelAndView;
+    }
+
+    @Override
+    public ModelAndView resumeEducationBackgroundAdd(Long resumeId) {
+        ModelAndView modelAndView = new ModelAndView("undergraduate_resume_education_background_add");
+        modelAndView.addObject("educationBackgroundType", EducationBackgroundType.values());
+        modelAndView.addObject("rankType", RankType.values());
+        modelAndView.addObject("resumeId", resumeId);
+        return modelAndView;
+    }
+
+    @Override
+    public ModelAndView resumeEducationBackgroundAdd(EducationBackgroundDto educationBackgroundDto, HttpSession httpSession) {
+        ModelAndView modelAndView = new ModelAndView();
+        String email = checkLogin(modelAndView, httpSession);
+        if(org.springframework.util.StringUtils.isEmpty(email)){
+            return modelAndView;
+        }
+        try {
+            if (educationBackgroundService.add(educationBackgroundDto)) {
+                modelAndView.addObject("message", "添加成功");
+                ResumeVo resumeVo = resumeService.selectOneById(educationBackgroundDto.getResumeId(), httpSession);
+                modelAndView.addObject("resumeVo", resumeVo);
+                modelAndView.addObject("undergraduateVo", service.getByEmail(email));
+                modelAndView.setViewName("undergraduate_resume_update");
+                return modelAndView;
+            } else {
+                modelAndView.addObject("errorMessage", "添加失败");
+            }
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            modelAndView.addObject("errorMessage", e.getMessage());
+        }
+        modelAndView.addObject("educationBackgroundType", EducationBackgroundType.values());
+        modelAndView.addObject("rankType", RankType.values());
+        modelAndView.addObject("resumeId", educationBackgroundDto.getResumeId());
+        modelAndView.setViewName("undergraduate_resume_education_background_add");
+        return modelAndView;
+    }
+
+    @Override
+    public PagedResult listResumeEducationBackground(PageDto pageDto, Long resumeId) {
+        return educationBackgroundService.list(pageDto, resumeId);
+    }
+
+    @Override
+    public ModelMap deleteResumeEducationBackground(Long educationBackgroundId) {
+        ModelMap modelMap = new ModelMap();
+        try {
+            if (educationBackgroundService.deleteByEducationBackgroundId(educationBackgroundId)) {
+                modelMap.addAttribute("message", "删除成功");
+            } else {
+                modelMap.addAttribute("errorMessage", "删除失败");
+            }
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            modelMap.addAttribute("errorMessage", e.getMessage());
+        }
+        return modelMap;
+    }
+
+    @Override
+    public ModelAndView updateResumeEducationBackground(Long educationBackgroundId) {
+        ModelAndView modelAndView = new ModelAndView();
+        try {
+            modelAndView.addObject("educationBackgroundVo", educationBackgroundService.selectOneById(educationBackgroundId));
+            modelAndView.addObject("educationBackgroundType", EducationBackgroundType.values());
+            modelAndView.addObject("rankType", RankType.values());
+            modelAndView.setViewName("undergraduate_resume_education_background_update");
+            return modelAndView;
+        }catch (Exception e){
+            logger.error(e.getMessage());
+            modelAndView.addObject("errorMessage", e.getMessage());
+        }
+        modelAndView.setViewName("undergraduate_resume_update");
+        return modelAndView;
+    }
+
+    @Override
+    public ModelAndView updateResumeEducationBackground(EducationBackgroundDto educationBackgroundDto, HttpSession httpSession) {
+        ModelAndView modelAndView = new ModelAndView();
+        try {
+            if (educationBackgroundService.updateById(educationBackgroundDto)) {
+                modelAndView.addObject("message", "更新成功");
+                return updateResume(educationBackgroundDto.getResumeId(), httpSession, modelAndView);
+            } else {
+                modelAndView.addObject("errorMessage", "更新失败");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.debug("e: ", e);
+            modelAndView.addObject("errorMessage", e.getMessage());
+        }
+        return updateResumeEducationBackground(educationBackgroundDto.getId());
     }
 
     private String checkLogin(ModelAndView modelAndView, HttpSession httpSession){

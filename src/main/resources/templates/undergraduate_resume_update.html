@@ -122,12 +122,21 @@
                 <span class="text-ellipsis" style="margin-left: 10px">完善的简历可提高求职成功率</span>
             </div>
             <div class="panel panel-default">
+                <div class="panel-body">
+                    <span th:text="${resumeVo.name}"></span>
+                    <span th:if="${resumeVo.acquiescence eq true}">
+                        (默认)
+                    </span>
+                    <span th:text="${#dates.format(resumeVo.createTime,'yyyy-MM-dd')}"></span>
+                    <!--<div class="layui-progress" lay-showPercent="true" lay-filter="demo">-->
+                        <!--<div id="progressBar" class="layui-progress-bar" lay-percent="0%"></div>-->
+                    <!--</div>-->
+                </div>
+            </div>
+            <div class="panel panel-default">
                 <div class="panel-heading">
                     <h3 class="panel-title">
                         小名片
-                        <a th:href="@{/undergraduate/info-update}" class="pull-right">
-                            <i class="layui-icon">&#xe642;</i>编辑
-                        </a>
                     </h3>
                 </div>
                 <div class="panel-body">
@@ -188,28 +197,50 @@
             <div class="panel panel-default">
                 <div class="panel-heading">
                     <h3 class="panel-title">
-                        我的简历
-                        <a th:href="@{/undergraduate/resume-add}" class="pull-right">
-                            <i class="layui-icon">&#xe654;</i>上传附件简历
-                        </a>
-                        <a th:href="@{/undergraduate/resume-add}" class="pull-right">
-                            <i class="layui-icon">&#xe654;</i>新增在线简历
+                        基本信息
+                        <a th:href="@{/undergraduate/resume-basic-update}" class="pull-right">
+                            <i class="layui-icon">&#xe642;</i>编辑
                         </a>
                     </h3>
                 </div>
                 <div class="panel-body">
-                    <table class="layui-table"
-                           lay-data="{height:'full', url:'/undergraduate/list-resume', page:true, id:'test', even:true, text: {none: '您还未登录'}}"
-                           lay-filter="roles">
-                        <thead>
-                            <tr class="layui-colla-item">
-                                <th lay-data="{align: 'center', field:'name', width:200, unresize:true}">简历名称</th>
-                                <th lay-data="{align: 'center', field:'acquiescence', width:200, sort: true, unresize:true, templet: '#acquiescence'}">是否默认</th>
-                                <th lay-data="{align: 'center', field:'type', width:200, sort: true, unresize:true, templet: '#type'}">类型</th>
-                                <th lay-data="{align: 'center', field:'createTime', width:200, sort: true, unresize:true, templet: '#create_time'}">创建日期</th>
-                                <th lay-data="{align: 'center', toolbar: '#barDemo', width:280, unresize:true}">操作</th>
-                            </tr>
-                        </thead>
+                    <table class="layui-table">
+                        <colgroup>
+                            <col width="33%">
+                            <col width="33%">
+                            <col width="34%">
+                        </colgroup>
+                        <tbody>
+                        <tr>
+                            <td>名称 <span th:text="${resumeVo.name}"></span></td>
+                            <td>
+                                默认
+                                <span th:switch="${resumeVo.acquiescence}">
+                                    <span th:case="false">否</span>
+                                    <span th:case="true">是</span>
+                                </span>
+                            </td>
+                            <td>出生年月 <span th:text="${#dates.format(resumeVo.birthDate,'yyyy-MM-dd')}"></span></td>
+                        </tr>
+                        <tr>
+                            <td>政治面貌 <span th:text="${resumeVo.politicsStatus.name}"></span></td>
+                            <td colspan="2" id="origin"></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">
+                        教育背景
+                        <a class="pull-right" id="add_btn">
+                            <i class="layui-icon">&#xe654;</i> 添加
+                        </a>
+                    </h3>
+                </div>
+                <div class="panel-body">
+                    <table class="layui-table" id="education_background_table" lay-filter="roles">
                     </table>
                 </div>
             </div>
@@ -222,7 +253,6 @@
     </div>
 </div>
 <script type="text/html" id="barDemo">
-    <a class="layui-btn layui-btn-xs" lay-event="detail">预览</a>
     <a class="layui-btn layui-btn-xs" lay-event="edit" >编辑</a>
     <a class="layui-btn layui-btn-xs layui-btn-danger" lay-event="del">删除</a>
 </script>
@@ -230,6 +260,7 @@
 <script type="text/javascript" th:src="@{~/js/jquery-3.3.1.min.js}"></script>
 <!--<script type="text/javascript" th:src="@{~/js/jquery.min.js}"></script>-->
 <script th:src="@{~/js/toastr.min.js}"></script>
+<script th:src="@{~/js/AllSchool.js}"></script>
 <script th:inline="javascript">
     toastr.options.positionClass = 'toast-top-center';
     //    toastr.options.timeOut = "5000";
@@ -245,66 +276,58 @@
             toastr.cancel();
         }
     +]*/
-</script>
-<script th:inline="javascript" type="text/html" id="acquiescence">
-    {{#
-        if(d.acquiescence === 0){
-            return "否";
-        }else{
-            return "是";
+//    alert(parseInt([[${resumeVo.province}]]));
+//    alert(parseInt([[${resumeVo.city}]]));
+//    alert(currentProvince);
+//    alert(currentCity);
+    window.onload = function () {
+        var currentProvinceIndex = parseInt([[${resumeVo.province}]]) - 1;
+        var currentProvince = province[currentProvinceIndex][1];
+        var selectCity = [[${resumeVo.province}]];
+        var citylist = city[selectCity];
+        var cityArray = "";
+        var currentCityKey = [[${resumeVo.city}]];
+        var currentCity = "";
+        for (var i = 0, len = citylist.length; i < len; i++) {
+            cityArray = citylist[i];
+            if(currentCityKey == cityArray[0]){
+                currentCity = cityArray[1];
+                break;
+            }
         }
-    }}
-</script>
-<script th:inline="javascript" type="text/html" id="type">
-    {{#
-        if(d.acquiescence === 0){
-            return "在线简历";
-        }else{
-            return "附件简历";
+        $("#origin").html("籍贯 <span>" + currentProvince + "</span>-<span>" + currentCity + "</span>");
+        function toPercent(point){
+            var str=Number(point*100);
+            str+="%";
+            return str;
         }
-    }}
+//        alert(toPercent([[${resumeVo.completeness}]]));
+//        $("#progressBar").setAttribute("lay-percent", toPercent([[${resumeVo.completeness}]]));
+//        layui.element.progress('progressBar', toPercent([[${resumeVo.completeness}]]));
+//        layui.element.animate({width:'80%'},500);
+//        layui.element.render();
+//        layui.element.init();
+//        layui.element.progress('demo', '50%');
+    }
 </script>
-<script th:inline="javascript" type="text/html" id="create_time">
-    {{#
-    return layui.util.toDateString(d.createTime, 'yyyy-MM-dd')
-    }}
-</script>
-<script>
+<script th:inline="javascript">
     //监听工具条
     layui.table.on('tool(roles)', function (obj) { //注：tool是工具条事件名，test是table原始容器的属性 lay-filter="对应的值"
         var data = obj.data; //获得当前行数据
         var layEvent = obj.event; //获得 lay-event 对应的值（也可以是表头的 event 参数对应的值）
         var tr = obj.tr; //获得当前行 tr 的DOM对象
         var layer = layui.layer;
-        if(layEvent === 'detail'){ //查看
-            $.get("/enterprise/check-get-professional-by-id?professionalId="+ data.id,
-                function (result, status) {
-                    console.log("Data: " + result + "\nStatus: " + status);
-                    var json = result;
-                    if (json.errorMessage != null) {
-                        toastr.error(json.errorMessage);
-                    } else {
-                        console.log(data.id);
-                        //do somehing
-                        layer.open({
-                            title: ['详情', 'font-size:18px;'],
-                            type: 2,
-                            content: 'http://localhost:8080/enterprise/get-professional-by-id?professionalId='+ data.id,
-                            area: ['500px', '600px']
-                        });
-                    }
-                });
-        }else if (layEvent === 'edit') {
-            window.location.href = 'http://localhost:8080/enterprise/update-professional?professionalId='+ data.id;
+        if (layEvent === 'edit') {
+            window.location.href = 'http://localhost:8080/undergraduate/update-resume-education-background?educationBackgroundId='+ data.id;
         } else if (layEvent === 'del') {
             layer.confirm('您真的要删除吗？', function (index) {
 //                obj.del(); //删除对应行（tr）的DOM结构，并更新缓存
                 layer.close(index);
                 //向服务端发送删除指令
                 console.log(data.id);
-                $.post("/undergraduate/delete-resume",
+                $.post("/undergraduate/delete-resume-education-background",
                     {
-                        resumeId: data.id
+                        educationBackgroundId: data.id
                     },
                     function (data, status) {
                         if (data.message != null) {
@@ -316,12 +339,41 @@
                         }
                     });
                 layui.table.reload('test', {
-                    url: '/undergraduate/list-resume'
-                    , where: {} //设定异步数据接口的额外参数
+                    url: '/undergraduate/list-resume-education-background'
+                    , where: {
+                        resumeId: data.resumeId
+                    } //设定异步数据接口的额外参数
                     //,height: 300
                 });
             });
         }
+    });
+    layui.table.render({
+        elem: '#education_background_table'
+        ,url: '/undergraduate/list-resume-education-background' //数据接口
+        ,page: true //开启分页
+        ,even:true
+        ,where: {
+            resumeId: [[${resumeVo.id}]]
+        }
+        , id: 'test'
+        ,cols:  [[ //标题栏
+            {align: 'center', colspan: 2, unresize:true, title: '就读时间'} //rowspan即纵向跨越的单元格数
+            ,{align: 'center', field:'school', sort: true, unresize:true, rowspan: 2, title: '学校'}
+            ,{align: 'center', field:'profession', sort: true, unresize:true, rowspan: 2, title: '专业名称'} //colspan即横跨的单元格数，这种情况下不用设置field和width
+            ,{align: 'center', field:'educationBackground', width:100, sort: true, unresize:true, rowspan: 2, title: '学历'}
+            ,{align: 'center', field:'ranking', width:100, sort: true, rowspan: 2, unresize:true, title: '专业排名'}
+            ,{align: 'center', field:'description', rowspan: 2, unresize:true, title: '专业描述'}
+            ,{align: 'center', toolbar: '#barDemo', width:125, rowspan: 2, unresize:true, title: '操作'}
+            ], [
+            {align: 'center', field:'startTime', sort: true, unresize:true, title: '开始时间'}
+            ,{align: 'center', field:'endTime', sort: true, unresize:true, title: '结束时间'}
+        ]]
+    });
+    $(document).ready(function(){
+        $("#add_btn").click(function(){
+            window.location.href = 'http://localhost:8080/undergraduate/resume-education-background-add?resumeId='+ [[${resumeVo.id}]];
+        });
     });
 </script>
 </body>
