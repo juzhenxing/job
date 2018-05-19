@@ -93,7 +93,7 @@ public class EnterpriseServiceImpl extends BaseServiceImpl<EnterpriseMapper, Ent
 
     @Override
     public EnterprisePo login(LoginEnterpriseDto loginEnterpriseDto) {
-        EnterprisePo enterprisePo = super.baseMapper.selectOneByUsernameOrEmail(loginEnterpriseDto);
+        EnterprisePo enterprisePo = super.baseMapper.selectOneByUsernameOrEmail(loginEnterpriseDto.getUsernameOrEmail());
         if(enterprisePo == null){
             throw JobException.NULL_ENTERPRISE_EXCEPTION;
         }else{
@@ -186,17 +186,7 @@ public class EnterpriseServiceImpl extends BaseServiceImpl<EnterpriseMapper, Ent
     @Override
     public List<EnterpriseVo> selectPageByQueryEnterpriseDto(Integer startLine, Integer pageSize) {
         List<EnterprisePo> enterprisePoList = super.baseMapper.selectPageByQueryEnterpriseDto(startLine, pageSize);
-        List<EnterpriseVo> enterpriseVoList = enterprisePoList.parallelStream().map(e -> {
-            EnterpriseVo enterpriseVo = new EnterpriseVo();
-            BeanUtil.copyProperties(e, enterpriseVo);
-            enterpriseVo.setLicense(e.getLicenseFileName());
-            enterpriseVo.setNature(e.getNature().getName());
-            enterpriseVo.setIndustryInvolved(e.getIndustryInvolved().getName());
-            enterpriseVo.setWorkerNumber(e.getWorkerNumber().getName());
-            enterpriseVo.setProvince(e.getProvince().getName());
-            enterpriseVo.setCheckStateType(e.getCheckState().getName());
-            return enterpriseVo;
-        }).collect(Collectors.toList());
+        List<EnterpriseVo> enterpriseVoList = enterprisePoList.parallelStream().map(e -> enterprisePoToVo((EnterprisePo)e)).collect(Collectors.toList());
         return enterpriseVoList;
     }
 
@@ -211,14 +201,24 @@ public class EnterpriseServiceImpl extends BaseServiceImpl<EnterpriseMapper, Ent
         if(e == null){
             throw JobException.NULL_ENTERPRISE_EXCEPTION;
         }
+        return enterprisePoToVo(e);
+    }
+
+    @Override
+    public EnterpriseVo getByUsernameOrEmail(String usernameOrEmail) {
+        EnterprisePo enterprisePo = super.baseMapper.selectOneByUsernameOrEmail(usernameOrEmail);
+        return enterprisePoToVo(enterprisePo);
+    }
+
+    private EnterpriseVo enterprisePoToVo(EnterprisePo enterprisePo){
         EnterpriseVo enterpriseVo = new EnterpriseVo();
-        BeanUtil.copyProperties(e, enterpriseVo);
-        enterpriseVo.setLicense(e.getLicenseFileName());
-        enterpriseVo.setNature(e.getNature().getName());
-        enterpriseVo.setIndustryInvolved(e.getIndustryInvolved().getName());
-        enterpriseVo.setWorkerNumber(e.getWorkerNumber().getName());
-        enterpriseVo.setProvince(e.getProvince().getName());
-        enterpriseVo.setCheckStateType(e.getCheckState().getName());
+        BeanUtil.copyProperties(enterprisePo, enterpriseVo);
+        enterpriseVo.setLicense(enterprisePo.getLicenseFileName());
+        enterpriseVo.setNature(enterprisePo.getNature().getName());
+        enterpriseVo.setIndustryInvolved(enterprisePo.getIndustryInvolved().getName());
+        enterpriseVo.setWorkerNumber(enterprisePo.getWorkerNumber().getName());
+        enterpriseVo.setProvince(enterprisePo.getProvince().getName());
+        enterpriseVo.setCheckStateType(enterprisePo.getCheckState().getName());
         return enterpriseVo;
     }
 

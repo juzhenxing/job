@@ -34,4 +34,6 @@ public class UndergraduateVo extends BaseVo {
 
     private String email;
 
+    private String password;
+
 }

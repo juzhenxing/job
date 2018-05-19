@@ -3,6 +3,7 @@ package com.zxkj.job.service.impl;
 import com.zxkj.job.bean.dto.*;
 import com.zxkj.job.bean.po.AdministratorPo;
 import com.zxkj.job.bean.po.EnterprisePo;
+import com.zxkj.job.bean.vo.AdministratorVo;
 import com.zxkj.job.bean.vo.EnterpriseVo;
 import com.zxkj.job.common.BaseServiceImpl;
 import com.zxkj.job.common.bean.PagedResult;
@@ -86,7 +87,7 @@ public class AdministratorServiceImpl extends BaseServiceImpl<AdministratorMappe
 
     @Override
     public String login(LoginAdministratorDto loginAdministratorDto) {
-        AdministratorPo administratorPo = super.baseMapper.selectOneByUsernameOrEmail(loginAdministratorDto);
+        AdministratorPo administratorPo = super.baseMapper.selectOneByUsernameOrEmail(loginAdministratorDto.getUsernameOrEmail());
         if(administratorPo == null){
             throw JobException.NULL_ADMINISTRATOR_EXCEPTION;
         }else{
@@ -159,6 +160,18 @@ public class AdministratorServiceImpl extends BaseServiceImpl<AdministratorMappe
             EmailUtil.sendEmail(enterprisePo.getEmail(), "[大学生求职网]审核结果", "抱歉， 您的企业账号审核未通过，请修改后重试！");
         }
         return true;
+    }
+
+    @Override
+    public AdministratorVo getByUsernameOrEmail(String usernameOrEmail) {
+        AdministratorPo administratorPo = super.baseMapper.selectOneByUsernameOrEmail(usernameOrEmail);
+        return administratorPoToVo(administratorPo);
+    }
+
+    private AdministratorVo administratorPoToVo(AdministratorPo administratorPo){
+        AdministratorVo administratorVo = new AdministratorVo();
+        BeanUtil.copyProperties(administratorPo, administratorVo);
+        return administratorVo;
     }
 
     private String checkEmailKey(HttpSession httpSession){

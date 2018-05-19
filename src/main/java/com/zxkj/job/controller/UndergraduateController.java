@@ -142,4 +142,38 @@ public interface UndergraduateController {
     @PostMapping("update-resume-education-background")
     ModelAndView updateResumeEducationBackground(EducationBackgroundDto educationBackgroundDto, HttpSession httpSession);
 
+    @GetMapping("deliver-resume")
+    ModelAndView deliverResume(Long professionalId, Long campusRecruitmentId, HttpSession httpSession, ModelAndView modelAndView);
+
+    @PostMapping("deliver-resume")
+    @ResponseBody
+    ModelMap deliverResume(@Valid DeliveryInformationDto deliveryInformationDto, HttpSession httpSession);
+
+    @GetMapping("resume-deliver-index")
+    ModelAndView resumeDeliverIndex(ModelAndView modelAndView);
+
+    @GetMapping("list-resume-deliver")
+    @ResponseBody
+    PagedResult listResumeDeliver(PageDto pageDto, HttpSession httpSession);
+
+    @GetMapping("check-deliver-resume-update")
+    @ResponseBody
+    ModelMap checkDeliverResumeUpdate(Long deliveryInformationId);
+
+    @GetMapping("deliver-resume-update")
+    ModelAndView deliverResumeUpdate(Long deliveryInformationId, ModelAndView modelAndView, HttpSession httpSession);
+
+    @PostMapping("deliver-resume-update")
+    @ResponseBody
+    ModelMap deliverResumeUpdate(@Valid DeliveryInformationDto deliveryInformationDto);
+
+    @GetMapping("get-resume-by-id")
+    ModelAndView getResumeById(Long resumeId, ModelAndView modelAndView, HttpSession httpSession);
+
+    @GetMapping("resume-basic-update")
+    ModelAndView resumeBasicUpdate(Long resumeId, ModelAndView modelAndView, HttpSession httpSession);
+
+    @PostMapping("resume-basic-update")
+    ModelAndView resumeBasicUpdate(@Valid ResumeDto resumeDto, HttpSession httpSession, ModelAndView modelAndView);
+
 }

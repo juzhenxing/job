@@ -20,6 +20,7 @@ import com.zxkj.job.util.BeanUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
@@ -28,17 +29,23 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
+import org.springframework.web.servlet.HandlerExceptionResolver;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.mail.MessagingException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import java.io.IOException;
 import java.text.ParseException;
+import java.util.HashMap;
+import java.util.Map;
 
 @Controller
 @RequestMapping("enterprise")
-public class EnterpriseControllerImpl extends BaseControllerImpl<EnterpriseService, EnterprisePo> implements EnterpriseController {
+public class EnterpriseControllerImpl extends BaseControllerImpl<EnterpriseService, EnterprisePo> implements EnterpriseController, HandlerExceptionResolver {
 
     @Autowired
     CareerTalkService careerTalkService;
@@ -451,21 +458,16 @@ public class EnterpriseControllerImpl extends BaseControllerImpl<EnterpriseServi
     }
 
     @Override
-    public ModelAndView addCampusRecruitment(HttpSession httpSession) {
+    public ModelAndView addCampusRecruitment(HttpSession httpSession, ModelAndView modelAndView) {
         Object enterpriseObj = httpSession.getAttribute("enterpriseVo");
-        if (StringUtils.isEmpty(enterpriseObj)) {
-//            throw JobException.NOT_LOGGED_IN_EXCEPTION;
-            logger.error("您还未登录");
-        }
         EnterpriseVo enterpriseVo = (EnterpriseVo) enterpriseObj;
-        ModelAndView modelAndView = new ModelAndView("enterprise_campus_recruitment_add");
+        modelAndView.setViewName("enterprise_campus_recruitment_add");
         modelAndView.addObject("professionalVoList", professionalService.list(enterpriseVo.getId()));
         return modelAndView;
     }
 
     @Override
-    public ModelAndView addCampusRecruitment(CampusRecruitmentDto campusRecruitmentDto, HttpSession httpSession) {
-        ModelAndView modelAndView = new ModelAndView();
+    public ModelAndView addCampusRecruitment(CampusRecruitmentDto campusRecruitmentDto, HttpSession httpSession, ModelAndView modelAndView) {
         try {
             if (campusRecruitmentService.add(campusRecruitmentDto, httpSession)) {
                 modelAndView.addObject("message", "添加成功");
@@ -478,24 +480,12 @@ public class EnterpriseControllerImpl extends BaseControllerImpl<EnterpriseServi
             logger.error(e.getMessage());
             modelAndView.addObject("errorMessage", e.getMessage());
         }
-        Object enterpriseObj = httpSession.getAttribute("enterpriseVo");
-        if (StringUtils.isEmpty(enterpriseObj)) {
-//            throw JobException.NOT_LOGGED_IN_EXCEPTION;
-            logger.error("您还未登录");
-        }
-        EnterpriseVo enterpriseVo = (EnterpriseVo) enterpriseObj;
-        modelAndView.addObject("professionalVoList", professionalService.list(enterpriseVo.getId()));
-        modelAndView.setViewName("enterprise_campus_recruitment_add");
-        return modelAndView;
+        return addCampusRecruitment(httpSession, modelAndView);
     }
 
     @Override
     public PagedResult listCampusRecruitment(PageDto pageDto, HttpSession httpSession) {
         Object enterpriseObj = httpSession.getAttribute("enterpriseVo");
-        if (StringUtils.isEmpty(enterpriseObj)) {
-//            throw JobException.NOT_LOGGED_IN_EXCEPTION;
-            logger.error("您还未登录");
-        }
         EnterpriseVo enterpriseVo = (EnterpriseVo) enterpriseObj;
         PagedResult pagedResult = campusRecruitmentService.list(pageDto, enterpriseVo.getId());
         return pagedResult;
@@ -604,4 +594,21 @@ public class EnterpriseControllerImpl extends BaseControllerImpl<EnterpriseServi
         return modelAndView;
     }
 
+    @Override
+    public ModelAndView applyIndex(HttpSession httpSession, ModelAndView modelAndView) {
+        modelAndView.setViewName("apply-index");
+        return null;
+    }
+
+    @Nullable
+    @Override
+    public ModelAndView resolveException(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, @Nullable Object o, Exception exception) {
+        HttpSession httpSession = httpServletRequest.getSession();
+        ModelAndView modelAndView = new ModelAndView();
+        if (exception instanceof MaxUploadSizeExceededException) {
+            modelAndView.addObject("errorMessage", "文件过大, 文件大小需小于1M");
+            return addCampusRecruitment(httpSession, modelAndView);
+        }
+        return null;
+    }
 }

@@ -40,7 +40,7 @@ public class DateUtil {
      * @return Date
      * @throws ParseException
      */
-    public static Date formatDate(String datestr,String format) throws ParseException {
+    public static Date formatDate(String datestr, String format) throws ParseException {
         SimpleDateFormat simpleDateFormat=new SimpleDateFormat(format);
         return  simpleDateFormat.parse(datestr);
     }

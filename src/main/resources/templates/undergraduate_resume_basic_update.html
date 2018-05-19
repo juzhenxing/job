@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="utf-8">
-    <title>新增简历</title>
+    <title>基本信息修改</title>
     <link th:href="@{~/layui/css/layui.css}" rel="stylesheet" type="text/css"/>
     <link th:href="@{~/css/toastr.min.css}" rel="stylesheet"/>
 </head>
@@ -16,24 +16,30 @@
         <!-- 内容主体区域 -->
         <div style="padding: 15px;">
             <div class="layui-col-md9">
-                <form class="layui-form" th:action="@{/undergraduate/resume-add}" method="post"> <!-- 提示：如果你不想用form，你可以换成div等任何一个普通元素 -->
+                <form class="layui-form" th:action="@{/undergraduate/resume-basic-update}" method="post"> <!-- 提示：如果你不想用form，你可以换成div等任何一个普通元素 -->
                     <div class="layui-form-item">
                         <label class="layui-form-label">名称</label>
                         <div class="layui-input-block">
-                            <input type="text" name="name" placeholder="请输入名称" autocomplete="off" class="layui-input" lay-verify="required">
+                            <input type="text" name="name" th:value="${resumeVo.name}" autocomplete="off" class="layui-input" lay-verify="required">
                         </div>
                     </div>
                     <div class="layui-form-item">
                         <label class="layui-form-label">设为默认</label>
                         <div class="layui-input-block">
-                            <input type="radio" name="acquiescence" value="1" title="是" checked>
-                            <input type="radio" name="acquiescence" value="0" title="否">
+                            <div th:if="${resumeVo.acquiescence eq true}">
+                                <input type="radio" name="acquiescence" value="1" title="是" checked>
+                                <input type="radio" name="acquiescence" value="0" title="否">
+                            </div>
+                            <div th:if="${resumeVo.acquiescence eq false}">
+                                <input type="radio" name="acquiescence" value="1" title="是">
+                                <input type="radio" name="acquiescence" value="0" title="否" checked>
+                            </div>
                         </div>
                     </div>
                     <div class="layui-form-item">
                         <label class="layui-form-label">出生年月</label>
                         <div class="layui-input-block">
-                            <input type="text" name="birthDate" id="birthDate"  autocomplete="off" class="layui-input" lay-verify="required">
+                            <input type="text" name="birthDate" id="birthDate"  th:value="${resumeVo.birthDate}" autocomplete="off" class="layui-input" lay-verify="required">
                         </div>
                     </div>
                     <div class="layui-form-item">
@@ -41,7 +47,12 @@
                         <div class="layui-input-block">
                             <select name="politicsStatus">
                                 <tr th:each="politicsStatusType : ${politicsStatusType}">
-                                    <option th:value="${politicsStatusType.type}"><span th:text="${politicsStatusType.name}"></span></option>
+                                    <div th:if="${resumeVo.politicsStatus eq politicsStatusType.name}">
+                                        <option th:value="${politicsStatusType.type}" selected><span th:text="${politicsStatusType.name}"></span></option>
+                                    </div>
+                                    <div th:if="${resumeVo.politicsStatus ne politicsStatusType.name}">
+                                        <option th:value="${politicsStatusType.type}"><span th:text="${politicsStatusType.name}"></span></option>
+                                    </div>
                                 </tr>
                             </select>
                         </div>
@@ -61,10 +72,11 @@
                             </div>
                         </div>
                     </div>
+                    <input type="hidden" name="id" th:value="${resumeVo.id}">
                     <div class="layui-form-item">
                         <div class="layui-input-block">
-                            <button class="layui-btn" lay-submit lay-filter="*">新增</button>
-                            <a class="layui-btn layui-btn-primary" th:href="@{/undergraduate/personal-center}">取消</a>
+                            <button class="layui-btn" lay-submit lay-filter="*">更新</button>
+                            <a class="layui-btn layui-btn-primary" id="cancel_a">取消</a>
                         </div>
                     </div>
                     <!-- 更多表单结构排版请移步文档左侧【页面元素-表单】一项阅览 -->
@@ -121,8 +133,11 @@
         var provicneSelectStr = "";
         for (var i = 0, len = province.length; i < len; i++) {
             provinceArray = province[i];
-            provicneSelectStr = provicneSelectStr + "<option value='" + provinceArray[0] + "'>" + provinceArray[1] + "</option>"
-        }
+            if(provinceArray[0] == [[${resumeVo.province}]]){
+                provicneSelectStr = provicneSelectStr + "<option value='" + provinceArray[0] + "' selected=\"selected\">" + provinceArray[1] + "</option>"
+            }else{
+                provicneSelectStr = provicneSelectStr + "<option value='" + provinceArray[0] + "'>" + provinceArray[1] + "</option>"
+            }}
         $("#province").html(provicneSelectStr);
 
         var selectCity = $("#province").val();
@@ -131,8 +146,11 @@
         var citySelectStr = "";
         for (var i = 0, len = citylist.length; i < len; i++) {
             cityArray = citylist[i];
-            citySelectStr = citySelectStr + "<option value='" + cityArray[0] + "'>" + cityArray[1] + "</option>"
-        }
+            if(cityArray[0] == [[${resumeVo.city}]]){
+                citySelectStr = citySelectStr + "<option value='" + cityArray[0] + "' selected=\"selected\">" + cityArray[1] + "</option>"
+            }else{
+                citySelectStr = citySelectStr + "<option value='" + cityArray[0] + "'>" + cityArray[1] + "</option>";
+            }}
         $("#city").html(citySelectStr);
 
         var start = {
@@ -144,7 +162,7 @@
     };
 </script>
 <script th:src="@{~/js/AllSchool.js}"></script>
-<script>
+<script th:inline="javascript">
     layui.form.on('select(province)', function (data) {
         var selectCity = $("#province").val();
         var citylist = city[selectCity];
@@ -158,6 +176,11 @@
         }
         $("#city").html(citySelectStr);
         layui.form.render();
+    });
+    $(document).ready(function(){
+        $("#cancel_a").click(function(){
+            window.location.href = 'http://localhost:8080/undergraduate/update-resume?resumeId='+ [[${resumeVo.id}]];
+        });
     });
 </script>
 

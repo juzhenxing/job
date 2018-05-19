@@ -29,7 +29,7 @@
     <select id="selectOneByUsernameOrEmail" resultMap="BaseResultMap">
         SELECT *
         FROM t_job_administrator
-        where user_name = #{loginAdministratorDto.usernameOrEmail} or email = #{loginAdministratorDto.usernameOrEmail};
+        where user_name = #{usernameOrEmail} or email = #{usernameOrEmail};
     </select>
 
 </mapper>

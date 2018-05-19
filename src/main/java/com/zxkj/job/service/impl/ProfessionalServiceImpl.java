@@ -127,6 +127,10 @@ public class ProfessionalServiceImpl extends BaseServiceImpl<ProfessionalMapper,
 
     @Override
     public List<ProfessionalVo> listByProfessionalIds(List<Long> professionalIds) {
+//        logger.error("professionalIds: " + professionalIds.size());
+        if(professionalIds == null || professionalIds.size() == 0){
+            return null;
+        }
         List<ProfessionalPo> professionalPos = super.selectBatchIds(professionalIds);
         return professionalPos.parallelStream().map(e -> professionalPoToVo(e)).collect(Collectors.toList());
     }

@@ -11,23 +11,29 @@ import com.zxkj.job.bean.po.EnterprisePo;
 import com.zxkj.job.bean.po.ResumePo;
 import com.zxkj.job.bean.po.UndergraduatePo;
 import com.zxkj.job.bean.vo.EnterpriseVo;
+import com.zxkj.job.bean.vo.ResumeInfoVo;
 import com.zxkj.job.bean.vo.ResumeVo;
 import com.zxkj.job.common.BaseServiceImpl;
 import com.zxkj.job.common.bean.PagedResult;
 import com.zxkj.job.enums.CheckStateType;
 import com.zxkj.job.exp.JobException;
 import com.zxkj.job.mapper.ResumeMapper;
+import com.zxkj.job.service.DeliveryInformationService;
 import com.zxkj.job.service.ResumeService;
 import com.zxkj.job.service.UndergraduateService;
 import com.zxkj.job.util.BeanUtil;
 import com.zxkj.job.util.DateUtil;
 import com.zxkj.job.util.IdUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpSession;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -40,8 +46,18 @@ public class ResumeServiceImpl extends BaseServiceImpl<ResumeMapper, ResumePo> i
     @Autowired
     UndergraduateService undergraduateService;
 
+    private Logger logger = LoggerFactory.getLogger(getClass());
+
+    @Autowired
+    DeliveryInformationService deliveryInformationService;
+
     @Override
     public Boolean add(ResumeDto resumeDto, HttpSession httpSession) throws ParseException {
+        ResumePo resumePo = resumeDtoToPo(resumeDto, httpSession, true);
+        return super.insert(resumePo);
+    }
+
+    private ResumePo resumeDtoToPo(ResumeDto resumeDto, HttpSession httpSession, Boolean isAdd) throws ParseException {
         ResumePo resumePo = new ResumePo();
         BeanUtil.copyProperties(resumeDto, resumePo);
         resumePo.setCompleteness(0.1f);
@@ -49,8 +65,10 @@ public class ResumeServiceImpl extends BaseServiceImpl<ResumeMapper, ResumePo> i
         UndergraduatePo undergraduatePo = (UndergraduatePo) httpSession.getAttribute("undergraduatePo");
         resumePo.setUndergraduateId(undergraduatePo.getId());
         resumePo.setType(0);
-        resumePo.setId(IdUtil.nextId());
-        resumePo.setGmtCreate(new Date());
+        if(isAdd){
+            resumePo.setId(IdUtil.nextId());
+            resumePo.setGmtCreate(new Date());
+        }
         if(resumeDto.getAcquiescence()){
             undergraduatePo.setAcquiescenceResumeId(resumePo.getId());
             if(!undergraduateService.updateById(undergraduatePo)){
@@ -58,7 +76,7 @@ public class ResumeServiceImpl extends BaseServiceImpl<ResumeMapper, ResumePo> i
             }
             httpSession.setAttribute("undergraduatePo", undergraduatePo);
         }
-        return super.insert(resumePo);
+        return resumePo;
     }
 
     @Override
@@ -86,6 +104,7 @@ public class ResumeServiceImpl extends BaseServiceImpl<ResumeMapper, ResumePo> i
             resumeVo.setAcquiescence(false);
         }
         resumeVo.setCreateTime(resumePo.getGmtCreate());
+        resumeVo.setBirthDate(DateUtil.formatDate(resumePo.getBirthDate(), "yyyy-MM-dd"));
         return resumeVo;
     }
 
@@ -93,6 +112,9 @@ public class ResumeServiceImpl extends BaseServiceImpl<ResumeMapper, ResumePo> i
     public Boolean deleteByResumeId(Long resumeId, HttpSession httpSession) {
         UndergraduatePo undergraduatePo = (UndergraduatePo) httpSession.getAttribute("undergraduatePo");
         checkResumePo(resumeId, undergraduatePo.getId());
+        if(deliveryInformationService.getByResumeId(resumeId).size() > 0){
+            throw JobException.EXIST_DELIVERYINFORMATIONPO_EXCEPTION;
+        }
         return super.deleteById(resumeId);
     }
 
@@ -102,6 +124,41 @@ public class ResumeServiceImpl extends BaseServiceImpl<ResumeMapper, ResumePo> i
         ResumePo resumePo = checkResumePo(resumeId, undergraduatePo.getId());
         Long acquiescenceResumeId = undergraduatePo.getAcquiescenceResumeId();
         return resumePoToVo(resumePo, acquiescenceResumeId);
+    }
+
+    @Override
+    public List<ResumeVo> list(Long undergraduateId, Long acquiescenceResumeId) {
+        EntityWrapper entityWrapper = new EntityWrapper();
+        entityWrapper.eq("undergraduate_id", undergraduateId);
+        List<ResumePo> resumePoList = super.selectList(entityWrapper);
+        return resumePoList.parallelStream().map(e -> resumePoToVo((ResumePo) e, acquiescenceResumeId)).collect(Collectors.toList());
+    }
+
+    @Override
+    public ResumeInfoVo getResumeInfoVoById(Long resumeId, HttpSession httpSession) {
+        UndergraduatePo undergraduatePo = (UndergraduatePo) httpSession.getAttribute("undergraduatePo");
+        ResumePo resumePo = checkResumePo(resumeId, undergraduatePo.getId());
+        ResumeInfoVo resumeInfoVo = new ResumeInfoVo();
+        BeanUtil.copyProperties(resumePo, resumeInfoVo);
+        resumeInfoVo.setPoliticsStatus(resumePo.getPoliticsStatus().getName());
+        Date birthDate = resumePo.getBirthDate();
+        Calendar now = Calendar.getInstance();
+        String currentYear = String.valueOf(now.get(Calendar.YEAR));
+        logger.error(currentYear);
+        String dateStr = DateUtil.formatDate(birthDate, "yyyy-MM-dd HH:mm:ss");
+        logger.error(dateStr);
+        String year = dateStr.substring(0, 4);
+        logger.error(year);
+        resumeInfoVo.setAge(Integer.valueOf(currentYear) - Integer.valueOf(year));
+        return resumeInfoVo;
+    }
+
+    @Override
+    public Boolean updateResumeBasicById(ResumeDto resumeDto, HttpSession httpSession) throws ParseException {
+        UndergraduatePo undergraduatePo = (UndergraduatePo) httpSession.getAttribute("undergraduatePo");
+        checkResumePo(resumeDto.getId(), undergraduatePo.getId());
+        ResumePo resumePo = resumeDtoToPo(resumeDto, httpSession, false);
+        return super.updateById(resumePo);
     }
 
     private ResumePo checkResumePo(Long resumeId, Long undergraduateId){

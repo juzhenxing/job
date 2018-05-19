@@ -80,7 +80,13 @@ public enum JobOutput {
 
     NULL_RESUME(134, "该简历不存在"),
 
-    NULL_EDUCATION_BACKGROUND(135, "该教育背景记录不存在")
+    NULL_EDUCATION_BACKGROUND(135, "该教育背景记录不存在"),
+
+    RESUME_ALREADY_ARRANGED(136, "本次投递已被企业处理，简历不可修改"),
+
+    NULL_DELIVERYINFORMATIONPO(137, "该投递记录不存在"),
+
+    EXIST_DELIVERYINFORMATIONPO(137, "该简历已投递, 无法删除"),
     ;
 
     private int code;

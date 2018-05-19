@@ -132,10 +132,10 @@ public interface EnterpriseController {
     ModelAndView updateProfessional(ProfessionalDto professionalDto, HttpSession httpSession);
 
     @GetMapping("add-campus-recruitment")
-    ModelAndView addCampusRecruitment(HttpSession httpSession);
+    ModelAndView addCampusRecruitment(HttpSession httpSession, ModelAndView modelAndView);
 
     @PostMapping("add-campus-recruitment")
-    ModelAndView addCampusRecruitment(CampusRecruitmentDto campusRecruitmentDto, HttpSession httpSession);
+    ModelAndView addCampusRecruitment(CampusRecruitmentDto campusRecruitmentDto, HttpSession httpSession, ModelAndView modelAndView);
 
     @GetMapping("list-campus-recruitment")
     @ResponseBody
@@ -164,4 +164,7 @@ public interface EnterpriseController {
 
     @PostMapping("update-campus-recruitment")
     ModelAndView updateCampusRecruitment(CampusRecruitmentDto campusRecruitmentDto, HttpSession httpSession);
+
+    @GetMapping("apply-index")
+    ModelAndView applyIndex(HttpSession httpSession, ModelAndView modelAndView);
 }

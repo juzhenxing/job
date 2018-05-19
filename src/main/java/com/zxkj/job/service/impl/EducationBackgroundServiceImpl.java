@@ -81,6 +81,14 @@ public class EducationBackgroundServiceImpl extends BaseServiceImpl<EducationBac
         return super.updateById(educationBackgroundPo);
     }
 
+    @Override
+    public List<EducationBackgroundVo> listByResumeId(Long resumeId) {
+        EntityWrapper entityWrapper = new EntityWrapper();
+        entityWrapper.eq("resume_id", resumeId);
+        List<EducationBackgroundPo> educationBackgroundPoList = super.selectList(entityWrapper);
+        return educationBackgroundPoList.parallelStream().map(e -> educationBackgroundPoToVo((EducationBackgroundPo) e)).collect(Collectors.toList());
+    }
+
     private EducationBackgroundPo checkEducationBackgroundPo(Long educationBackgroundId){
         if(StringUtils.isEmpty(educationBackgroundId)){
             throw JobException.NULL_ID_EXCEPTION;

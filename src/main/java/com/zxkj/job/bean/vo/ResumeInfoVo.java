@@ -1,8 +1,5 @@
 package com.zxkj.job.bean.vo;
 
-import com.baomidou.mybatisplus.annotations.TableName;
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.zxkj.job.common.bean.BasePo;
 import com.zxkj.job.common.bean.BaseVo;
 import com.zxkj.job.enums.PoliticsStatusType;
 import lombok.Data;
@@ -13,7 +10,7 @@ import java.util.Date;
  * 简历类
  */
 @Data
-public class ResumeVo extends BaseVo {
+public class ResumeInfoVo extends BaseVo {
 
     private String name;
 
@@ -21,9 +18,11 @@ public class ResumeVo extends BaseVo {
 
     private Float completeness;
 
-    private String birthDate;
+    private Date birthDate;
 
-    private PoliticsStatusType politicsStatus;
+    private Integer age;
+
+    private String politicsStatus;
 
     private String province;
 

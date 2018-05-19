@@ -9,7 +9,20 @@ import java.io.Serializable;
 @Getter
 public enum StatusType implements IEnum {
 
-    POSTED(1, "已投递")
+    POSTED(1, "已投递"),
+
+    PROCESSED(2, "已处理"),
+
+    WRITTEN_EXAMINATION_TO_BE_ARRANGE(3, "待安排笔试"),
+
+    WRITTEN_EXAMINATION_ALREADY_ARRANGED(4, "笔试已安排"),
+
+    INTERVIEW_TO_BE_ARRANGE(5, "待安排面试"),
+
+    INTERVIEW_ALREADY_ARRANGED(6, "面试已安排"),
+
+    OFFER_HAS_BEEN_ISSUED(7, "offer已发放")
+
     ;
 
     private int type;

@@ -12,6 +12,7 @@ import com.zxkj.job.common.bean.PagedResult;
 
 import javax.servlet.http.HttpSession;
 import java.text.ParseException;
+import java.util.List;
 
 public interface EducationBackgroundService extends IService<EducationBackgroundPo> {
 
@@ -24,5 +25,7 @@ public interface EducationBackgroundService extends IService<EducationBackground
     EducationBackgroundVo selectOneById(Long educationBackgroundId);
 
     Boolean updateById(EducationBackgroundDto educationBackgroundDto) throws ParseException;
+
+    List<EducationBackgroundVo> listByResumeId(Long resumeId);
 
 }

@@ -72,6 +72,18 @@ spring:
     database: 0
   jackson:
     date-format: yyyy-MM-dd HH:mm
+  mail:
+    host: smtp.qq.com
+    username: 1029432816@qq.com
+    password: btuovenlvpxqbdcj
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+
 
 #mybatis-plus
 mybatis-plus:

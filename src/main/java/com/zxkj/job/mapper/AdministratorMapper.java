@@ -28,9 +28,9 @@ public interface AdministratorMapper extends BaseMapper<AdministratorPo> {
     /**
      * 根据usernameOrEmail查询管理员信息
      *
-     * @param loginAdministratorDto
+     * @param usernameOrEmail
      * @return
      */
-    AdministratorPo selectOneByUsernameOrEmail(@Param("loginAdministratorDto") LoginAdministratorDto loginAdministratorDto);
+    AdministratorPo selectOneByUsernameOrEmail(@Param("usernameOrEmail") String usernameOrEmail);
 
 }

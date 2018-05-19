@@ -1,0 +1,26 @@
+<html xmlns:th="http://www.thymeleaf.org">
+<div class="layui-side layui-bg-black" th:fragment="undergraduate_personal_center_nav_tree">
+    <div class="layui-side-scroll">
+        <!-- 左侧导航区域（可配合layui已有的垂直导航） -->
+        <ul class="layui-nav layui-nav-tree">
+            <li class="layui-nav-item layui-nav-itemed">
+                <a th:href="@{/undergraduate/personal-center}">我的简历</a>
+            </li>
+            <li class="layui-nav-item">
+                <a  th:href="@{/undergraduate/resume-deliver-index}">简历投递记录</a>
+            </li>
+            <li class="layui-nav-item">
+                <a >我的收藏</a>
+            </li>
+            <li class="layui-nav-item">
+                <a >我的消息</a>
+            </li>
+            <li class="layui-nav-item">
+                <a >修改密码</a>
+            </li>
+            <li class="layui-nav-item">
+                <a >账号绑定</a>
+            </li>
+        </ul>
+    </div>
+</div>

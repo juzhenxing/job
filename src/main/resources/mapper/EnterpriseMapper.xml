@@ -45,7 +45,7 @@
     <select id="selectOneByUsernameOrEmail" resultMap="BaseResultMap">
         SELECT *
         FROM t_job_enterprise
-        where user_name = #{loginEnterpriseDto.usernameOrEmail} or email = #{loginEnterpriseDto.usernameOrEmail};
+        where user_name = #{usernameOrEmail} or email = #{usernameOrEmail};
     </select>
 
     <select id="selectPageByQueryEnterpriseDto" resultMap="BaseResultMap">

@@ -9,6 +9,7 @@ import lombok.Data;
 
 import java.util.Date;
 
+
 /**
  * 简历类
  */

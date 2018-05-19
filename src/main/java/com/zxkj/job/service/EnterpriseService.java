@@ -46,4 +46,6 @@ public interface EnterpriseService extends IService<EnterprisePo> {
 
     EnterpriseVo getById(Long enterpriseId);
 
+    EnterpriseVo getByUsernameOrEmail(String usernameOrEmail);
+
 }

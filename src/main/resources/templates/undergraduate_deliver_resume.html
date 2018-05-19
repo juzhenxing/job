@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <title>投递简历</title>
+    <link th:href="@{~/layui/css/layui.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{~/css/toastr.min.css}" rel="stylesheet"/>
+</head>
+<body class="layui-layout-body" style="padding: 15px;">
+        <form class="layui-form" th:action="@{/undergraduate/deliver-resume}" method="post">
+            <div class="layui-form-item">
+                <label class="layui-form-label">意向职位</label>
+                <div class="layui-input-block">
+                    <select name="professionalId">
+                        <tr th:each="professionalVo : ${professionalVoList}">
+                            <span th:if="${professionalVo.id eq professionalId}">
+                                <option th:value="${professionalVo.id}" selected><span th:text="${professionalVo.name}"></span></option>
+                            </span>
+                            <span th:if="${professionalVo.id ne professionalId}">
+                                <option th:value="${professionalVo.id}"><span th:text="${professionalVo.name}"></span></option>
+                            </span>
+                        </tr>
+                    </select>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">选择简历</label>
+                <div class="layui-input-block">
+                    <select name="resumeId">
+                        <tr th:each="resumeVo : ${resumeVoList}">
+                            <span th:if="${resumeVo.acquiescence eq true}">
+                                <option th:value="${resumeVo.id}" selected><span th:text="${resumeVo.name}"></span></option>
+                            </span>
+                            <span th:if="${resumeVo.acquiescence eq false}">
+                                <option th:value="${resumeVo.id}"><span th:text="${resumeVo.name}"></span></option>
+                            </span>
+                        </tr>
+                    </select>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-input-block">
+                    <button class="layui-btn" lay-submit lay-filter="formDemo">确认投递</button>
+                </div>
+            </div>
+        </form>
+<script type="text/javascript" th:src="@{~/layui/layui.all.js}"></script>
+<script th:src="@{~/js/toastr.min.js}"></script>
+<script th:inline="javascript">
+    toastr.options.positionClass = 'toast-top-center';
+    toastr.options.timeOut = "1000";
+    /*[+
+        if([[${errorMessage}]] != null){
+            toastr.error([[${errorMessage}]]);
+            toastr.cancel();
+            console.log([[${errorMessage}]]);
+        }
+    +]*/
+    /*[+
+        if([[${message}]] != null){
+            toastr.success([[${message}]]);
+            toastr.cancel();
+            console.log([[${message}]]);
+        }
+    +]*/
+    //监听提交
+    layui.form.on('submit(formDemo)', function(data){
+        layer.msg(JSON.stringify(data.field));
+        parent.getChildrenData(data.field);
+        var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+        parent.layer.close(index); //再执行关闭
+        return false;
+    });
+</script>
+</body>
+</html>

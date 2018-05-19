@@ -8,77 +8,7 @@
 </head>
 <body class="layui-layout-body">
 <div class="layui-layout layui-layout-admin">
-    <div class="layui-header">
-        <div class="layui-logo">
-            <a th:href="@{/undergraduate/index}"><img th:src="@{~/img/logo.png}" alt="通用的占位符缩略图" width="100px"/></a>
-        </div>
-        <!-- 头部区域（可配合layui已有的水平导航） -->
-        <ul class="layui-nav layui-layout-left">
-            <li class="layui-nav-item">
-                <a href="javascript:;">
-                    广东
-                </a>
-                <dl class="layui-nav-child">
-                    <dd><a href="">北京</a></dd>
-                    <dd><a>上海</a></dd>
-                    <dd><a>广东</a></dd>
-                    <dd><a>湖北</a></dd>
-                    <dd><a>陕西</a></dd>
-                    <dd><a>四川</a></dd>
-                    <dd><a>江苏</a></dd>
-                    <dd><a>安徽</a></dd>
-                    <dd><a>山东</a></dd>
-                    <dd><a>湖南</a></dd>
-                    <dd><a>天津</a></dd>
-                    <dd><a>河南</a></dd>
-                    <dd><a>浙江</a></dd>
-                    <dd><a>重庆</a></dd>
-                    <dd><a>辽宁</a></dd>
-                    <dd><a>福建</a></dd>
-                    <dd><a>江西</a></dd>
-                    <dd><a>吉林</a></dd>
-                    <dd><a>黑龙江</a></dd>
-                    <dd><a>河北</a></dd>
-                    <dd><a>山西</a></dd>
-                    <dd><a>云南</a></dd>
-                    <dd><a>甘肃</a></dd>
-                    <dd><a>广西</a></dd>
-                </dl>
-            </li>
-            <li class="layui-nav-item">
-                <a th:href="@{/undergraduate/career-talk}">宣讲会</a>
-            </li>
-            <li class="layui-nav-item">
-                <a th:href="@{/undergraduate/campus-recruitment}">校招网申</a>
-            </li>
-        </ul>
-        <div th:if="${session.email eq null}">
-            <ul class="layui-nav layui-layout-right">
-                <a>学生登录</a>
-                <a th:href="@{/enterprise/index}">企业登录</a>
-            </ul>
-        </div>
-        <div th:if="${session.email ne null}">
-            <ul class="layui-nav layui-layout-right">
-                <li class="layui-nav-item">
-                    <a >我的消息</a>
-                </li>
-                <li class="layui-nav-item">
-                    <a >我的简历</a>
-                </li>
-                <li class="layui-nav-item">
-                    <a href="javascript:;">
-                        <p th:text="'hi, ' + ${session.email}"></p>
-                    </a>
-                    <dl class="layui-nav-child">
-                        <dd><a th:href="@{/undergraduate/personal-center}">个人中心</a></dd>
-                        <dd><a th:href="@{/undergraduate/logout}">退出登录</a></dd>
-                    </dl>
-                </li>
-            </ul>
-        </div>
-    </div>
-
+    <div th:replace="undergraduate_header :: undergraduate_header"></div>
     <div class="layui-side layui-bg-black">
         <div class="layui-side-scroll">
             <!-- 左侧导航区域（可配合layui已有的垂直导航） -->
@@ -217,9 +147,9 @@
 </script>
 <script type="text/html" id="professionalBar">
     <a class="layui-btn layui-btn-xs" lay-event="professional_detail">详情</a>
-    <a class="layui-btn layui-btn-xs" lay-event="professional_resumes" >投递简历</a>
+    <a class="layui-btn layui-btn-xs" lay-event="professional_deliver_resume" >投递简历</a>
 </script>
-<script>
+<script th:inline="javascript">
     //监听工具条
     layui.table.on('tool(roles)', function (obj) { //注：tool是工具条事件名，test是table原始容器的属性 lay-filter="对应的值"
         var data = obj.data; //获得当前行数据
@@ -244,10 +174,30 @@
                         });
                     }
                 });
-        }else if (layEvent === 'professional_resumes') {
-            window.location.href = 'http://localhost:8080/undergraduate/update-professional?professionalId='+ data.id;
+        }else if (layEvent === 'professional_deliver_resume') {
+            layer.open({
+                title: '确认投递信息',
+                type: 2,
+                area: ['900px', '400px'],
+                content: ['http://localhost:8080/undergraduate/deliver-resume?professionalId=' + data.id + '&campusRecruitmentId=' + [[${campusRecruitmentVo.id}]], 'no'] //这里content是一个URL，如果你不想让iframe出现滚动条，你还可以content: ['http://sentsin.com', 'no']
+            });
         }
     });
+    function getChildrenData(data) {
+        console.log(data);
+        $.post("/undergraduate/deliver-resume",
+            {
+                professionalId: data.professionalId,
+                resumeId: data.resumeId
+            },
+            function (data, status) {
+                if (data.message != null) {
+                    toastr.success(data.message);
+                } else if (data.errorMessage != null) {
+                    toastr.error(data.errorMessage);
+                }
+            });
+    }
 </script>
 </body>
 </html>

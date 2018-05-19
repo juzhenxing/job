@@ -28,10 +28,10 @@ public interface EnterpriseMapper extends BaseMapper<EnterprisePo> {
     /**
      * 根据usernameOrEmail查询企业信息
      *
-     * @param loginEnterpriseDto
+     * @param usernameOrEmail
      * @return
      */
-    EnterprisePo selectOneByUsernameOrEmail(@Param("loginEnterpriseDto") LoginEnterpriseDto loginEnterpriseDto);
+    EnterprisePo selectOneByUsernameOrEmail(@Param("usernameOrEmail") String usernameOrEmail);
 
     List<EnterprisePo> selectPageByQueryEnterpriseDto(
             @Param("startLine") Integer startLine,

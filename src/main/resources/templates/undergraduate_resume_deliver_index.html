@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>个人中心</title>
+    <link th:href="@{~/layui/css/layui.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{~/css/toastr.min.css}" rel="stylesheet"/>
+
+    <!-- 新 Bootstrap 核心 CSS 文件 -->
+    <link th:href="@{~/bootstrap/css/bootstrap.min.css}" rel="stylesheet" type="text/css" />
+    <!-- 可选的Bootstrap主题文件（一般不使用） -->
+    <link th:href="@{~/bootstrap/css/bootstrap-theme.min.css}" rel="stylesheet" type="text/css"/>
+    <!-- jQuery文件。务必在bootstrap.min.js 之前引入 -->
+    <script type="text/javascript" th:src="@{~/js/jquery-3.3.1.min.js}"></script>
+    <!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
+    <script type="text/javascript" th:src="@{~/bootstrap/js/bootstrap.min.js}"></script>
+</head>
+<body class="layui-layout-body">
+<div class="layui-layout layui-layout-admin">
+    <div th:replace="undergraduate_header :: undergraduate_header"></div>
+    <div th:replace="undergraduate_personal_center_nav_tree :: undergraduate_personal_center_nav_tree"></div>
+
+
+    <div class="layui-body">
+        <!-- 内容主体区域 -->
+        <div style="padding: 15px;">
+            <div class="header">
+                <h3 style="display: inline-block">简历投递记录</h3>
+                <span class="text-ellipsis">记录了平台所有的简历投递信息，方便统一查看</span>
+            </div>
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">投递记录</h3>
+                </div>
+                <div class="panel-body">
+                    <table class="layui-table"
+                           lay-data="{height:'full', url:'/undergraduate/list-resume-deliver', page:true, id:'test', even:true}"
+                           lay-filter="roles">
+                        <thead>
+                        <tr class="layui-colla-item">
+                            <th lay-data="{align: 'center', field:'enterpriseName', width:200, sort: true, unresize:true}">投递公司</th>
+                            <th lay-data="{align: 'center', field:'professionalName', width:200, sort: true, unresize:true}">投递岗位</th>
+                            <th lay-data="{align: 'center', field:'deliveryTime', width:200, sort: true, unresize:true}">投递时间</th>
+                            <th lay-data="{align: 'center', field:'status', width:150, sort: true, unresize:true}">状态</th>
+                            <th lay-data="{align: 'center', field:'time', width:200, unresize:true}">状态更新时间</th>
+                            <th lay-data="{align: 'center', toolbar: '#barDemo', width:129, unresize:true}">操作</th>
+                        </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">简历投递要注意什么</h3>
+                </div>
+                <div class="panel-body">
+                    <ul>
+                        <li><h4>投递简历之前应尽可能完善简历，资料越完善被录用的概率越高。</h4></li>
+                        <li><h4>尽量上传真实登记照头像，能体现应聘者的认真与重视。系统统计数据显示，有头像的用户比没有的HR反馈率高出65%。</h4></li>
+                        <li><h4>在投递简历时，只需要按要求补充投递的职位名称即可，系统将自动为邮件标题补全“学校_专业_学历_姓名”。</h4></li>
+                    </ul>
+                   </div>
+            </div>
+            <i class="layui-icon">&#xe60c;</i>
+        </div>
+    </div>
+    <div class="layui-footer">
+        <!-- 底部固定区域 -->
+        © layui.com - 底部固定区域
+    </div>
+</div>
+<script type="text/html" id="barDemo">
+    <a class="layui-btn layui-btn-xs" lay-event="edit" >修改投递简历</a>
+</script>
+<script type="text/javascript" th:src="@{~/layui/layui.all.js}"></script>
+<script type="text/javascript" th:src="@{~/js/jquery-3.3.1.min.js}"></script>
+<!--<script type="text/javascript" th:src="@{~/js/jquery.min.js}"></script>-->
+<script th:src="@{~/js/toastr.min.js}"></script>
+<script th:inline="javascript">
+    toastr.options.positionClass = 'toast-top-center';
+    //    toastr.options.timeOut = "5000";
+    /*[+
+        if([[${errorMessage}]] != null){
+            toastr.error([[${errorMessage}]]);
+            toastr.cancel();
+        }
+    +]*/
+    /*[+
+        if([[${message}]] != null){
+            toastr.success([[${message}]]);
+            toastr.cancel();
+        }
+    +]*/
+</script>
+<script>
+    //监听工具条
+    layui.table.on('tool(roles)', function (obj) { //注：tool是工具条事件名，test是table原始容器的属性 lay-filter="对应的值"
+        var data = obj.data; //获得当前行数据
+        var layEvent = obj.event; //获得 lay-event 对应的值（也可以是表头的 event 参数对应的值）
+        var tr = obj.tr; //获得当前行 tr 的DOM对象
+        var layer = layui.layer;
+        if (layEvent === 'edit') {
+            $.get("/undergraduate/check-deliver-resume-update?deliveryInformationId=" + data.id,
+                function (result, status) {
+                    console.log("Data: " + result + "\nStatus: " + status);
+                    var json = result;
+                    if (json.errorMessage != null) {
+                        toastr.error(json.errorMessage);
+                    } else {
+                        console.log(data.id);
+                        //do somehing
+                        layer.open({
+                            title: '修改投递简历',
+                            type: 2,
+                            area: ['900px', '400px'],
+                            content: ['http://localhost:8080/undergraduate/deliver-resume-update?deliveryInformationId=' + data.id, 'no'] //这里content是一个URL，如果你不想让iframe出现滚动条，你还可以content: ['http://sentsin.com', 'no']
+                        });
+                    }
+                });
+        }
+    });
+    function getChildrenData(data) {
+        console.log(data);
+        $.post("/undergraduate/deliver-resume-update",
+            {
+                id: data.id,
+                professionalId: data.professionalId,
+                resumeId: data.resumeId
+            },
+            function (data, status) {
+                if (data.message != null) {
+                    toastr.success(data.message);
+                } else if (data.errorMessage != null) {
+                    toastr.error(data.errorMessage);
+                }
+            });
+    }
+</script>
+</body>
+</html>

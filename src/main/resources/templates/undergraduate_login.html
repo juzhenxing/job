@@ -23,7 +23,7 @@
     <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
         <div class="container-fluid">
             <div class="navbar-header">
-                <a class="navbar-brand" th:href="@{/undergraduate/index}">大学生求职网</a>
+                <a class="navbar-brand" th:href="@{/visitor/index}">大学生求职网</a>
             </div>
             <div>
                 <ul class="nav navbar-nav">
@@ -32,12 +32,12 @@
                             旗下平台 <b class="caret"></b>
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a th:href="@{/undergraduate/campus-recruitment}">校招</a></li>
+                            <li><a th:href="@{/visitor/campus-recruitment}">校招</a></li>
                             <li class="divider"></li>
-                            <li><a th:href="@{/undergraduate/career-talk}">宣讲会</a></li>
+                            <li><a th:href="@{/visitor/career-talk}">宣讲会</a></li>
                         </ul>
                     </li>
-                    <li><a th:href="@{/undergraduate/index}">返回首页</a></li>
+                    <li><a th:href="@{/visitor/index}">返回首页</a></li>
                 </ul>
             </div>
         </div>
@@ -52,7 +52,7 @@
         </div>
     </div>
     <div class="col-sm-12">
-        <form role="form" class="form-horizontal" id="login" th:action="@{/undergraduate/entry}" method="post">
+        <form role="form" class="form-horizontal" id="login" th:action="@{/visitor/entry}" method="post">
             <div class="col-sm-offset-2">
                 <label for="email" class="col-sm-2 control-label" style="text-align: center;">邮箱</label>
                 <div class="col-sm-6">
@@ -74,12 +74,12 @@
         <br/>
         <br/>
         <div class="text-right">
-            <a th:href="@{/undergraduate/find-password}">忘记密码 ?</a>
+            <a th:href="@{/visitor/find-password}">忘记密码 ?</a>
         </div>
         <br/>
         <br/>
         <div>
-            <a class='btn btn-default col-sm-12' th:href="@{/undergraduate/register}">立即注册</a>
+            <a class='btn btn-default col-sm-12' th:href="@{/visitor/register}">立即注册</a>
         </div>
         <br/>
         <br/>
@@ -89,13 +89,13 @@
     </div>
     <ul class="nav navbar-nav navbar-fixed-bottom" style="left: 43.5%">
         <li class="">
-            <a th:href="@{/undergraduate/index}">首页</a>
+            <a th:href="@{/visitor/index}">首页</a>
         </li>
         <li class="">
-            <a th:href="@{/undergraduate/campus-recruitment}">校招</a>
+            <a th:href="@{/visitor/campus-recruitment}">校招</a>
         </li>
         <li class="">
-            <a th:href="@{/undergraduate/career-talk}">宣讲会</a>
+            <a th:href="@{/visitor/career-talk}">宣讲会</a>
         </li>
     </ul>
 </div>

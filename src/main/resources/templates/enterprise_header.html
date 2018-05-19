@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<div th:fragment="enterprise_header">
+<div class="layui-header">
+    <div class="layui-logo">企业后台</div>
+    <!-- 头部区域（可配合layui已有的水平导航） -->
+    <ul class="layui-nav layui-layout-left">
+        <li class="layui-nav-item">
+            <a th:href="@{/enterprise/career-talk-index}">宣讲会</a>
+        </li>
+        <li class="layui-nav-item">
+            <a th:href="@{/enterprise/enterprise-campus-recruitment-index}">校招网申</a>
+        </li>
+        <li class="layui-nav-item">
+            <a th:href="@{/enterprise/enterprise-professional-index}">招聘岗位</a>
+        </li>
+    </ul>
+    <ul class="layui-nav layui-layout-right">
+        <li class="layui-nav-item">
+            <a href="javascript:;">
+                <span th:text="${session.userName}"></span>
+            </a>
+            <dl class="layui-nav-child">
+                <dd><a href="">基本资料</a></dd>
+                <dd><a href="">安全设置</a></dd>
+            </dl>
+        </li>
+        <li class="layui-nav-item"><a th:href="@{/enterprise/logout}">注销</a></li>
+    </ul>
+</div>
+
+<div class="layui-side layui-bg-black">
+    <div class="layui-side-scroll">
+        <!-- 左侧导航区域（可配合layui已有的垂直导航） -->
+        <ul class="layui-nav layui-nav-tree">
+            <li class="layui-nav-item layui-nav-itemed">
+                <a th:href="@{/enterprise/career-talk-index}">宣讲会</a>
+            </li>
+            <li class="layui-nav-item">
+                <a th:href="@{/enterprise/enterprise-campus-recruitment-index}">校招网申</a>
+            </li>
+            <li class="layui-nav-item">
+                <a th:href="@{/enterprise/enterprise-professional-index}">招聘岗位</a>
+            </li>
+            <li class="layui-nav-item">
+                <a th:href="@{/enterprise/apply-index}">申请管理</a>
+            </li>
+        </ul>
+    </div>
+</div>
+</div>
+</html>

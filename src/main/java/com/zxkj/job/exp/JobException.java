@@ -80,5 +80,11 @@ public class JobException extends BaseException {
     public static final JobException NULL_RESUME_EXCEPTION = new JobException(JobOutput.NULL_RESUME);
 
     public static final JobException NULL_EDUCATION_BACKGROUND_EXCEPTION = new JobException(JobOutput.NULL_EDUCATION_BACKGROUND);
+
+    public static final JobException RESUME_ALREADY_ARRANGED_EXCEPTION = new JobException(JobOutput.RESUME_ALREADY_ARRANGED);
+
+    public static final JobException NULL_DELIVERYINFORMATIONPO_EXCEPTION = new JobException(JobOutput.NULL_DELIVERYINFORMATIONPO);
+
+    public static final JobException EXIST_DELIVERYINFORMATIONPO_EXCEPTION = new JobException(JobOutput.EXIST_DELIVERYINFORMATIONPO);
 }
 

@@ -14,7 +14,6 @@
 <head>
     <link rel="stylesheet" href="http://jqueryvalidation.org/files/demo/site-demos.css">
     <link th:href="@{~/css/toastr.min.css}" rel="stylesheet"/>
-    <script th:src="@{~/js/toastr.min.js}"></script>
     <title>企业登录</title>
 </head>
 <body style="padding: 100px">
@@ -127,6 +126,9 @@
 </div>
 <script src="http://jqueryvalidation.org/files/dist/jquery.validate.min.js"></script>
 <script src="http://jqueryvalidation.org/files/dist/additional-methods.min.js"></script>
+
+<script th:src="@{~/js/toastr.min.js}"></script>
+
 <script th:inline="javascript">
     jQuery.validator.setDefaults({
         success: "valid",
@@ -170,6 +172,12 @@
             toastr.cancel();
         }
     +]*/
+    /*[+
+           if([[${param.errorMessage}]] != null){
+               toastr.error([[${param.errorMessage}]]);
+               toastr.cancel();
+           }
+       +]*/
     /*[+
         if([[${message}]] != null){
             toastr.success([[${message}]]);

@@ -95,10 +95,10 @@ public class CampusRecruitmentServiceImpl extends BaseServiceImpl<CampusRecruitm
     public Boolean deleteByCampusRecruitmentId(Long campusRecruitmentId, HttpSession httpSession) {
         EnterpriseVo enterpriseVo = checkEnterpriseVo(httpSession);
         checkCampusRecruitmentPo(campusRecruitmentId, enterpriseVo.getId());
-        if(!super.deleteById(campusRecruitmentId)){
+        if(!campusRecruitmentProfessionalRService.deleteByCampusRecruitmentId(campusRecruitmentId)){
             throw JobException.CAMPUS_RECRUITMENT_DELETE_EXCEPTION;
         }
-        return campusRecruitmentProfessionalRService.deleteByCampusRecruitmentId(campusRecruitmentId);
+        return super.deleteById(campusRecruitmentId);
     }
 
     @Override

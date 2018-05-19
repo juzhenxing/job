@@ -9,7 +9,7 @@ public class PagedResult<T> {
 
     private List<T> data;
 
-    private Integer count;
+    private long count;
 
     private Integer code = 0;
 

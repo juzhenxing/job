@@ -3,6 +3,7 @@ package com.zxkj.job.service;
 import com.baomidou.mybatisplus.service.IService;
 import com.zxkj.job.bean.dto.*;
 import com.zxkj.job.bean.po.AdministratorPo;
+import com.zxkj.job.bean.vo.AdministratorVo;
 import com.zxkj.job.common.bean.PagedResult;
 import com.zxkj.job.enums.CheckStateType;
 
@@ -38,5 +39,7 @@ public interface AdministratorService extends IService<AdministratorPo> {
     PagedResult checkApplication(PageDto pageDto);
 
     Boolean checkApplication(Long enterpriseId, CheckStateType checkStateType) throws MessagingException;
+
+    AdministratorVo getByUsernameOrEmail(String usernameOrEmail);
 
 }

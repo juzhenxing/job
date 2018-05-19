@@ -52,4 +52,6 @@ public class EnterpriseVo extends BaseVo{
     private String userName;
 
     private String checkStateType;
+
+    private String password;
 }

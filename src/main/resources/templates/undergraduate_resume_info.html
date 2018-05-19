@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <title>我的简历</title>
+    <link th:href="@{~/layui/css/layui.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{~/css/toastr.min.css}" rel="stylesheet"/>
+</head>
+<body class="layui-layout-body">
+<div class="layui-layout layui-layout-admin">
+    <div th:replace="undergraduate_header :: undergraduate_header"></div>
+    <div th:replace="undergraduate_personal_center_nav_tree :: undergraduate_personal_center_nav_tree"></div>
+
+
+    <div class="layui-body" style="background-color: #F7F7F7">
+        <!-- 内容主体区域 -->
+        <div style="padding: 15px;">
+            <div style="font-size: 14px; position: relative; width: 793px; margin: 0 auto; padding: 15px; padding-top: 50px; padding-bottom: 70px; background: #fff;">
+            <h3 style="font-size: 40px; font-weight: normal; text-align: center; letter-spacing: 16px;">
+                <span th:text="${undergraduateVo.name}"></span>
+            </h3>
+            <table style="border-bottom:0;display: block; margin: 6px 0; padding: 8px 0;">
+                <tbody>
+                <tr style="font-size: 14px; line-height: 30px; margin-bottom: 15px;">
+                    <th style="font-size: 13px; font-weight: normal; padding: 0; color: #999; width:80px;border:0;">基本情况：</th>
+                    <td width="530" style="line-height: 25px;border:0;">
+                        <span th:if="${undergraduateVo.sex eq 1}">
+                            女
+                        </span>
+                        <span th:if="${undergraduateVo.sex eq 0}">
+                            男
+                        </span>
+                        <span th:if="${undergraduateVo.sex ne 0 and undergraduateVo.sex ne 1}">
+                            <span th:text="${undergraduateVo.sex}"></span>
+                        </span>|
+                        <span th:text="${resumeInfoVo.age}"></span>岁|
+                        <span th:text="${#dates.format(undergraduateVo.graduateYear, 'yyyy')}"></span>届毕业生|
+                        <span th:text="${resumeInfoVo.politicsStatus}"></span>
+                    </td>
+                    <td rowspan="5" style="line-height: 25px;border:0;">
+                        <div th:if="${undergraduateVo.headUrl ne null}">
+                            <img th:src="@{'~/' + ${undergraduateVo.headUrl} }" style="width: 150px;height: auto; border-radius: 3px;">
+                        </div>
+                        <div th:if="${undergraduateVo.headUrl eq null}">
+                            <img th:src="@{~/img/user-face-male.png}" style="width: 150px;height: auto; border-radius: 3px;">
+                        </div>
+                    </td>
+                </tr>
+                <tr style="font-size: 14px; line-height: 30px; margin-bottom: 15px;border:0;">
+                    <th style="font-size: 13px; font-weight: normal; padding: 0; color: #999; width:80px;border:0;">最高学历：</th>
+                    <td style="line-height: 25px;border:0;"><span th:text="${undergraduateVo.school}"></span>·
+                        <span th:if="${undergraduateVo.educationBackground eq null}">
+                            <span th:text="${undergraduateVo.educationBackground}"></span>
+                        </span>
+                        <span th:if="${undergraduateVo.educationBackground ne null}">
+                            <span th:text="${undergraduateVo.educationBackground.name}"></span>
+                        </span>[<span th:text="${undergraduateVo.profession}"></span>]
+
+                    </td>
+                </tr>
+                <tr style="font-size: 14px; line-height: 30px; margin-bottom: 15px;border:0;">
+                    <th style="font-size: 13px; font-weight: normal; padding: 0; color: #999; width:80px;border:0;">联系电话：</th>
+                    <td style="line-height: 25px;border:0;">
+                        <span th:text="${undergraduateVo.phone}"></span>
+                    </td>
+                </tr>
+                <tr style="font-size: 14px; line-height: 30px; margin-bottom: 15px;border:0;">
+                    <th style="font-size: 13px; font-weight: normal; padding: 0; color: #999; width:80px;border:0;">电子邮箱：
+                    </th>
+                    <td style="line-height: 25px;border:0;">
+                        <span th:text="${undergraduateVo.email}"></span>
+                    </td>
+                </tr>
+
+                <tr style="font-size: 14px; line-height: 30px; margin-bottom: 15px;border:0;">
+                    <th style="font-size: 13px; font-weight: normal; padding: 0; color: #999; width:80px;border:0;">
+                        籍贯信息：
+                    </th>
+                    <td style="line-height: 25px;border:0;" id="origin">
+                    </td>
+                </tr>
+
+                </tbody>
+            </table>
+                <div style="font-size: 16px;font-weight: bold; line-height: 50px; display: block; height: 40px; color: rgb(51, 51, 51); border-bottom: 1px solid #38f;">
+                    教育背景
+                </div>
+                <table style="display: block; margin: 6px 0; padding: 8px 0; border-bottom: 1px solid #eee;">
+                    <div th:each="educationBackgroundVo : ${educationBackgroundVoList}">
+                        <tr style="border:0;">
+                            <td style="font-size: 13px; font-weight: normal; padding: 0; color: #999; line-height: 25px; width: 125px;border:0;"><span th:text="${educationBackgroundVo.startTime}"></span>-<span th:text="${educationBackgroundVo.endTime}"></span></td>
+                            <td style="line-height: 25px;width: 280px;padding: 0 8px;border:0;"><span th:text="${educationBackgroundVo.school}"></span></td>
+                            <td style="line-height: 25px;width: 220px;padding: 0 8px;border:0;"><span th:text="${educationBackgroundVo.profession}"></span></td>
+                            <td style="line-height: 25px;width: 150px;padding-left: 8px;text-align: right;border:0;"><span th:text="${educationBackgroundVo.educationBackground}"></span><span style="font-size: 13px; font-weight: normal; padding: 0; color: #999; width:80px">(<span th:text="${educationBackgroundVo.ranking}"></span>)</span>
+                            </td>
+                        </tr>
+                        <tr style="border:0;">
+                            <td style="line-height: 25px;border:0;"></td>
+                            <td colspan="3" style="font-size: 13px; font-weight: normal; padding: 0 8px; color: #999; width:80px; white-space: pre-line; word-break: break-all; line-height: 25px;border:0;"></td>
+                        </tr>
+                    </div>
+                </table>
+            </div>
+            </div>
+        </div>
+    </div>
+    <div class="layui-footer">
+        <!-- 底部固定区域 -->
+        © layui.com - 底部固定区域
+    </div>
+</div>
+<script type="text/javascript" th:src="@{~/layui/layui.all.js}"></script>
+<script type="text/javascript" th:src="@{~/js/jquery-3.3.1.min.js}"></script>
+<script th:src="@{~/js/toastr.min.js}"></script>
+<script th:src="@{~/js/AllSchool.js}"></script>
+<!--<script type="text/javascript" th:src="@{~/select/jquery.js}"></script>-->
+<script th:inline="javascript">
+    toastr.options.positionClass = 'toast-top-center';
+    toastr.options.timeOut = "2000";
+    /*[+
+        if([[${errorMessage}]] != null){
+            toastr.error([[${errorMessage}]]);
+            toastr.cancel();
+            console.log([[${errorMessage}]]);
+        }
+    +]*/
+    /*[+
+        if([[${message}]] != null){
+            toastr.success([[${message}]]);
+            toastr.cancel();
+            console.log([[${message}]]);
+        }
+    +]*/
+</script>
+<script>
+    window.onload = function () {
+        var currentProvinceIndex = parseInt([[${resumeInfoVo.province}]]) - 1;
+        var currentProvince = province[currentProvinceIndex][1];
+        var selectCity = [[${resumeInfoVo.province}]];
+        var citylist = city[selectCity];
+        var cityArray = "";
+        var currentCityKey = [[${resumeInfoVo.city}]];
+        var currentCity = "";
+        for (var i = 0, len = citylist.length; i < len; i++) {
+            cityArray = citylist[i];
+            if (currentCityKey == cityArray[0]) {
+                currentCity = cityArray[1];
+                break;
+            }
+        }
+        $("#origin").html("<span>" + currentProvince + "</span>-<span>" + currentCity + "</span>");
+    }
+</script>
+</body>
+</html>

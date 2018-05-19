@@ -17,6 +17,8 @@ import java.util.Date;
 @Data
 public class ResumeDto extends BasePo<ResumeDto> {
 
+    private Long id;
+
     @NotBlank(message = "名称不能为空")
     private String name;
 

@@ -2,6 +2,7 @@ package com.zxkj.job.controller.impl;
 
 import com.zxkj.job.bean.dto.*;
 import com.zxkj.job.bean.po.UndergraduatePo;
+import com.zxkj.job.bean.vo.ResumeInfoVo;
 import com.zxkj.job.bean.vo.ResumeVo;
 import com.zxkj.job.common.BaseControllerImpl;
 import com.zxkj.job.common.bean.PagedResult;
@@ -41,6 +42,9 @@ public class UndergraduateControllerImpl extends BaseControllerImpl<Undergraduat
 
     @Autowired
     EducationBackgroundService educationBackgroundService;
+
+    @Autowired
+    DeliveryInformationService deliveryInformationService;
 
     @Override
     public ModelAndView add(SimpleUndergraduateDto simpleUndergraduateDto, HttpSession httpSession) {
@@ -473,6 +477,133 @@ public class UndergraduateControllerImpl extends BaseControllerImpl<Undergraduat
             modelAndView.addObject("errorMessage", e.getMessage());
         }
         return updateResumeEducationBackground(educationBackgroundDto.getId());
+    }
+
+    @Override
+    public ModelAndView deliverResume(Long professionalId, Long campusRecruitmentId, HttpSession httpSession, ModelAndView modelAndView) {
+        modelAndView.addObject("professionalId", professionalId);
+        modelAndView.addObject("professionalVoList", campusRecruitmentService.getById(campusRecruitmentId).getProfessionalVoList());
+        UndergraduatePo undergraduatePo = (UndergraduatePo)httpSession.getAttribute("undergraduatePo");
+        modelAndView.addObject("resumeVoList", resumeService.list(undergraduatePo.getId(), undergraduatePo.getAcquiescenceResumeId()));
+        modelAndView.setViewName("undergraduate_deliver_resume");
+        return modelAndView;
+    }
+
+    @Override
+    public ModelMap deliverResume(DeliveryInformationDto deliveryInformationDto, HttpSession httpSession) {
+        ModelMap modelMap = new ModelMap();
+        try{
+            if(deliveryInformationService.add(deliveryInformationDto, httpSession)){
+                modelMap.addAttribute("message", "投递成功");
+                return modelMap;
+            }else{
+                modelMap.addAttribute("errorMessage", "投递失败");
+            }
+        }catch (Exception e){
+            modelMap.addAttribute("errorMessage", e.getMessage());
+        }
+        return modelMap;
+    }
+
+    @Override
+    public ModelAndView resumeDeliverIndex(ModelAndView modelAndView) {
+        modelAndView.setViewName("undergraduate_resume_deliver_index");
+        return modelAndView;
+    }
+
+    @Override
+    public PagedResult listResumeDeliver(PageDto pageDto, HttpSession httpSession) {
+        return deliveryInformationService.list(pageDto, httpSession);
+    }
+
+    @Override
+    public ModelMap checkDeliverResumeUpdate(Long deliveryInformationId) {
+        ModelMap modelMap = new ModelMap();
+        try{
+            deliveryInformationService.getByDeliveryInformationId(deliveryInformationId);
+        }catch (Exception e){
+            e.printStackTrace();
+            modelMap.addAttribute("errorMessage", e.getMessage());
+        }
+        return modelMap;
+    }
+
+    @Override
+    public ModelAndView deliverResumeUpdate(Long deliveryInformationId, ModelAndView modelAndView, HttpSession httpSession) {
+        try{
+            UndergraduatePo undergraduatePo = (UndergraduatePo)httpSession.getAttribute("undergraduatePo");
+            modelAndView.addObject("resumeVoList", resumeService.list(undergraduatePo.getId(), undergraduatePo.getAcquiescenceResumeId()));
+            modelAndView.addObject("deliveryInformationVo", deliveryInformationService.getByDeliveryInformationId(deliveryInformationId));
+            modelAndView.setViewName("undergraduate_deliver_resume_update");
+        }catch (Exception e){
+            e.printStackTrace();
+            logger.debug("e: ", e);
+            modelAndView.addObject("errorMessage", e.getMessage());
+        }
+        return modelAndView;
+    }
+
+    @Override
+    public ModelMap deliverResumeUpdate(@Valid DeliveryInformationDto deliveryInformationDto) {
+        ModelMap modelMap = new ModelMap();
+        try {
+            if (deliveryInformationService.updateById(deliveryInformationDto)) {
+                modelMap.addAttribute("message", "更新成功");
+            } else {
+                modelMap.addAttribute("errorMessage", "更新失败");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.debug("e: ", e);
+            modelMap.addAttribute("errorMessage", e.getMessage());
+        }
+        return modelMap;
+    }
+
+    @Override
+    public ModelAndView getResumeById(Long resumeId, ModelAndView modelAndView, HttpSession httpSession) {
+        try{
+            UndergraduatePo undergraduatePo = (UndergraduatePo)httpSession.getAttribute("undergraduatePo");
+            modelAndView.addObject("undergraduateVo", service.getByEmail(undergraduatePo.getEmail()));
+            ResumeInfoVo resumeInfoVo = resumeService.getResumeInfoVoById(resumeId, httpSession);
+            modelAndView.addObject("resumeInfoVo", resumeInfoVo);
+            modelAndView.addObject("educationBackgroundVoList", educationBackgroundService.listByResumeId(resumeId));
+            modelAndView.setViewName("undergraduate_resume_info");
+            return modelAndView;
+        }catch (Exception e){
+            modelAndView.addObject("errorMessage", e.getMessage());
+        }
+        modelAndView.setViewName("undergraduate_personal_center");
+        return modelAndView;
+    }
+
+    @Override
+    public ModelAndView resumeBasicUpdate(Long resumeId, ModelAndView modelAndView, HttpSession httpSession) {
+        try{
+            modelAndView.setViewName("undergraduate_resume_basic_update");
+            modelAndView.addObject("resumeVo", resumeService.selectOneById(resumeId, httpSession));
+            modelAndView.addObject("politicsStatusType", PoliticsStatusType.values());
+            return modelAndView;
+        }catch (Exception e){
+            modelAndView.addObject("errorMessage", e.getMessage());
+        }
+        return updateResume(resumeId, httpSession, modelAndView);
+    }
+
+    @Override
+    public ModelAndView resumeBasicUpdate(@Valid ResumeDto resumeDto, HttpSession httpSession, ModelAndView modelAndView) {
+        try {
+            if(resumeService.updateResumeBasicById(resumeDto, httpSession)){
+                modelAndView.addObject("message", "更新成功");
+                return updateResume(resumeDto.getId(), httpSession, modelAndView);
+            }else{
+                modelAndView.addObject("errorMessage", "更新失败");
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+            modelAndView.addObject("errorMessage", e.getMessage());
+        }
+        return updateResume(resumeDto.getId(), httpSession, modelAndView);
     }
 
     private String checkLogin(ModelAndView modelAndView, HttpSession httpSession){
