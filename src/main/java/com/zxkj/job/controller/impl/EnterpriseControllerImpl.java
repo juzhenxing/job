@@ -6,14 +6,14 @@ import com.zxkj.job.bean.dto.*;
 import com.zxkj.job.bean.po.CampusRecruitmentPo;
 import com.zxkj.job.bean.po.EnterprisePo;
 import com.zxkj.job.bean.po.UndergraduatePo;
-import com.zxkj.job.bean.vo.CareerTalkUpdateVo;
-import com.zxkj.job.bean.vo.EnterpriseVo;
+import com.zxkj.job.bean.vo.*;
 import com.zxkj.job.common.BaseControllerImpl;
 import com.zxkj.job.common.bean.PagedResult;
 import com.zxkj.job.controller.EnterpriseController;
 import com.zxkj.job.enums.CheckStateType;
 import com.zxkj.job.enums.EducationBackgroundType;
 import com.zxkj.job.enums.JobCategoryType;
+import com.zxkj.job.enums.StatusType;
 import com.zxkj.job.exp.JobException;
 import com.zxkj.job.service.*;
 import com.zxkj.job.util.BeanUtil;
@@ -25,6 +25,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
 import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -58,6 +59,18 @@ public class EnterpriseControllerImpl extends BaseControllerImpl<EnterpriseServi
 
     @Autowired
     ObjectMapper objectMapper;
+
+    @Autowired
+    DeliveryInformationService deliveryInformationService;
+
+    @Autowired
+    UndergraduateService undergraduateService;
+
+    @Autowired
+    ResumeService resumeService;
+
+    @Autowired
+    EducationBackgroundService educationBackgroundService;
 
     @Override
     public String preRegister() {
@@ -236,13 +249,17 @@ public class EnterpriseControllerImpl extends BaseControllerImpl<EnterpriseServi
     }
 
     @Override
-    public String careerTalkIndex() {
-        return "enterprise_career_talk_index";
+    public ModelAndView careerTalkIndex(ModelAndView modelAndView, HttpSession httpSession) {
+        EnterpriseVo enterpriseVo = (EnterpriseVo) httpSession.getAttribute("enterpriseVo");
+        modelAndView.addObject("professionalVoList", professionalService.list(enterpriseVo.getId()));
+        modelAndView.setViewName("enterprise_career_talk_index");
+        return modelAndView;
     }
 
     @Override
     public ModelMap addCareerTalk(CareerTalkDto careerTalkDto, HttpSession httpSession) {
         logger.error(careerTalkDto.getSchool());
+        logger.error("职位数量：" + careerTalkDto.getProfessionalIds().size());
         ModelMap modelMap = new ModelMap();
         try {
             if (careerTalkService.add(careerTalkDto, httpSession)) {
@@ -596,8 +613,55 @@ public class EnterpriseControllerImpl extends BaseControllerImpl<EnterpriseServi
 
     @Override
     public ModelAndView applyIndex(HttpSession httpSession, ModelAndView modelAndView) {
-        modelAndView.setViewName("apply-index");
-        return null;
+        modelAndView.setViewName("enterprise_apply_index");
+        return modelAndView;
+    }
+
+    @Override
+    public PagedResult listApply(PageDto pageDto, HttpSession httpSession) {
+        return deliveryInformationService.listByEnterpriseId(pageDto, httpSession);
+    }
+
+    @Override
+    public ModelAndView getResumeById(Long resumeId, Long undergraduateId, ModelAndView modelAndView) {
+        try{
+            UndergraduateVo undergraduateVo = undergraduateService.getByUndergraduateId(undergraduateId);
+            modelAndView.addObject("undergraduateVo", undergraduateVo);
+            ResumeInfoVo resumeInfoVo = resumeService.getResumeInfoVoById(resumeId, undergraduateVo.getId());
+            modelAndView.addObject("resumeInfoVo", resumeInfoVo);
+            modelAndView.addObject("educationBackgroundVoList", educationBackgroundService.listByResumeId(resumeId));
+            modelAndView.setViewName("enterprise_resume_info");
+            return modelAndView;
+        }catch (Exception e){
+            modelAndView.addObject("errorMessage", e.getMessage());
+        }
+        modelAndView.setViewName("enterprise_apply_index");
+        return modelAndView;
+    }
+
+    @Override
+    public ModelAndView deliveryInformationUpdate(Long deliveryInformationId, ModelAndView modelAndView) {
+        modelAndView.setViewName("enterprise_deliver_information_update");
+        modelAndView.addObject("statusTypeList", StatusType.values());
+        modelAndView.addObject("deliveryInformationVo", deliveryInformationService.getByDeliveryInformationId(deliveryInformationId));
+        return modelAndView;
+    }
+
+    @Override
+    public ModelMap deliveryInformationUpdate(Long deliveryInformationId, StatusType statusType) {
+        ModelMap modelMap = new ModelMap();
+        try {
+            if (deliveryInformationService.updateStatusTypeById(deliveryInformationId, statusType)) {
+                modelMap.addAttribute("message", "更新成功");
+            } else {
+                modelMap.addAttribute("errorMessage", "更新失败");
+            }
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            modelMap.addAttribute("errorMessage", e.getMessage());
+        }
+//        logger.error(modelMap.get("message").toString());
+        return modelMap;
     }
 
     @Nullable
@@ -610,5 +674,23 @@ public class EnterpriseControllerImpl extends BaseControllerImpl<EnterpriseServi
             return addCampusRecruitment(httpSession, modelAndView);
         }
         return null;
+    }
+
+    @Override
+    public ModelMap checkDeliverResumeUpdate(Long deliveryInformationId) {
+        ModelMap modelMap = new ModelMap();
+        try{
+            DeliveryInformationVo deliveryInformationVo = deliveryInformationService.getByDeliveryInformationId(deliveryInformationId);
+            String status = deliveryInformationVo.getStatus();
+//            logger.error(status);
+            if(status.equals(StatusType.PROCESSED.getName()) || status.equals(StatusType.WRITTEN_EXAMINATION_ALREADY_ARRANGED.getName()) || status.equals(StatusType.INTERVIEW_ALREADY_ARRANGED.getName()) || status.equals(StatusType.OFFER_HAS_BEEN_ISSUED.getName())){
+                throw JobException.APPLY_ALREADY_ARRANGED_EXCEPTION;
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+            modelMap.addAttribute("errorMessage", e.getMessage());
+        }
+//        logger.error(modelMap.get("errorMessage").toString());
+        return modelMap;
     }
 }

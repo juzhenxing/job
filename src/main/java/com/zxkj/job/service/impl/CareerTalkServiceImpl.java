@@ -1,26 +1,37 @@
 package com.zxkj.job.service.impl;
 
+import com.baomidou.mybatisplus.enums.SqlLike;
+import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.zxkj.job.bean.dto.CareerTalkDto;
 import com.zxkj.job.bean.dto.PageDto;
+import com.zxkj.job.bean.dto.QueryCareerTalkDto;
 import com.zxkj.job.bean.po.CareerTalkPo;
+import com.zxkj.job.bean.po.CareerTalkProfessionalRPo;
 import com.zxkj.job.bean.vo.CareerTalkUpdateVo;
 import com.zxkj.job.bean.vo.CareerTalkVo;
 import com.zxkj.job.bean.vo.EnterpriseVo;
 import com.zxkj.job.common.BaseServiceImpl;
 import com.zxkj.job.common.bean.PagedResult;
+import com.zxkj.job.enums.ProvinceType;
 import com.zxkj.job.exp.JobException;
 import com.zxkj.job.mapper.CareerTalkMapper;
+import com.zxkj.job.service.CareerTalkProfessionalRService;
 import com.zxkj.job.service.CareerTalkService;
 import com.zxkj.job.util.BeanUtil;
 import com.zxkj.job.util.DateUtil;
+import com.zxkj.job.util.FileUtil;
+import com.zxkj.job.util.IdUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpSession;
+import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Collections;
@@ -34,8 +45,14 @@ public class CareerTalkServiceImpl extends BaseServiceImpl<CareerTalkMapper, Car
 
     private Logger logger = LoggerFactory.getLogger(getClass());
 
+    @Autowired
+    FileUtil fileUtil;
+
+    @Autowired
+    CareerTalkProfessionalRService careerTalkProfessionalRService;
+
     @Override
-    public Boolean add(CareerTalkDto careerTalkDto, HttpSession httpSession) throws ParseException {
+    public Boolean add(CareerTalkDto careerTalkDto, HttpSession httpSession) throws ParseException, IOException {
 //        Date startTime = DateUtil.formatDate(careerTalkDto.getStartTime(), "yyyy-MM-dd HH:mm");
 //        Date endTime = DateUtil.formatDate(careerTalkDto.getEndTime(), "yyyy-MM-dd HH:mm");
         Date startTime = careerTalkDto.getStartTime();
@@ -50,10 +67,25 @@ public class CareerTalkServiceImpl extends BaseServiceImpl<CareerTalkMapper, Car
         careerTalkPo.setEndTime(endTime);
         careerTalkPo.setEnterpriseId(enterpriseVo.getId());
         careerTalkPo.setName(enterpriseVo.getFullname());
-        return super.insert(careerTalkPo);
+        MultipartFile preachingIext = careerTalkDto.getPreachingText();
+        String fileName = fileUtil.saveFile(preachingIext);
+        careerTalkPo.setPreachingTextFileName(fileName);
+        careerTalkPo.setId(IdUtil.nextId());
+        careerTalkPo.setGmtCreate(new Date());
+        if(!super.insert(careerTalkPo)){
+            throw JobException.CAREERTALK_ADD_EXCEPTION;
+        }
+        List<Long> professionalIds = careerTalkDto.getProfessionalIds();
+        List<CareerTalkProfessionalRPo> careerTalkProfessionalRPos = professionalIds.parallelStream().map(e -> {
+            CareerTalkProfessionalRPo careerTalkProfessionalRPo = new CareerTalkProfessionalRPo();
+            careerTalkProfessionalRPo.setProfessionalId(e);
+            careerTalkProfessionalRPo.setCareerTalkId(careerTalkPo.getId());
+            return careerTalkProfessionalRPo;
+        }).collect(Collectors.toList());
+        return careerTalkProfessionalRService.insertBatch(careerTalkProfessionalRPos);
     }
 
-    private EnterpriseVo checkEnterpriseVo(HttpSession httpSession){
+    public EnterpriseVo checkEnterpriseVo(HttpSession httpSession){
         Object enterpriseObj = httpSession.getAttribute("enterpriseVo");
         if (StringUtils.isEmpty(enterpriseObj)) {
             throw JobException.NOT_LOGGED_IN_EXCEPTION;
@@ -94,7 +126,7 @@ public class CareerTalkServiceImpl extends BaseServiceImpl<CareerTalkMapper, Car
         return super.deleteById(careerTalkId);
     }
 
-    private CareerTalkPo checkCareerTalkPo(Long careerTalkId, Long enterpriseId){
+    public CareerTalkPo checkCareerTalkPo(Long careerTalkId, Long enterpriseId){
         CareerTalkPo careerTalkPo = super.baseMapper.selectOneById(careerTalkId, enterpriseId);
         if(careerTalkPo == null){
             throw JobException.NULL_CAREERTALK_EXCEPTION;
@@ -137,6 +169,34 @@ public class CareerTalkServiceImpl extends BaseServiceImpl<CareerTalkMapper, Car
     public PagedResult list(PageDto pageDto) {
         Page page = new Page(pageDto.getPage(), pageDto.getLimit());
         Page<CareerTalkPo> careerTalkPoPage = super.selectPage(page);
+        List<CareerTalkVo> careerTalkVoList = careerTalkPoPage.getRecords().parallelStream().map(e -> {
+            CareerTalkVo careerTalkVo = new CareerTalkVo();
+            BeanUtil.copyProperties(e, careerTalkVo);
+            careerTalkVo.setProvince(e.getProvince().getName());
+            careerTalkVo.setOperationType(e.getOperationType().getName());
+            careerTalkVo.setCreateTime(e.getGmtCreate());
+            return careerTalkVo;
+        }).collect(Collectors.toList());
+        PagedResult<CareerTalkVo> pagedResult = new PagedResult<>();
+        pagedResult.setData(careerTalkVoList);
+//        logger.error("总数：" + careerTalkPoPage.getTotal());
+        pagedResult.setCount(careerTalkPoPage.getTotal());
+        return pagedResult;
+    }
+
+    @Override
+    public PagedResult listByQueryDto(QueryCareerTalkDto queryCareerTalkDto, PageDto pageDto) {
+        Page page = new Page(pageDto.getPage(), pageDto.getLimit());
+        EntityWrapper entityWrapper = new EntityWrapper();
+        if(!StringUtils.isEmpty(queryCareerTalkDto.getProvince())){
+            logger.error(queryCareerTalkDto.getProvince().getName());
+            entityWrapper.eq("province", queryCareerTalkDto.getProvince().getType());
+        }
+            if(!StringUtils.isEmpty(queryCareerTalkDto.getKey())){
+                logger.error(queryCareerTalkDto.getKey());
+                entityWrapper.like("name", queryCareerTalkDto.getKey(), SqlLike.DEFAULT);
+        }
+        Page<CareerTalkPo> careerTalkPoPage = super.selectPage(page, entityWrapper);
         List<CareerTalkVo> careerTalkVoList = careerTalkPoPage.getRecords().parallelStream().map(e -> {
             CareerTalkVo careerTalkVo = new CareerTalkVo();
             BeanUtil.copyProperties(e, careerTalkVo);

@@ -22,6 +22,8 @@ public class DeliveryInformationVo extends BaseVo {
 
     private Long undergraduateId;
 
+    private String undergraduateName;
+
     private Long enterpriseId;
 
     private String enterpriseName;

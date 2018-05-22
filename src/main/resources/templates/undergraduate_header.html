@@ -3,46 +3,28 @@
 <link th:href="@{~/layui/css/layui.css}" rel="stylesheet" type="text/css"/>
 <div class="layui-header" th:fragment="undergraduate_header">
     <div class="layui-logo">
-        <a th:href="@{/undergraduate/index}"><img th:src="@{~/img/logo.png}" alt="通用的占位符缩略图" width="100px"/></a>
+        <a th:href="@{/visitor/index}"><img th:src="@{~/img/logo.png}" alt="通用的占位符缩略图" width="100px"/></a>
     </div>
     <!-- 头部区域（可配合layui已有的水平导航） -->
     <ul class="layui-nav layui-layout-left">
         <li class="layui-nav-item">
             <a href="javascript:;">
-                广东
+                <span id="select_province_span">北京</span>
             </a>
             <dl class="layui-nav-child">
-                <dd><a href="">北京</a></dd>
-                <dd><a>上海</a></dd>
-                <dd><a>广东</a></dd>
-                <dd><a>湖北</a></dd>
-                <dd><a>陕西</a></dd>
-                <dd><a>四川</a></dd>
-                <dd><a>江苏</a></dd>
-                <dd><a>安徽</a></dd>
-                <dd><a>山东</a></dd>
-                <dd><a>湖南</a></dd>
-                <dd><a>天津</a></dd>
-                <dd><a>河南</a></dd>
-                <dd><a>浙江</a></dd>
-                <dd><a>重庆</a></dd>
-                <dd><a>辽宁</a></dd>
-                <dd><a>福建</a></dd>
-                <dd><a>江西</a></dd>
-                <dd><a>吉林</a></dd>
-                <dd><a>黑龙江</a></dd>
-                <dd><a>河北</a></dd>
-                <dd><a>山西</a></dd>
-                <dd><a>云南</a></dd>
-                <dd><a>甘肃</a></dd>
-                <dd><a>广西</a></dd>
+                <tr th:each="province : ${session.provinces}">
+                    <dd>
+                        <a th:href="'javascript:selectProvince('+${province.type}+')'"><span
+                                th:text="${province.name}"></span></a>
+                    </dd>
+                </tr>
             </dl>
         </li>
         <li class="layui-nav-item">
-            <a th:href="@{/undergraduate/career-talk}">宣讲会</a>
+            <a th:href="@{/visitor/career-talk}">宣讲会</a>
         </li>
         <li class="layui-nav-item">
-            <a th:href="@{/undergraduate/campus-recruitment}">校招网申</a>
+            <a th:href="@{/visitor/campus-recruitment}">校招网申</a>
         </li>
     </ul>
     <div th:if="${session.email eq null}">
@@ -51,15 +33,12 @@
                 <a th:href="@{/enterprise/index}">企业登录</a>
             </li>
             <li class="layui-nav-item">
-                <a th:href="@{/undergraduate/login}">学生登录</a>
+                <a th:href="@{/visitor/login}">学生登录</a>
             </li>
         </ul>
     </div>
     <div th:if="${session.email ne null}">
         <ul class="layui-nav layui-layout-right">
-            <li class="layui-nav-item">
-                <a >我的消息</a>
-            </li>
             <li class="layui-nav-item">
                 <a th:href="@{/undergraduate/personal-center}">我的简历</a>
             </li>
@@ -74,5 +53,21 @@
             </li>
         </ul>
     </div>
+    <script type="text/javascript" th:src="@{~/js/jquery-3.3.1.min.js}"></script>
+    <script th:inline="javascript">
+        function selectProvince(provinceType) {
+//        alert(provinceName);
+//        alert(provinceType);
+            window.location.href = 'http://localhost:8080/visitor/index?province=' + provinceType;
+        }
+//        alert([[${session.province.name}]]);
+        /*[+
+            if([[${session.province.name}]] != null){
+                $("#select_province_span").text([[${session.province.name}]]);
+            }else{
+                window.location.href = 'http://localhost:8080/visitor/index';
+            }
+        +]*/
+    </script>
 </div>
 </html>

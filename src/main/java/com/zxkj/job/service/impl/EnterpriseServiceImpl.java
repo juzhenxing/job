@@ -150,7 +150,7 @@ public class EnterpriseServiceImpl extends BaseServiceImpl<EnterpriseMapper, Ent
         return super.updateById(enterprisePo);
     }
 
-    private EnterprisePo checkEnterprisePoByUserName(String userName){
+    public EnterprisePo checkEnterprisePoByUserName(String userName){
         EnterprisePo enterprisePo = super.baseMapper.selectOneByUserName(userName);
         if(enterprisePo == null){
             throw JobException.NULL_ENTERPRISE_EXCEPTION;
@@ -158,7 +158,7 @@ public class EnterpriseServiceImpl extends BaseServiceImpl<EnterpriseMapper, Ent
         return enterprisePo;
     }
 
-    private String getUserName(HttpSession httpSession){
+    public String getUserName(HttpSession httpSession){
         Object userName = httpSession.getAttribute("userName");
         if(StringUtils.isEmpty(userName)){
             throw JobException.NULL_USERNAME_EXCEPTION;
@@ -210,7 +210,7 @@ public class EnterpriseServiceImpl extends BaseServiceImpl<EnterpriseMapper, Ent
         return enterprisePoToVo(enterprisePo);
     }
 
-    private EnterpriseVo enterprisePoToVo(EnterprisePo enterprisePo){
+    public EnterpriseVo enterprisePoToVo(EnterprisePo enterprisePo){
         EnterpriseVo enterpriseVo = new EnterpriseVo();
         BeanUtil.copyProperties(enterprisePo, enterpriseVo);
         enterpriseVo.setLicense(enterprisePo.getLicenseFileName());
@@ -222,7 +222,7 @@ public class EnterpriseServiceImpl extends BaseServiceImpl<EnterpriseMapper, Ent
         return enterpriseVo;
     }
 
-    private String saveFile(MultipartFile multipartFile) throws IOException {
+    public String saveFile(MultipartFile multipartFile) throws IOException {
         String originalFilename = multipartFile.getOriginalFilename();
         int pointIndex = originalFilename.lastIndexOf(".");
         String fileType = originalFilename.substring(pointIndex + 1);
@@ -243,7 +243,7 @@ public class EnterpriseServiceImpl extends BaseServiceImpl<EnterpriseMapper, Ent
         return fileName;
     }
 
-    private void checkUserName(String userName){
+    public void checkUserName(String userName){
         if(StringUtils.isEmpty(userName)){
             throw JobException.NULL_USERNAME_EXCEPTION;
         }
@@ -253,7 +253,7 @@ public class EnterpriseServiceImpl extends BaseServiceImpl<EnterpriseMapper, Ent
         }
     }
 
-    private void checkEmail(String email, Long enterpriseId) throws JobException {
+    public void checkEmail(String email, Long enterpriseId) throws JobException {
         checkEmailMatcher(email);
         EnterprisePo enterprisePo = super.baseMapper.selectOneByEmail(email);
         if (StringUtils.isEmpty(enterpriseId)) {
@@ -267,7 +267,7 @@ public class EnterpriseServiceImpl extends BaseServiceImpl<EnterpriseMapper, Ent
         }
     }
 
-    private void checkEmailMatcher(String email){
+    public void checkEmailMatcher(String email){
         if (StringUtils.isEmpty(email)) {
             throw JobException.NULL_EMAIL_EXCEPTION;
         }

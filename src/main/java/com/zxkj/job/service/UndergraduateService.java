@@ -46,4 +46,6 @@ public interface UndergraduateService extends IService<UndergraduatePo> {
 
     Boolean infoUpdate(UndergraduateDto undergraduateDto, HttpSession httpSession) throws IOException, ParseException;
 
+    UndergraduateVo getByUndergraduateId(Long undergraduateId);
+
 }

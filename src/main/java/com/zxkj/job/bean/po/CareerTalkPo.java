@@ -37,4 +37,6 @@ public class CareerTalkPo extends BasePo<CareerTalkPo> {
 
     private OperationType operationType;
 
+    private String preachingTextFileName;
+
 }

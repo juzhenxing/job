@@ -16,10 +16,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
 
 @Controller
 @RequestMapping("visitor")
@@ -43,6 +47,9 @@ public class VisitorControllerImpl implements VisitorController {
     @Autowired
     EducationBackgroundService educationBackgroundService;
 
+    @Autowired
+    CampusRecruitmentProfessionalRService campusRecruitmentProfessionalRService;
+
     protected Logger logger = LoggerFactory.getLogger(getClass());
 
     @Override
@@ -61,21 +68,38 @@ public class VisitorControllerImpl implements VisitorController {
     }
 
     @Override
-    public String index() {
-        return "index";
-    }
-
-    @Override
-    public ModelAndView campusRecruitment() {
-        ModelAndView modelAndView = new ModelAndView("campus_recruitment");
-        modelAndView.addObject("jobCategoryType", JobCategoryType.values());
-        modelAndView.addObject("provinceType", ProvinceType.values());
+    public ModelAndView index(ProvinceType province, ModelAndView modelAndView) {
+        modelAndView.setViewName("index");
+        if(province == null){
+            province = ProvinceType.BEI_JING;
+        }
+        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+        HttpSession httpSession = request.getSession();
+        httpSession.setAttribute("province", province);
+        httpSession.setAttribute("provinces", ProvinceType.values());
         return modelAndView;
     }
 
     @Override
-    public String careerTalk() {
-        return "career_talk";
+    public ModelAndView campusRecruitment(JobCategoryType jobCategoryType, ModelAndView modelAndView) {
+        if(jobCategoryType != null){
+            logger.error(jobCategoryType.getName());
+            modelAndView.addObject("jobCategoryType", jobCategoryType);
+        }else{
+            modelAndView.addObject("jobCategoryType", 0);
+        }
+        modelAndView.addObject("jobCategoryTypes", JobCategoryType.values());
+        modelAndView.addObject("provinceType", ProvinceType.values());
+        modelAndView.setViewName("campus_recruitment");
+        return modelAndView;
+    }
+
+    @Override
+    public ModelAndView careerTalk(ModelAndView modelAndView) {
+        modelAndView.setViewName("career_talk");
+        modelAndView.addObject("jobCategoryType", JobCategoryType.values());
+        modelAndView.addObject("provinceType", ProvinceType.values());
+        return modelAndView;
     }
 
     @Override
@@ -87,8 +111,7 @@ public class VisitorControllerImpl implements VisitorController {
             jobException.printStackTrace();
             modelAndView.addObject("errorMessage", jobException.getMessage());
         }
-        modelAndView.setViewName("index");
-        return modelAndView;
+        return index((ProvinceType)httpSession.getAttribute("province"), modelAndView);
     }
 
     @Override
@@ -106,7 +129,7 @@ public class VisitorControllerImpl implements VisitorController {
         ModelAndView modelAndView = new ModelAndView();
         try{
             undergraduateService.login(simpleUndergraduateDto, httpSession);
-            modelAndView.setViewName("index");
+            return index((ProvinceType)httpSession.getAttribute("province"), modelAndView);
         }catch (JobException jobException){
             jobException.printStackTrace();
             modelAndView.addObject("errorMessage", jobException.getMessage());
@@ -126,15 +149,26 @@ public class VisitorControllerImpl implements VisitorController {
     }
 
     @Override
+    public PagedResult listCareerTalkByQueryDto(QueryCareerTalkDto queryCareerTalkDto, PageDto pageDto) {
+        return careerTalkService.listByQueryDto(queryCareerTalkDto, pageDto);
+    }
+
+    @Override
     public PagedResult listCampusRecruitment(PageDto pageDto) {
         return campusRecruitmentService.list(pageDto);
+    }
+
+    @Override
+    public PagedResult listCampusRecruitmentByQueryDto(QueryCampusRecruitmentDto queryCampusRecruitmentDto, PageDto pageDto) {
+        return campusRecruitmentService.listByQueryCampusRecruitmentDto(queryCampusRecruitmentDto, pageDto);
     }
 
     @Override
     public ModelAndView getCampusRecruitmentById(Long campusRecruitmentId) {
         ModelAndView modelAndView = new ModelAndView();
         try {
-            modelAndView.addObject("jobCategoryType", JobCategoryType.values());
+            modelAndView.addObject("jobCategoryType", 0);
+            modelAndView.addObject("jobCategoryTypes", JobCategoryType.values());
             modelAndView.addObject("campusRecruitmentVo", campusRecruitmentService.getById(campusRecruitmentId));
         } catch (Exception e) {
             logger.error(e.getMessage());
@@ -185,7 +219,19 @@ public class VisitorControllerImpl implements VisitorController {
         return modelMap;
     }
 
-    private String checkLogin(ModelAndView modelAndView, HttpSession httpSession){
+    @Override
+    public ModelAndView search(@NotBlank(message = "关键字不能为空") String key, ModelAndView modelAndView) {
+        modelAndView.setViewName("search");
+        modelAndView.addObject("key", key);
+        return modelAndView;
+    }
+
+    @Override
+    public PagedResult listCampusRecruitmentByQueryProfessionalDto(QueryProfessionalDto queryProfessionalDto, PageDto pageDto) {
+        return campusRecruitmentProfessionalRService.listCampusRecruitmentByQueryProfessionalDto(queryProfessionalDto, pageDto);
+    }
+
+    public String checkLogin(ModelAndView modelAndView, HttpSession httpSession){
         Object emailObj = httpSession.getAttribute("email");
         if (org.springframework.util.StringUtils.isEmpty(emailObj)) {
 //            throw JobException.NOT_LOGGED_IN_EXCEPTION;

@@ -16,6 +16,7 @@
     <script th:src="@{~/js/toastr.min.js}"></script>
 
     <link th:href="@{~/layui/css/layui.css}" rel="stylesheet" type="text/css"/>
+
 </head>
 <body style="padding: 100px">
 <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
@@ -32,7 +33,7 @@
                     <ul class="dropdown-menu pre-scrollable">
                         <tr th:each="province : ${session.provinces}">
                             <li class="layui-nav-item">
-                                <a th:href="'javascript:selectProvince('+${province.type}+')'"><span th:text="${province.name}"></span></a>
+                                <a th:href="'javascript:selectProvince('+${province.type}+', \''+${province.name}+'\')'"><span th:text="${province.name}"></span></a>
                             </li>
                         </tr>
                     </ul>
@@ -42,7 +43,7 @@
             </ul>
             <div class="navbar-form navbar-left" style="margin-top: 5px">
                 <form role="search" th:action="@{/visitor/search}" method="post">
-                    <input type="text" class="form-control" placeholder="搜索 宣讲会/公司/职位" style="margin-top: 7px" name="key">
+                    <input type="text" class="form-control" th:value="${key}" style="margin-top: 7px" name="key">
                     <button type="submit" class="btn btn-default" style="margin-top: 5px">提交</button>
                 </form>
             </div>
@@ -103,51 +104,9 @@
         </div><!-- /.modal-content -->
     </div><!-- /.modal -->
 </div>
-<div class="layui-carousel" id="test1">
-    <div carousel-item>
-        <div>
-            <img th:src="@{~/img/mei-ling.png}" alt="美菱" class="img-responsive" style="height: 100%;width: 100%"/>
-        </div>
-        <div>
-            <img th:src="@{~/img/jing-dong-fang.png}" alt="京东方" class="img-responsive" style="height: 100%;width: 100%"/>
-        </div>
-        <div>
-            <img th:src="@{~/img/hai-kang-wei-shi.png}" alt="海康威视" class="img-responsive" style="height: 100%;width: 100%"/>
-        </div>
-    </div>
-</div>
 <div class="panel panel-success">
     <div class="panel-heading">
-        <h3 class="panel-title">知名雇主品牌 <a href="//xyzp.haitou.cc/" class="pull-right glyphicon glyphicon-chevron-right">查看更多</a></h3>
-    </div>
-    <div class="panel-body">
-        <table border="3">
-            <tr>
-                <td colspan="4"><img th:src="@{~/img/mei-ling.png}" alt="美菱" class="img-responsive"/></td>
-                <td colspan="4"><img th:src="@{~/img/mei-ling.png}" alt="美菱" class="img-responsive"/></td>
-            </tr>
-            <tr>
-                <td colspan="2"><img th:src="@{~/img/mei-ling.png}" alt="美菱" class="img-responsive"/></td>
-                <td colspan="2"><img th:src="@{~/img/mei-ling.png}" alt="美菱" class="img-responsive"/></td>
-                <td colspan="2"><img th:src="@{~/img/mei-ling.png}" alt="美菱" class="img-responsive"/></td>
-                <td colspan="2"><img th:src="@{~/img/mei-ling.png}" alt="美菱" class="img-responsive"/></td>
-            </tr>
-            <tr>
-                <td><img th:src="@{~/img/mei-ling.png}" alt="美菱" class="img-responsive"/></td>
-                <td><img th:src="@{~/img/mei-ling.png}" alt="美菱" class="img-responsive"/></td>
-                <td><img th:src="@{~/img/mei-ling.png}" alt="美菱" class="img-responsive"/></td>
-                <td><img th:src="@{~/img/mei-ling.png}" alt="美菱" class="img-responsive"/></td>
-                <td><img th:src="@{~/img/mei-ling.png}" alt="美菱" class="img-responsive"/></td>
-                <td><img th:src="@{~/img/mei-ling.png}" alt="美菱" class="img-responsive"/></td>
-                <td><img th:src="@{~/img/mei-ling.png}" alt="美菱" class="img-responsive"/></td>
-                <td><img th:src="@{~/img/mei-ling.png}" alt="美菱" class="img-responsive"/></td>
-            </tr>
-        </table>
-    </div>
-</div>
-<div class="panel panel-success">
-    <div class="panel-heading">
-        <h3 class="panel-title">热门宣讲会 <a th:href="@{/visitor/career-talk}" class="pull-right glyphicon glyphicon-chevron-right">查看更多</a></h3>
+        <h3 class="panel-title">搜索类别：<a th:href="@{/visitor/career-talk}">宣讲会</a></h3>
     </div>
     <div class="panel-body">
         <table class="layui-table" id="career_talk_table">
@@ -156,7 +115,7 @@
 </div>
 <div class="panel panel-success">
     <div class="panel-heading">
-        <h3 class="panel-title">热门校招网申 <a th:href="@{/visitor/campus-recruitment}" class="pull-right glyphicon glyphicon-chevron-right">查看更多</a></h3>
+        <h3 class="panel-title">搜索类别：<a th:href="@{/visitor/campus-recruitment}">校园招聘</a></h3>
     </div>
     <div class="panel-body">
         <table class="layui-table" id="campus_recruitment_table">
@@ -244,12 +203,13 @@
             {align: 'center', field:'location', width:120, unresize:true, rowspan: 2, title: '举办地点'},
             {align: 'center', field:'hits', width:100, sort: true, unresize:true, rowspan: 2, title: '点击量'},
             {align: 'center', field:'createTime', width:200, sort: true, unresize:true, rowspan: 2, title: '发布时间'}
-            ],[
+        ],[
             {align: 'center', field:'startTime', width:200, sort: true, unresize:true, title: '开始时间'},
             {align: 'center', field:'endTime', width:200, sort: true, unresize:true, title: '结束时间'}
         ]],
         where: {
-            province: [[${session.province.type}]]
+            province: [[${session.province.type}]],
+            key: [[${key}]]
         }
     });
     //第一个实例
@@ -265,10 +225,10 @@
             {align: 'center', field:'releaseTime', width:200, sort: true, unresize:true, title: '发布时间'}
         ]],
         where: {
-            province: [[${session.province.type}]]
+            province: [[${session.province.type}]],
+            key: [[${key}]]
         }
     });
 </script>
-
 </body>
 </html>

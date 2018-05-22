@@ -168,13 +168,13 @@ public class AdministratorServiceImpl extends BaseServiceImpl<AdministratorMappe
         return administratorPoToVo(administratorPo);
     }
 
-    private AdministratorVo administratorPoToVo(AdministratorPo administratorPo){
+    public AdministratorVo administratorPoToVo(AdministratorPo administratorPo){
         AdministratorVo administratorVo = new AdministratorVo();
         BeanUtil.copyProperties(administratorPo, administratorVo);
         return administratorVo;
     }
 
-    private String checkEmailKey(HttpSession httpSession){
+    public String checkEmailKey(HttpSession httpSession){
         Object emailKey = httpSession.getAttribute("emailKey");
         if(emailKey == null){
             throw JobException.NULL_EMAILKEY_EXCEPTION;
@@ -182,7 +182,7 @@ public class AdministratorServiceImpl extends BaseServiceImpl<AdministratorMappe
         return emailKey.toString();
     }
 
-    private void checkUserName(String userName){
+    public void checkUserName(String userName){
         if(StringUtils.isEmpty(userName)){
             throw JobException.NULL_USERNAME_EXCEPTION;
         }
@@ -192,7 +192,7 @@ public class AdministratorServiceImpl extends BaseServiceImpl<AdministratorMappe
         }
     }
 
-    private void checkEmail(String email, Long administratorId) throws JobException {
+    public void checkEmail(String email, Long administratorId) throws JobException {
         checkEmailMatcher(email);
         AdministratorPo administratorPo = super.baseMapper.selectOneByEmail(email);
         if (StringUtils.isEmpty(administratorId)) {
@@ -206,7 +206,7 @@ public class AdministratorServiceImpl extends BaseServiceImpl<AdministratorMappe
         }
     }
 
-    private void checkEmailMatcher(String email){
+    public void checkEmailMatcher(String email){
         if (StringUtils.isEmpty(email)) {
             throw JobException.NULL_EMAIL_EXCEPTION;
         }

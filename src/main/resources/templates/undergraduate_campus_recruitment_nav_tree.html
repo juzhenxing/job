@@ -1,0 +1,39 @@
+<html xmlns:th="http://www.thymeleaf.org">
+<div class="layui-side layui-bg-black" th:fragment="undergraduate_campus_recruitment_nav_tree">
+    <div class="layui-side-scroll">
+        <!-- 左侧导航区域（可配合layui已有的垂直导航） -->
+        <ul class="layui-nav layui-nav-tree">
+            <span th:if="${jobCategoryType} == 0">
+                <li class="layui-nav-item layui-nav-itemed">
+                    <a href="javascript:selectJobCategoryType()">全部信息</a>
+                </li>
+            </span>
+            <span th:unless="${jobCategoryType} == 0">
+                <li class="layui-nav-item">
+                    <a href="javascript:selectJobCategoryType()">全部信息</a>
+                </li>
+            </span>
+            <tr th:each="type : ${jobCategoryTypes}">
+                <span th:if="${jobCategoryType} == ${type}">
+                    <li class="layui-nav-item layui-nav-itemed">
+                        <a th:href="'javascript:selectJobCategoryType('+${type.type}+')'"><span th:text="${type.name}"></span></a>
+                    </li>
+                </span>
+                <span th:unless="${jobCategoryType} == ${type}">
+                    <li class="layui-nav-item">
+                        <a th:href="'javascript:selectJobCategoryType('+${type.type}+')'"><span th:text="${type.name}"></span></a>
+                    </li>
+                </span>
+            </tr>
+        </ul>
+    </div>
+    <script>
+        function selectJobCategoryType(jobCategoryType) {
+            if(jobCategoryType == undefined){
+                window.location.href = 'http://localhost:8080/visitor/campus-recruitment';
+            }else{
+                window.location.href = 'http://localhost:8080/visitor/campus-recruitment?jobCategoryType=' + jobCategoryType;
+            }
+        }
+    </script>
+</div>

@@ -10,6 +10,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import java.util.Date;
+import java.util.List;
 
 /**
  * 宣讲会类
@@ -43,5 +44,11 @@ public class CareerTalkDto {
 
     @NotNull(message = "申请方式不能为空")
     private OperationType operationType;
+
+    @NotNull(message = "宣讲正文不能为空")
+    private MultipartFile preachingText;
+
+    @NotNull(message = "职位不能为空")
+    private List<Long> professionalIds;
 
 }

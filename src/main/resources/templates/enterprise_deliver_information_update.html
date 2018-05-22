@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <title>申请状态更改</title>
+    <link th:href="@{~/layui/css/layui.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{~/css/toastr.min.css}" rel="stylesheet"/>
+</head>
+<body class="layui-layout-body" style="padding: 15px;">
+        <form class="layui-form">
+            <div class="layui-form-item">
+                <span th:if="${deliveryInformationVo.status eq '已投递'}">
+                    <input type="radio" name="statusType" value="2" title="已处理">
+                    <input type="radio" name="statusType" value="3" title="安排笔试" checked>
+                </span>
+                <span th:if="${deliveryInformationVo.status eq '待安排笔试'}">
+                    <input type="radio" name="statusType" value="4" title="笔试已安排">
+                    <input type="radio" name="statusType" value="5" title="安排面试" checked>
+                </span>
+                <span th:if="${deliveryInformationVo.status eq '待安排面试'}">
+                    <input type="radio" name="statusType" value="6" title="面试已安排">
+                    <input type="radio" name="statusType" value="7" title="发放offer" checked>
+                </span>
+            </div>
+            <input type="hidden" name="id" th:value="${deliveryInformationVo.id}">
+            <div class="layui-form-item">
+                <button class="layui-btn" lay-submit lay-filter="formDemo">确认</button>
+            </div>
+        </form>
+<script type="text/javascript" th:src="@{~/layui/layui.all.js}"></script>
+<script th:src="@{~/js/toastr.min.js}"></script>
+<script th:inline="javascript">
+    toastr.options.positionClass = 'toast-top-center';
+    toastr.options.timeOut = "1000";
+    /*[+
+        if([[${errorMessage}]] != null){
+            toastr.error([[${errorMessage}]]);
+            toastr.cancel();
+            console.log([[${errorMessage}]]);
+        }
+    +]*/
+    /*[+
+        if([[${message}]] != null){
+            toastr.success([[${message}]]);
+            toastr.cancel();
+            console.log([[${message}]]);
+        }
+    +]*/
+    //监听提交
+    layui.form.on('submit(formDemo)', function(data){
+        var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+        parent.layer.close(index); //再执行关闭
+        layer.msg(JSON.stringify(data.field));
+        parent.getChildrenData(data.field);
+        return false;
+    });
+</script>
+</body>
+</html>

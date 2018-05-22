@@ -141,7 +141,7 @@ public class ProfessionalServiceImpl extends BaseServiceImpl<ProfessionalMapper,
         return professionalPoToVo(professionalPo);
     }
 
-    private ProfessionalVo professionalPoToVo(ProfessionalPo professionalPo){
+    public ProfessionalVo professionalPoToVo(ProfessionalPo professionalPo){
         ProfessionalVo professionalVo = new ProfessionalVo();
         BeanUtil.copyProperties(professionalPo, professionalVo);
         professionalVo.setEducationBackground(professionalPo.getEducationBackground().getName());
@@ -149,7 +149,7 @@ public class ProfessionalServiceImpl extends BaseServiceImpl<ProfessionalMapper,
         return professionalVo;
     }
 
-    private ProfessionalPo checkProfessionalPo(Long professionalId, Long enterpriseId){
+    public ProfessionalPo checkProfessionalPo(Long professionalId, Long enterpriseId){
         ProfessionalPo professionalPo = super.baseMapper.selectOneById(professionalId, enterpriseId);
         if(professionalPo == null){
             throw JobException.NULL_PROFESSIONAL_EXCEPTION;
@@ -157,13 +157,13 @@ public class ProfessionalServiceImpl extends BaseServiceImpl<ProfessionalMapper,
         return professionalPo;
     }
 
-    private void checkId(Long id) {
+    public void checkId(Long id) {
         if (StringUtils.isEmpty(id)) {
             throw JobException.NULL_ENTERPRISE_ID_EXCEPTION;
         }
     }
 
-    private EnterpriseVo checkEnterpriseVo(HttpSession httpSession) {
+    public EnterpriseVo checkEnterpriseVo(HttpSession httpSession) {
         Object enterpriseObj = httpSession.getAttribute("enterpriseVo");
         if (StringUtils.isEmpty(enterpriseObj)) {
             throw JobException.NOT_LOGGED_IN_EXCEPTION;

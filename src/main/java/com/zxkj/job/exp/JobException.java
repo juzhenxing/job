@@ -86,5 +86,15 @@ public class JobException extends BaseException {
     public static final JobException NULL_DELIVERYINFORMATIONPO_EXCEPTION = new JobException(JobOutput.NULL_DELIVERYINFORMATIONPO);
 
     public static final JobException EXIST_DELIVERYINFORMATIONPO_EXCEPTION = new JobException(JobOutput.EXIST_DELIVERYINFORMATIONPO);
+
+    public static final JobException APPLY_ALREADY_ARRANGED_EXCEPTION = new JobException(JobOutput.APPLY_ALREADY_ARRANGED);
+
+    public static final JobException CAMPUSRECRUITMENT_DELETE_EXCEPTION = new JobException(JobOutput.CAMPUSRECRUITMENT_DELETE);
+
+    public static final JobException DELIVERYINFORMATIONPO_UPDATE_EXCEPTION = new JobException(JobOutput.DELIVERYINFORMATIONPO_UPDATE);
+
+    public static final JobException COLLECTPO_EXIST_EXCEPTION = new JobException(JobOutput.COLLECTPO_EXIST);
+
+    public static final JobException CAREERTALK_ADD_EXCEPTION = new JobException(JobOutput.CAREERTALK_ADD);
 }
 

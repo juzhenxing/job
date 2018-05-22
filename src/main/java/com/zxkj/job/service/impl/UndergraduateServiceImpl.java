@@ -131,13 +131,24 @@ public class UndergraduateServiceImpl extends BaseServiceImpl<UndergraduateMappe
        return super.updateById(undergraduatePo);
     }
 
-    private void checkId(Long id){
+    @Override
+    public UndergraduateVo getByUndergraduateId(Long undergraduateId) {
+        if(StringUtils.isEmpty(undergraduateId)){
+            throw JobException.NULL_ID_EXCEPTION;
+        }
+        UndergraduatePo undergraduatePo = super.selectById(undergraduateId);
+        UndergraduateVo undergraduateVo = new UndergraduateVo();
+        BeanUtil.copyProperties(undergraduatePo, undergraduateVo);
+        return undergraduateVo;
+    }
+
+    public void checkId(Long id){
         if(StringUtils.isEmpty(id)){
             throw JobException.NULL_ID_EXCEPTION;
         }
     }
 
-    private String checkEmailKey(HttpSession httpSession){
+    public String checkEmailKey(HttpSession httpSession){
         Object emailKey = httpSession.getAttribute("emailKey");
         if(emailKey == null){
             throw JobException.NULL_EMAILKEY_EXCEPTION;
@@ -145,7 +156,7 @@ public class UndergraduateServiceImpl extends BaseServiceImpl<UndergraduateMappe
         return emailKey.toString();
     }
 
-    private void checkEmail(String email, Long undergraduateId) throws JobException {
+    public void checkEmail(String email, Long undergraduateId) throws JobException {
         checkEmailMatcher(email);
         UndergraduatePo undergraduatePo = super.baseMapper.selectOneByEmail(email);
         if (StringUtils.isEmpty(undergraduateId)) {
@@ -159,7 +170,7 @@ public class UndergraduateServiceImpl extends BaseServiceImpl<UndergraduateMappe
         }
     }
 
-    private void checkEmailMatcher(String email){
+    public void checkEmailMatcher(String email){
         if (StringUtils.isEmpty(email)) {
             throw JobException.NULL_EMAIL_EXCEPTION;
         }

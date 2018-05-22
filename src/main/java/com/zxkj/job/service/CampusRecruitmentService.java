@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.service.IService;
 import com.zxkj.job.bean.dto.CampusRecruitmentDto;
 import com.zxkj.job.bean.dto.PageDto;
 import com.zxkj.job.bean.dto.ProfessionalDto;
+import com.zxkj.job.bean.dto.QueryCampusRecruitmentDto;
 import com.zxkj.job.bean.po.CampusRecruitmentPo;
 import com.zxkj.job.bean.po.ProfessionalPo;
 import com.zxkj.job.bean.vo.CampusRecruitmentVo;
@@ -34,4 +35,8 @@ public interface CampusRecruitmentService extends IService<CampusRecruitmentPo> 
     PagedResult list(PageDto pageDto);
 
     CampusRecruitmentVo getById(Long campusRecruitmentId);
+
+    PagedResult listByQueryCampusRecruitmentDto(QueryCampusRecruitmentDto queryCampusRecruitmentDto, PageDto pageDto);
+
+    CampusRecruitmentVo campusRecruitmentPoToVo(CampusRecruitmentPo campusRecruitmentPo);
 }

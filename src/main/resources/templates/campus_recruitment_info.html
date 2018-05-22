@@ -9,19 +9,7 @@
 <body class="layui-layout-body">
 <div class="layui-layout layui-layout-admin">
     <div th:replace="undergraduate_header :: undergraduate_header"></div>
-    <div class="layui-side layui-bg-black">
-        <div class="layui-side-scroll">
-            <!-- 左侧导航区域（可配合layui已有的垂直导航） -->
-            <ul class="layui-nav layui-nav-tree">
-                <tr th:each="jobCategoryType : ${jobCategoryType}">
-                    <li class="layui-nav-item">
-                        <a><span th:text="${jobCategoryType.name}"></span></a>
-                    </li>
-                </tr>
-            </ul>
-        </div>
-    </div>
-
+    <div th:replace="undergraduate_campus_recruitment_nav_tree :: undergraduate_campus_recruitment_nav_tree"></div>
     <div class="layui-body">
         <!-- 内容主体区域 -->
         <div style="padding: 15px;">
@@ -129,7 +117,7 @@
     layui.table.render({
         elem: '#professional_table'
         ,height: 'full'
-        ,url: '/undergraduate/list-professional-by-campus-recruitment-id' //数据接口
+        ,url: '/visitor/list-professional-by-campus-recruitment-id' //数据接口
         ,page: true //开启分页
         ,even:true
         ,text: {none: '您还未登录'}
@@ -157,7 +145,7 @@
         var tr = obj.tr; //获得当前行 tr 的DOM对象
         var layer = layui.layer;
         if(layEvent === 'professional_detail'){ //查看
-            $.get("/undergraduate/check-get-professional-by-id?professionalId="+ data.id,
+            $.get("/visitor/check-get-professional-by-id?professionalId="+ data.id,
                 function (result, status) {
                     console.log("Data: " + result + "\nStatus: " + status);
                     var json = result;
@@ -169,18 +157,24 @@
                         layer.open({
                             title: ['详情', 'font-size:18px;'],
                             type: 2,
-                            content: 'http://localhost:8080/undergraduate/get-professional-by-id?professionalId='+ data.id,
+                            content: 'http://localhost:8080/visitor/get-professional-by-id?professionalId='+ data.id,
                             area: ['500px', '600px']
                         });
                     }
                 });
         }else if (layEvent === 'professional_deliver_resume') {
-            layer.open({
-                title: '确认投递信息',
-                type: 2,
-                area: ['900px', '400px'],
-                content: ['http://localhost:8080/undergraduate/deliver-resume?professionalId=' + data.id + '&campusRecruitmentId=' + [[${campusRecruitmentVo.id}]], 'no'] //这里content是一个URL，如果你不想让iframe出现滚动条，你还可以content: ['http://sentsin.com', 'no']
-            });
+            if ([[${session.undergraduatePo}]] == null) {
+                window.location.href = 'http://localhost:8080/visitor/login?errorMessage='+ "您还未登录";
+            } else {
+                console.log(data.id);
+                //do somehing
+                layer.open({
+                    title: '确认投递信息',
+                    type: 2,
+                    area: ['900px', '400px'],
+                    content: ['http://localhost:8080/undergraduate/deliver-resume?professionalId=' + data.id + '&campusRecruitmentId=' + [[${campusRecruitmentVo.id}]], 'no'] //这里content是一个URL，如果你不想让iframe出现滚动条，你还可以content: ['http://sentsin.com', 'no']
+                });
+            }
         }
     });
     function getChildrenData(data) {

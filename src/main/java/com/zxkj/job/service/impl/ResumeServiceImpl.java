@@ -57,7 +57,7 @@ public class ResumeServiceImpl extends BaseServiceImpl<ResumeMapper, ResumePo> i
         return super.insert(resumePo);
     }
 
-    private ResumePo resumeDtoToPo(ResumeDto resumeDto, HttpSession httpSession, Boolean isAdd) throws ParseException {
+    public ResumePo resumeDtoToPo(ResumeDto resumeDto, HttpSession httpSession, Boolean isAdd) throws ParseException {
         ResumePo resumePo = new ResumePo();
         BeanUtil.copyProperties(resumeDto, resumePo);
         resumePo.setCompleteness(0.1f);
@@ -95,7 +95,7 @@ public class ResumeServiceImpl extends BaseServiceImpl<ResumeMapper, ResumePo> i
         return pagedResult;
     }
 
-    private ResumeVo resumePoToVo(ResumePo resumePo, Long acquiescenceResumeId){
+    public ResumeVo resumePoToVo(ResumePo resumePo, Long acquiescenceResumeId){
         ResumeVo resumeVo = new ResumeVo();
         BeanUtil.copyProperties(resumePo, resumeVo);
         if(resumeVo.getId().equals(acquiescenceResumeId)){
@@ -135,20 +135,19 @@ public class ResumeServiceImpl extends BaseServiceImpl<ResumeMapper, ResumePo> i
     }
 
     @Override
-    public ResumeInfoVo getResumeInfoVoById(Long resumeId, HttpSession httpSession) {
-        UndergraduatePo undergraduatePo = (UndergraduatePo) httpSession.getAttribute("undergraduatePo");
-        ResumePo resumePo = checkResumePo(resumeId, undergraduatePo.getId());
+    public ResumeInfoVo getResumeInfoVoById(Long resumeId, Long undergraduateId) {
+        ResumePo resumePo = checkResumePo(resumeId, undergraduateId);
         ResumeInfoVo resumeInfoVo = new ResumeInfoVo();
         BeanUtil.copyProperties(resumePo, resumeInfoVo);
         resumeInfoVo.setPoliticsStatus(resumePo.getPoliticsStatus().getName());
         Date birthDate = resumePo.getBirthDate();
         Calendar now = Calendar.getInstance();
         String currentYear = String.valueOf(now.get(Calendar.YEAR));
-        logger.error(currentYear);
+//        logger.error(currentYear);
         String dateStr = DateUtil.formatDate(birthDate, "yyyy-MM-dd HH:mm:ss");
-        logger.error(dateStr);
+//        logger.error(dateStr);
         String year = dateStr.substring(0, 4);
-        logger.error(year);
+//        logger.error(year);
         resumeInfoVo.setAge(Integer.valueOf(currentYear) - Integer.valueOf(year));
         return resumeInfoVo;
     }
@@ -161,7 +160,7 @@ public class ResumeServiceImpl extends BaseServiceImpl<ResumeMapper, ResumePo> i
         return super.updateById(resumePo);
     }
 
-    private ResumePo checkResumePo(Long resumeId, Long undergraduateId){
+    public ResumePo checkResumePo(Long resumeId, Long undergraduateId){
         EntityWrapper entityWrapper = new EntityWrapper();
         entityWrapper.eq("undergraduate_id", undergraduateId);
         entityWrapper.eq("id", resumeId);

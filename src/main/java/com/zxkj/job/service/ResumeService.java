@@ -31,7 +31,7 @@ public interface ResumeService extends IService<ResumePo> {
 
     List<ResumeVo> list(Long undergraduateId, Long acquiescenceResumeId);
 
-    ResumeInfoVo getResumeInfoVoById(Long resumeId, HttpSession httpSession);
+    ResumeInfoVo getResumeInfoVoById(Long resumeId, Long undergraduateId);
 
     Boolean updateResumeBasicById(ResumeDto resumeDto, HttpSession httpSession) throws ParseException;
 

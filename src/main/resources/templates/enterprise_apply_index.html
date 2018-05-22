@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>申请管理</title>
+    <link th:href="@{~/layui/css/layui.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{~/css/toastr.min.css}" rel="stylesheet"/>
+
+    <!-- 新 Bootstrap 核心 CSS 文件 -->
+    <link th:href="@{~/bootstrap/css/bootstrap.min.css}" rel="stylesheet" type="text/css" />
+    <!-- 可选的Bootstrap主题文件（一般不使用） -->
+    <link th:href="@{~/bootstrap/css/bootstrap-theme.min.css}" rel="stylesheet" type="text/css"/>
+    <!-- jQuery文件。务必在bootstrap.min.js 之前引入 -->
+    <script type="text/javascript" th:src="@{~/js/jquery-3.3.1.min.js}"></script>
+    <!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
+    <script type="text/javascript" th:src="@{~/bootstrap/js/bootstrap.min.js}"></script>
+</head>
+<body class="layui-layout-body">
+<div class="layui-layout layui-layout-admin">
+    <div th:replace="enterprise_header :: enterprise_header"></div>
+
+    <div class="layui-body">
+        <!-- 内容主体区域 -->
+        <div style="padding: 15px;">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">申请记录</h3>
+                </div>
+                <div class="panel-body">
+                    <table class="layui-table"
+                           lay-data="{height:'full', url:'/enterprise/list-apply', page:true, id:'test', even:true}"
+                           lay-filter="roles">
+                        <thead>
+                        <tr class="layui-colla-item">
+                            <th lay-data="{align: 'center', field:'undergraduateName', width:100, sort: true, unresize:true}">姓名</th>
+                            <th lay-data="{align: 'center', field:'professionalName', width:200, sort: true, unresize:true}">申请岗位</th>
+                            <th lay-data="{align: 'center', field:'deliveryTime', width:200, sort: true, unresize:true}">申请时间</th>
+                            <th lay-data="{align: 'center', field:'status', width:150, sort: true, unresize:true}">状态</th>
+                            <th lay-data="{align: 'center', field:'time', width:200, unresize:true}">状态更新时间</th>
+                            <th lay-data="{align: 'center', toolbar: '#barDemo', unresize:true}">操作</th>
+                        </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>
+            <i class="layui-icon">&#xe60c;</i>
+        </div>
+    </div>
+    <div class="layui-footer">
+        <!-- 底部固定区域 -->
+        © layui.com - 底部固定区域
+    </div>
+</div>
+<script type="text/html" id="barDemo">
+    <a class="layui-btn layui-btn-xs" lay-event="detail" >查看简历</a>
+    <a class="layui-btn layui-btn-xs" lay-event="edit" >修改状态</a>
+</script>
+<script type="text/javascript" th:src="@{~/layui/layui.all.js}"></script>
+<script type="text/javascript" th:src="@{~/js/jquery-3.3.1.min.js}"></script>
+<!--<script type="text/javascript" th:src="@{~/js/jquery.min.js}"></script>-->
+<script th:src="@{~/js/toastr.min.js}"></script>
+<script th:inline="javascript">
+    toastr.options.positionClass = 'toast-top-center';
+    toastr.options.timeOut = "1000";
+    /*[+
+        if([[${errorMessage}]] != null){
+            toastr.error([[${errorMessage}]]);
+            toastr.cancel();
+        }
+    +]*/
+    /*[+
+        if([[${message}]] != null){
+            toastr.success([[${message}]]);
+            toastr.cancel();
+        }
+    +]*/
+</script>
+<script>
+    //监听工具条
+    layui.table.on('tool(roles)', function (obj) { //注：tool是工具条事件名，test是table原始容器的属性 lay-filter="对应的值"
+        var data = obj.data; //获得当前行数据
+        var layEvent = obj.event; //获得 lay-event 对应的值（也可以是表头的 event 参数对应的值）
+        var tr = obj.tr; //获得当前行 tr 的DOM对象
+        var layer = layui.layer;
+        if (layEvent === 'edit') {
+            $.get("/enterprise/check-deliver-resume-update?deliveryInformationId=" + data.id,
+                function (result, status) {
+                    console.log("Data: " + result + "\nStatus: " + status);
+                    var json = result;
+                    if (json.errorMessage != null) {
+                        toastr.error(json.errorMessage);
+                    } else {
+                        console.log(data.id);
+                        //do somehing
+                        layer.open({
+                            title: '修改状态',
+                            type: 2,
+                            area: ['300px', '200px'],
+                            content: ['http://localhost:8080/enterprise/deliver-information-update?deliveryInformationId=' + data.id, 'no'] //这里content是一个URL，如果你不想让iframe出现滚动条，你还可以content: ['http://sentsin.com', 'no']
+                        });
+                    }
+                });
+        }else if(layEvent === 'detail'){
+            layer.open({
+                title: '简历详情',
+                type: 2,
+                area: ['900px', '500px'],
+                content: 'http://localhost:8080/enterprise/get-resume-by-id?resumeId=' + data.resumeId + '&undergraduateId=' + data.undergraduateId, //这里content是一个URL，如果你不想让iframe出现滚动条，你还可以content: ['http://sentsin.com', 'no']
+            });
+        }
+    });
+    function getChildrenData(data) {
+        console.log(data);
+        $.post("/enterprise/deliver-information-update",
+            {
+                deliveryInformationId: data.id,
+                statusType: data.statusType,
+            },
+            function (data, status) {
+                if (data.message != null) {
+                    toastr.success(data.message);
+                } else if (data.errorMessage != null) {
+                    toastr.error(data.errorMessage);
+                }
+            });
+        layui.table.reload('test', {
+            url: '/enterprise/list-apply'
+            , where: {} //设定异步数据接口的额外参数
+            //,height: 300
+            ,page: {
+                curr: 1 //重新从第 1 页开始
+            }
+        });
+    }
+</script>
+</body>
+</html>

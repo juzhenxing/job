@@ -19,47 +19,27 @@
 <body class="layui-layout-body">
 <div class="layui-layout layui-layout-admin">
     <div th:replace="undergraduate_header :: undergraduate_header"></div>
-    <div class="layui-side layui-bg-black">
-        <div class="layui-side-scroll">
-            <!-- 左侧导航区域（可配合layui已有的垂直导航） -->
-            <ul class="layui-nav layui-nav-tree">
-                <tr th:each="jobCategoryType : ${jobCategoryType}">
-                    <li class="layui-nav-item">
-                        <a><span th:text="${jobCategoryType.name}"></span></a>
-                    </li>
-                </tr>
-            </ul>
-        </div>
-    </div>
+    <div th:replace="undergraduate_campus_recruitment_nav_tree :: undergraduate_campus_recruitment_nav_tree"></div>
     <div class="layui-body">
         <!-- 内容主体区域 -->
         <div style="padding: 15px;">
             <blockquote class="layui-elem-quote">
                 <form class="layui-form">
-                    <input type="text" id="myInput" onkeyup="myFunction()" placeholder="搜索...">
+                    <input type="text" id="myInput" onkeyup="myFunction()" placeholder="搜索 公司/职位">
                 </form>
             </blockquote>
             <blockquote class="layui-elem-quote">
-                <form class="layui-form" method="post">
-                    <select name="type">
+                <form class="layui-form">
+                    <select lay-filter="province_filter">
+                        <option value="">不限</option>
                         <tr th:each="provinceType : ${provinceType}">
-                            <option th:value="${provinceType.type}"><span th:text="${provinceType.name}"></span></option>
+                            <option th:value="${provinceType.type}"><span th:text="${provinceType.name}"></span>
+                            </option>
                         </tr>
                     </select>
                 </form>
             </blockquote>
-            <table class="layui-table"
-                   lay-data="{height:'full', url:'/undergraduate/list-campus-recruitment', page:true, id:'test', even:true, text: {none: '您还未登录'}}"
-                   lay-filter="roles">
-                <thead>
-                <tr class="layui-colla-item">
-                    <th lay-data="{align: 'center', field:'title', unresize:true}">公司标题</th>
-                    <th lay-data="{align: 'center', field:'professionalVoList', unresize:true, templet: '#job_name_s'}">招聘职位</th>
-                    <th lay-data="{align: 'center', field:'workplace', width:200, unresize:true}">涉及城市</th>
-                    <th lay-data="{align: 'center', field:'releaseTime', width:200, sort: true, unresize:true}">发布时间</th>
-                    <th lay-data="{align: 'center', toolbar: '#barDemo', unresize:true}">操作</th>
-                </tr>
-                </thead>
+            <table class="layui-table" id="campus_recruitment_table" lay-filter="roles">
             </table>
             <i class="layui-icon">&#xe60c;</i>
         </div>
@@ -79,7 +59,7 @@
 <script th:src="@{~/js/toastr.min.js}"></script>
 <script th:inline="javascript">
     toastr.options.positionClass = 'toast-top-center';
-    //    toastr.options.timeOut = "5000";
+    toastr.options.timeOut = "1000";
     /*[+
         if([[${errorMessage}]] != null){
             toastr.error([[${errorMessage}]]);
@@ -93,16 +73,95 @@
         }
     +]*/
 </script>
-<script>
+<script th:inline="javascript">
     //监听工具条
     layui.table.on('tool(roles)', function (obj) { //注：tool是工具条事件名，test是table原始容器的属性 lay-filter="对应的值"
         var data = obj.data; //获得当前行数据
         var layEvent = obj.event; //获得 lay-event 对应的值（也可以是表头的 event 参数对应的值）
         var tr = obj.tr; //获得当前行 tr 的DOM对象
         var layer = layui.layer;
-        if(layEvent === 'detail'){ //查看
-            window.location.href = 'http://localhost:8080/undergraduate/get-campus-recruitment-by-id?campusRecruitmentId='+ data.id;
+        if (layEvent === 'detail') { //查看
+            window.location.href = 'http://localhost:8080/visitor/get-campus-recruitment-by-id?campusRecruitmentId=' + data.id;
+        } else if (layEvent == 'collect') {
+            if ([[${session.undergraduatePo}]] == null) {
+                window.location.href = 'http://localhost:8080/visitor/login?errorMessage=' + "您还未登录";
+            } else {
+                $.post("/undergraduate/add-collect",
+                    {
+                        type: 2,
+                        campusRecruitmentId: data.id,
+                    },
+                    function (data, status) {
+                        if (data.message != null) {
+                            toastr.success(data.message);
+                        } else if (data.errorMessage != null) {
+                            toastr.error(data.errorMessage);
+                        }
+                    }
+                );
+            }
         }
+    });
+//    alert([[${jobCategoryType}]]);
+    if ([[${jobCategoryType}]] != 0) {
+        layui.table.render({
+            elem: '#campus_recruitment_table',
+            height: 'full',
+            url: '/visitor/list-campus-recruitment-by-professional-dto',
+            even: true,
+            cols: [[ //表头
+                {align: 'center', field: 'title', unresize: true, title: '公司标题'},
+                {align: 'center', field: 'professionalVoList', unresize: true, templet: '#job_name_s', title: '招聘职位'},
+                {align: 'center', field: 'workplace', width: 200, unresize: true, title: '涉及城市'},
+                {align: 'center', field: 'releaseTime', width: 200, sort: true, unresize: true, title: '发布时间'},
+                {align: 'center', toolbar: '#barDemo', unresize: true, title: '操作'}
+            ]],
+            where: {
+                jobCategoryType:[[${jobCategoryType}]]
+            }
+        });
+    } else {
+        layui.table.render({
+            elem: '#campus_recruitment_table',
+            height: 'full',
+            url: '/visitor/list-campus-recruitment-by-professional-dto',
+            even: true,
+            cols: [[ //表头
+                {align: 'center', field: 'title', unresize: true, title: '公司标题'},
+                {align: 'center', field: 'professionalVoList', unresize: true, templet: '#job_name_s', title: '招聘职位'},
+                {align: 'center', field: 'workplace', width: 200, unresize: true, title: '涉及城市'},
+                {align: 'center', field: 'releaseTime', width: 200, sort: true, unresize: true, title: '发布时间'},
+                {align: 'center', toolbar: '#barDemo', unresize: true, title: '操作'}
+            ]],
+            where: {}
+        });
+    }
+
+    function myFunction() {
+        var key = $("#myInput").val();
+        layui.table.reload('campus_recruitment_table', {
+            url: '/visitor/list-campus-recruitment-by-dto',
+            where: {
+                province: [[${session.province.type}]],
+                key: key
+            },
+            page: {
+                curr: 1 //重新从第 1 页开始
+            }
+        });
+    }
+
+    layui.form.on('select(province_filter)', function (data) {
+        console.log(data);
+        layui.table.reload('campus_recruitment_table', {
+            url: '/visitor/list-campus-recruitment-by-dto',
+            where: {
+                province: data.value,
+            },
+            page: {
+                curr: 1 //重新从第 1 页开始
+            }
+        });
     });
 </script>
 <script th:inline="javascript" type="text/html" id="job_name_s">

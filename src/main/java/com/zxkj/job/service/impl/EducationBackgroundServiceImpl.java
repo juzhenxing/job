@@ -89,7 +89,7 @@ public class EducationBackgroundServiceImpl extends BaseServiceImpl<EducationBac
         return educationBackgroundPoList.parallelStream().map(e -> educationBackgroundPoToVo((EducationBackgroundPo) e)).collect(Collectors.toList());
     }
 
-    private EducationBackgroundPo checkEducationBackgroundPo(Long educationBackgroundId){
+    public EducationBackgroundPo checkEducationBackgroundPo(Long educationBackgroundId){
         if(StringUtils.isEmpty(educationBackgroundId)){
             throw JobException.NULL_ID_EXCEPTION;
         }
@@ -100,7 +100,7 @@ public class EducationBackgroundServiceImpl extends BaseServiceImpl<EducationBac
         return educationBackgroundPo;
     }
 
-    private EducationBackgroundVo educationBackgroundPoToVo(EducationBackgroundPo educationBackgroundPo){
+    public EducationBackgroundVo educationBackgroundPoToVo(EducationBackgroundPo educationBackgroundPo){
         EducationBackgroundVo educationBackgroundVo = new EducationBackgroundVo();
         BeanUtil.copyProperties(educationBackgroundPo, educationBackgroundVo);
         educationBackgroundVo.setEducationBackground(educationBackgroundPo.getEducationBackground().getName());

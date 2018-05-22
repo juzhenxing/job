@@ -2,12 +2,14 @@ package com.zxkj.job.controller;
 
 import com.zxkj.job.bean.dto.*;
 import com.zxkj.job.common.bean.PagedResult;
+import com.zxkj.job.enums.StatusType;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -76,7 +78,7 @@ public interface EnterpriseController {
             HttpSession httpSession);
 
     @GetMapping("career-talk-index")
-    String careerTalkIndex();
+    ModelAndView careerTalkIndex(ModelAndView modelAndView, HttpSession httpSession);
 
     @PostMapping("add-career-talk")
     @ResponseBody
@@ -167,4 +169,22 @@ public interface EnterpriseController {
 
     @GetMapping("apply-index")
     ModelAndView applyIndex(HttpSession httpSession, ModelAndView modelAndView);
+
+    @GetMapping("list-apply")
+    @ResponseBody
+    PagedResult listApply(PageDto pageDto, HttpSession httpSession);
+
+    @GetMapping("get-resume-by-id")
+    ModelAndView getResumeById(Long resumeId, Long undergraduateId, ModelAndView modelAndView);
+
+    @GetMapping("deliver-information-update")
+    ModelAndView deliveryInformationUpdate(Long deliveryInformationId, ModelAndView modelAndView);
+
+    @PostMapping("deliver-information-update")
+    @ResponseBody
+    ModelMap deliveryInformationUpdate(Long deliveryInformationId, StatusType statusType);
+
+    @GetMapping("check-deliver-resume-update")
+    @ResponseBody
+    ModelMap checkDeliverResumeUpdate(Long deliveryInformationId);
 }

@@ -87,6 +87,16 @@ public enum JobOutput {
     NULL_DELIVERYINFORMATIONPO(137, "该投递记录不存在"),
 
     EXIST_DELIVERYINFORMATIONPO(137, "该简历已投递, 无法删除"),
+
+    APPLY_ALREADY_ARRANGED(136, "申请已被处理完成，不可修改"),
+
+    CAMPUSRECRUITMENT_DELETE(139, "该校招网申记录已有人申请, 无法删除"),
+
+    DELIVERYINFORMATIONPO_UPDATE(140, "投递记录更新失败"),
+
+    COLLECTPO_EXIST(141, "已收藏"),
+
+    CAREERTALK_ADD(142, "宣讲会增加失败"),
     ;
 
     private int code;

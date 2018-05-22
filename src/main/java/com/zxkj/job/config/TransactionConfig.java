@@ -1,28 +1,28 @@
-//package com.zxkj.job.config;
-//
-//import org.springframework.beans.factory.annotation.Autowired;
-//import org.springframework.context.annotation.Bean;
-//import org.springframework.context.annotation.Configuration;
-//import org.springframework.jdbc.datasource.DataSourceTransactionManager;
-//import org.springframework.transaction.annotation.EnableTransactionManagement;
-//import org.springframework.transaction.interceptor.TransactionInterceptor;
-//
-//import javax.sql.DataSource;
-//import java.util.Properties;
-//
-///**
-// * Created by chenyunan on 2017/11/27.
-// */
-//@Configuration
-//@EnableTransactionManagement
-//public class TransactionConfig {
-//
-////    @Bean
-////    public DataSourceTransactionManager transactionManager(
-////            @Autowired DataSource dataSource) {
-////        return new DataSourceTransactionManager(dataSource);
-////    }
-//
+package com.zxkj.job.config;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.transaction.interceptor.TransactionInterceptor;
+
+import javax.sql.DataSource;
+import java.util.Properties;
+
+/**
+ * Created by chenyunan on 2017/11/27.
+ */
+@Configuration
+@EnableTransactionManagement
+public class TransactionConfig {
+
+//    @Bean
+//    public DataSourceTransactionManager transactionManager(
+//            @Autowired DataSource dataSource) {
+//        return new DataSourceTransactionManager(dataSource);
+//    }
+
 //    @Bean("transactionInterceptor")
 //    public TransactionInterceptor transactionInterceptor(
 //            @Autowired DataSourceTransactionManager transactionManager) {
@@ -55,5 +55,5 @@
 //        transactionInterceptor.setTransactionAttributes(transactionAttributes);
 //        return transactionInterceptor;
 //    }
-//
-//}
+
+}

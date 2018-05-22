@@ -2,6 +2,7 @@ package com.zxkj.job.controller.impl;
 
 import com.zxkj.job.bean.dto.*;
 import com.zxkj.job.bean.po.UndergraduatePo;
+import com.zxkj.job.bean.vo.DeliveryInformationVo;
 import com.zxkj.job.bean.vo.ResumeInfoVo;
 import com.zxkj.job.bean.vo.ResumeVo;
 import com.zxkj.job.common.BaseControllerImpl;
@@ -46,6 +47,9 @@ public class UndergraduateControllerImpl extends BaseControllerImpl<Undergraduat
     @Autowired
     DeliveryInformationService deliveryInformationService;
 
+    @Autowired
+    CollectService collectService;
+
     @Override
     public ModelAndView add(SimpleUndergraduateDto simpleUndergraduateDto, HttpSession httpSession) {
         ModelAndView modelAndView = new ModelAndView();
@@ -59,11 +63,6 @@ public class UndergraduateControllerImpl extends BaseControllerImpl<Undergraduat
             modelAndView.setViewName("undergraduate_register");
         }
         return modelAndView;
-    }
-
-    @Override
-    public String index() {
-        return "index";
     }
 
     @Override
@@ -517,18 +516,6 @@ public class UndergraduateControllerImpl extends BaseControllerImpl<Undergraduat
     }
 
     @Override
-    public ModelMap checkDeliverResumeUpdate(Long deliveryInformationId) {
-        ModelMap modelMap = new ModelMap();
-        try{
-            deliveryInformationService.getByDeliveryInformationId(deliveryInformationId);
-        }catch (Exception e){
-            e.printStackTrace();
-            modelMap.addAttribute("errorMessage", e.getMessage());
-        }
-        return modelMap;
-    }
-
-    @Override
     public ModelAndView deliverResumeUpdate(Long deliveryInformationId, ModelAndView modelAndView, HttpSession httpSession) {
         try{
             UndergraduatePo undergraduatePo = (UndergraduatePo)httpSession.getAttribute("undergraduatePo");
@@ -565,7 +552,7 @@ public class UndergraduateControllerImpl extends BaseControllerImpl<Undergraduat
         try{
             UndergraduatePo undergraduatePo = (UndergraduatePo)httpSession.getAttribute("undergraduatePo");
             modelAndView.addObject("undergraduateVo", service.getByEmail(undergraduatePo.getEmail()));
-            ResumeInfoVo resumeInfoVo = resumeService.getResumeInfoVoById(resumeId, httpSession);
+            ResumeInfoVo resumeInfoVo = resumeService.getResumeInfoVoById(resumeId, undergraduatePo.getId());
             modelAndView.addObject("resumeInfoVo", resumeInfoVo);
             modelAndView.addObject("educationBackgroundVoList", educationBackgroundService.listByResumeId(resumeId));
             modelAndView.setViewName("undergraduate_resume_info");
@@ -606,7 +593,7 @@ public class UndergraduateControllerImpl extends BaseControllerImpl<Undergraduat
         return updateResume(resumeDto.getId(), httpSession, modelAndView);
     }
 
-    private String checkLogin(ModelAndView modelAndView, HttpSession httpSession){
+    public String checkLogin(ModelAndView modelAndView, HttpSession httpSession){
         Object emailObj = httpSession.getAttribute("email");
         if (org.springframework.util.StringUtils.isEmpty(emailObj)) {
 //            throw JobException.NOT_LOGGED_IN_EXCEPTION;
@@ -615,5 +602,79 @@ public class UndergraduateControllerImpl extends BaseControllerImpl<Undergraduat
             return null;
         }
         return emailObj.toString();
+    }
+
+    @Override
+    public ModelMap checkDeliverResumeUpdate(Long deliveryInformationId) {
+        ModelMap modelMap = new ModelMap();
+        try{
+            DeliveryInformationVo deliveryInformationVo = deliveryInformationService.getByDeliveryInformationId(deliveryInformationId);
+            if(deliveryInformationVo.getStatus() != StatusType.POSTED.getName()){
+                throw JobException.RESUME_ALREADY_ARRANGED_EXCEPTION;
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+            modelMap.addAttribute("errorMessage", e.getMessage());
+        }
+        return modelMap;
+    }
+
+    @Override
+    public ModelMap addCollect(CollectDto collectDto, HttpSession httpSession) {
+        ModelMap modelMap = new ModelMap();
+        try {
+            if (collectService.add(collectDto, httpSession)) {
+                modelMap.addAttribute("message", "收藏成功");
+            } else {
+                modelMap.addAttribute("errorMessage", "收藏失败");
+            }
+        } catch (Exception e) {
+            logger.debug("e: ", e);
+            modelMap.addAttribute("errorMessage", e.getMessage());
+        }
+        return modelMap;
+    }
+
+    @Override
+    public ModelAndView collectIndex(ModelAndView modelAndView) {
+        modelAndView.setViewName("undergraduate_collect_index");
+        return modelAndView;
+    }
+
+    @Override
+    public PagedResult listCollect(PageDto pageDto, HttpSession httpSession) {
+        return collectService.list(pageDto, httpSession);
+    }
+
+    @Override
+    public ModelAndView getCareerTalkOrCampusRecruitmentById(Long id, CollectType type) {
+        if(type == CollectType.CAMPUSRECRUITMENT){
+            return getCampusRecruitmentById(id);
+        }else if(type == CollectType.CAREERTALK){
+            return getCareerTalkById(id, new ModelAndView());
+        }
+        return null;
+    }
+
+    @Override
+    public ModelAndView getCareerTalkById(Long careerTalkId, ModelAndView modelAndView) {
+        modelAndView.setViewName("career_talk_info");
+        return modelAndView;
+    }
+
+    @Override
+    public ModelMap deleteCollect(Long collectId) {
+        ModelMap modelMap = new ModelMap();
+        try {
+            if (collectService.deleteByCollectId(collectId)) {
+                modelMap.addAttribute("message", "取消成功");
+            } else {
+                modelMap.addAttribute("errorMessage", "取消失败");
+            }
+        } catch (Exception e) {
+            logger.debug("e: ", e);
+            modelMap.addAttribute("errorMessage", e.getMessage());
+        }
+        return modelMap;
     }
 }

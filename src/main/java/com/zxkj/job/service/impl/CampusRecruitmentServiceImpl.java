@@ -1,9 +1,12 @@
 package com.zxkj.job.service.impl;
 
+import com.baomidou.mybatisplus.enums.SqlLike;
+import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.zxkj.job.bean.dto.CampusRecruitmentDto;
 import com.zxkj.job.bean.dto.PageDto;
 import com.zxkj.job.bean.dto.ProfessionalDto;
+import com.zxkj.job.bean.dto.QueryCampusRecruitmentDto;
 import com.zxkj.job.bean.po.CampusRecruitmentPo;
 import com.zxkj.job.bean.po.CampusRecruitmentProfessionalRPo;
 import com.zxkj.job.bean.po.ProfessionalPo;
@@ -60,7 +63,7 @@ public class CampusRecruitmentServiceImpl extends BaseServiceImpl<CampusRecruitm
     public Boolean add(CampusRecruitmentDto campusRecruitmentDto, HttpSession httpSession) throws IOException {
         CampusRecruitmentPo campusRecruitmentPo = new CampusRecruitmentPo();
         BeanUtil.copyProperties(campusRecruitmentDto, campusRecruitmentPo);
-        EnterpriseVo enterpriseVo = checkEnterpriseVo(httpSession);
+        EnterpriseVo enterpriseVo = (EnterpriseVo)httpSession.getAttribute("enterpriseVo");
         campusRecruitmentPo.setEnterpriseId(enterpriseVo.getId());
         MultipartFile generalRegulation = campusRecruitmentDto.getGeneralRegulation();
         String fileName = saveFile(generalRegulation);
@@ -93,7 +96,7 @@ public class CampusRecruitmentServiceImpl extends BaseServiceImpl<CampusRecruitm
 
     @Override
     public Boolean deleteByCampusRecruitmentId(Long campusRecruitmentId, HttpSession httpSession) {
-        EnterpriseVo enterpriseVo = checkEnterpriseVo(httpSession);
+        EnterpriseVo enterpriseVo = (EnterpriseVo)httpSession.getAttribute("enterpriseVo");
         checkCampusRecruitmentPo(campusRecruitmentId, enterpriseVo.getId());
         if(!campusRecruitmentProfessionalRService.deleteByCampusRecruitmentId(campusRecruitmentId)){
             throw JobException.CAMPUS_RECRUITMENT_DELETE_EXCEPTION;
@@ -103,7 +106,7 @@ public class CampusRecruitmentServiceImpl extends BaseServiceImpl<CampusRecruitm
 
     @Override
     public CampusRecruitmentVo getById(Long campusRecruitmentId, HttpSession httpSession) {
-        EnterpriseVo enterpriseVo = checkEnterpriseVo(httpSession);
+        EnterpriseVo enterpriseVo = (EnterpriseVo)httpSession.getAttribute("enterpriseVo");
         CampusRecruitmentPo campusRecruitmentPo = checkCampusRecruitmentPo(campusRecruitmentId, enterpriseVo.getId());
         return campusRecruitmentPoToVo(campusRecruitmentPo);
     }
@@ -131,7 +134,7 @@ public class CampusRecruitmentServiceImpl extends BaseServiceImpl<CampusRecruitm
         if(StringUtils.isEmpty(campusRecruitmentDto.getId())){
             throw JobException.NULL_ID_EXCEPTION;
         }
-        EnterpriseVo enterpriseVo = checkEnterpriseVo(httpSession);
+        EnterpriseVo enterpriseVo = (EnterpriseVo)httpSession.getAttribute("enterpriseVo");
         CampusRecruitmentPo campusRecruitmentPo = checkCampusRecruitmentPo(campusRecruitmentDto.getId(), enterpriseVo.getId());
         BeanUtil.copyProperties(campusRecruitmentDto, campusRecruitmentPo);
         MultipartFile generalRegulation = campusRecruitmentDto.getGeneralRegulation();
@@ -188,7 +191,7 @@ public class CampusRecruitmentServiceImpl extends BaseServiceImpl<CampusRecruitm
         return pagedResult;
     }
 
-    private CampusRecruitmentPo checkCampusRecruitmentPo(Long campusRecruitmentId, Long enterpriseId){
+    public CampusRecruitmentPo checkCampusRecruitmentPo(Long campusRecruitmentId, Long enterpriseId){
         CampusRecruitmentPo campusRecruitmentPo = super.baseMapper.selectOneById(campusRecruitmentId, enterpriseId);
         if(campusRecruitmentPo == null){
             throw JobException.NULL_CAMPUS_RECRUITMENT_EXCEPTION;
@@ -196,7 +199,8 @@ public class CampusRecruitmentServiceImpl extends BaseServiceImpl<CampusRecruitm
         return campusRecruitmentPo;
     }
 
-    private CampusRecruitmentVo campusRecruitmentPoToVo(CampusRecruitmentPo campusRecruitmentPo){
+    @Override
+    public CampusRecruitmentVo campusRecruitmentPoToVo(CampusRecruitmentPo campusRecruitmentPo){
         CampusRecruitmentVo campusRecruitmentVo = new CampusRecruitmentVo();
         BeanUtil.copyProperties(campusRecruitmentPo, campusRecruitmentVo);
         campusRecruitmentVo.setReleaseTime(campusRecruitmentPo.getGmtCreate());
@@ -208,7 +212,7 @@ public class CampusRecruitmentServiceImpl extends BaseServiceImpl<CampusRecruitm
         return campusRecruitmentVo;
     }
 
-    private String saveFile(MultipartFile multipartFile) throws IOException {
+    public String saveFile(MultipartFile multipartFile) throws IOException {
         String originalFilename = multipartFile.getOriginalFilename();
         int pointIndex = originalFilename.lastIndexOf(".");
         String fileType = originalFilename.substring(pointIndex + 1);
@@ -229,17 +233,30 @@ public class CampusRecruitmentServiceImpl extends BaseServiceImpl<CampusRecruitm
         return fileName;
     }
 
-    private EnterpriseVo checkEnterpriseVo(HttpSession httpSession) {
-        Object enterpriseObj = httpSession.getAttribute("enterpriseVo");
-        if (StringUtils.isEmpty(enterpriseObj)) {
-            throw JobException.NOT_LOGGED_IN_EXCEPTION;
-        }
-        return (EnterpriseVo) enterpriseObj;
-    }
-
     @Override
     public CampusRecruitmentVo getById(Long campusRecruitmentId) {
         CampusRecruitmentPo campusRecruitmentPo = super.selectById(campusRecruitmentId);
         return campusRecruitmentPoToVo(campusRecruitmentPo);
+    }
+
+    @Override
+    public PagedResult listByQueryCampusRecruitmentDto(QueryCampusRecruitmentDto queryCampusRecruitmentDto, PageDto pageDto) {
+        Page page = new Page(pageDto.getPage(), pageDto.getLimit());
+        EntityWrapper entityWrapper = new EntityWrapper();
+        if(!StringUtils.isEmpty(queryCampusRecruitmentDto.getProvince())){
+            logger.error(queryCampusRecruitmentDto.getProvince().getName());
+            entityWrapper.like("workplace", queryCampusRecruitmentDto.getProvince().getName(), SqlLike.DEFAULT);
+        }
+        if(!StringUtils.isEmpty(queryCampusRecruitmentDto.getKey())){
+            logger.error(queryCampusRecruitmentDto.getKey());
+            entityWrapper.like("title", queryCampusRecruitmentDto.getKey(), SqlLike.DEFAULT);
+        }
+        Page<CampusRecruitmentPo> campusRecruitmentPoPage = super.selectPage(page, entityWrapper);
+        List<CampusRecruitmentVo> campusRecruitmentVoList = campusRecruitmentPoPage.getRecords().parallelStream().map(e -> campusRecruitmentPoToVo(e)).collect(Collectors.toList());
+        PagedResult<CampusRecruitmentVo> pagedResult = new PagedResult<>();
+        pagedResult.setData(campusRecruitmentVoList);
+//        logger.error("总数：" + careerTalkPoPage.getTotal());
+        pagedResult.setCount(campusRecruitmentPoPage.getTotal());
+        return pagedResult;
     }
 }

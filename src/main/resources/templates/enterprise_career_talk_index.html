@@ -17,7 +17,7 @@
                 <button id="add_btn" type="button" class="layui-btn layui-btn-small" onclick="">添加</button>
             </blockquote>
             <table class="layui-table"
-                   lay-data="{height:'full', url:'/enterprise/list-career-talk', page:true, id:'test', even:true, text: {none: '您还未登录'}}"
+                   lay-data="{height:'full', url:'/enterprise/list-career-talk', page:true, id:'test', even:true}"
                    lay-filter="roles">
                 <thead>
                 <tr>
@@ -222,41 +222,29 @@
 //            async : false
 //        });
         $(document).on('click', '#add_form_btn', function () {
-            var province = document.getElementById("province").value;
-            var city = document.getElementById("city").value;
-            var school = document.getElementById("school").value;
-            var startTime = document.getElementById("startTime").value;
-            var endTime = document.getElementById("endTime").value;
-            var location = document.getElementById("location").value;
-            var operationType = $('#add_form input[name="operationType"]:checked ').val();
-            $.ajaxSettings.async = false;
-            $.post("/enterprise/add-career-talk",
-//                decodeURIComponent($('#add_form').serialize(),true),
-//                $('#add_form').serialize(),
-                {
-                    province: province,
-                    city: city,
-                    school: school,
-                    startTime: startTime,
-                    endTime: endTime,
-                    location: location,
-                    operationType: operationType
-                },
-                function (data, status) {
-//                        alert("Data: " + data + "\nStatus: " + status);
-                    console.log("Data: " + data + "\nStatus: " + status);
+            var form = document.getElementById("form1");
+            var formData = new FormData(form);
+            $.ajax({
+                url: '/enterprise/add-career-talk',
+                type: 'POST',
+                data: formData,
+                cache: false,
+                processData: false,
+                contentType: false,
+                async: false,
+                success: function (data) {
                     if (data.message != null) {
                         toastr.success(data.message);
                     } else if (data.errorMessage != null) {
                         toastr.error(data.errorMessage);
                     }
-                });
-//            $("#add_form").css("display", "none");
-//            layui.table.reload('test', {
-//                url: '/enterprise/list-career-talk'
-//                , where: {} //设定异步数据接口的额外参数
-//                //,height: 300
-//            });
+                },
+                error: function (data) {
+                    toastr.error("请求失败");
+                }
+            });
+            layui.layer.close(layui.layer.index);
+            $("#add_form").css("display", "none");
         });
     }
 
@@ -356,7 +344,7 @@
 </script>
 </body>
 <div style="display: none;margin-top: 10px;padding: 10px" id="add_form" name="add_form">
-    <form class="layui-form">
+    <form class="layui-form" enctype="multipart/form-data" id="form1">
         <div class="layui-form-item">
             <label class="layui-form-label">所在高校</label>
             <div class="layui-input-block">
@@ -407,8 +395,23 @@
             </div>
         </div>
         <div class="layui-form-item">
+            <label class="layui-form-label">宣讲正文</label>
             <div class="layui-input-block">
-                <button class="layui-btn layui-btn-primary" id="add_form_btn">添加</button>
+                <input type="file" name="preachingText" id="preachingText" style="padding-top: 10px">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">职位</label>
+            <div class="layui-input-block">
+                <tr th:each="professionalVo : ${professionalVoList}">
+                    <input type="checkbox" name="professionalIds" th:value="${professionalVo.id}" th:title="${professionalVo.name}">
+                </tr>
+                <!--<input type="hidden" th:name="professionalIds">-->
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button type="button" class="layui-btn layui-btn-primary" id="add_form_btn">添加</button>
                 <button type="reset" class="layui-btn layui-btn-primary">重置</button>
             </div>
         </div>

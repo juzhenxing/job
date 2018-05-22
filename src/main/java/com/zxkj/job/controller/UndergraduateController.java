@@ -2,6 +2,8 @@ package com.zxkj.job.controller;
 
 import com.zxkj.job.bean.dto.*;
 import com.zxkj.job.common.bean.PagedResult;
+import com.zxkj.job.enums.CollectType;
+import com.zxkj.job.enums.StatusType;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcProperties;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
@@ -28,9 +30,6 @@ public interface UndergraduateController {
      */
     @PostMapping("add")
     ModelAndView add(@Valid SimpleUndergraduateDto simpleUndergraduateDto, HttpSession httpSession);
-
-    @GetMapping("index")
-    String index();
 
     @GetMapping("campus-recruitment")
     ModelAndView campusRecruitment();
@@ -156,10 +155,6 @@ public interface UndergraduateController {
     @ResponseBody
     PagedResult listResumeDeliver(PageDto pageDto, HttpSession httpSession);
 
-    @GetMapping("check-deliver-resume-update")
-    @ResponseBody
-    ModelMap checkDeliverResumeUpdate(Long deliveryInformationId);
-
     @GetMapping("deliver-resume-update")
     ModelAndView deliverResumeUpdate(Long deliveryInformationId, ModelAndView modelAndView, HttpSession httpSession);
 
@@ -175,5 +170,30 @@ public interface UndergraduateController {
 
     @PostMapping("resume-basic-update")
     ModelAndView resumeBasicUpdate(@Valid ResumeDto resumeDto, HttpSession httpSession, ModelAndView modelAndView);
+
+    @GetMapping("check-deliver-resume-update")
+    @ResponseBody
+    ModelMap checkDeliverResumeUpdate(Long deliveryInformationId);
+
+    @PostMapping("add-collect")
+    @ResponseBody
+    ModelMap addCollect(@Valid CollectDto collectDto, HttpSession httpSession);
+
+    @GetMapping("collect-index")
+    ModelAndView collectIndex(ModelAndView modelAndView);
+
+    @GetMapping("list-collect")
+    @ResponseBody
+    PagedResult listCollect(PageDto pageDto, HttpSession httpSession);
+
+    @GetMapping("get-career-talk-or-campus-recruitment-by-id")
+    ModelAndView getCareerTalkOrCampusRecruitmentById(Long id, CollectType type);
+
+    @GetMapping("get-career-talk-by-id")
+    ModelAndView getCareerTalkById(Long careerTalkId, ModelAndView modelAndView);
+
+    @PostMapping("delete-collect")
+    @ResponseBody
+    ModelMap deleteCollect(Long collectId);
 
 }

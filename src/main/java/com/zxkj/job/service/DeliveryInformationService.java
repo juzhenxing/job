@@ -10,7 +10,9 @@ import com.zxkj.job.bean.vo.DeliveryInformationVo;
 import com.zxkj.job.bean.vo.ProfessionalUpdateVo;
 import com.zxkj.job.bean.vo.ProfessionalVo;
 import com.zxkj.job.common.bean.PagedResult;
+import com.zxkj.job.enums.StatusType;
 
+import javax.mail.MessagingException;
 import javax.servlet.http.HttpSession;
 import java.util.List;
 
@@ -25,4 +27,11 @@ public interface DeliveryInformationService extends IService<DeliveryInformation
     Boolean updateById(DeliveryInformationDto deliveryInformationDto);
 
     List<DeliveryInformationVo> getByResumeId(Long resumeId);
+
+    PagedResult listByEnterpriseId(PageDto pageDto, HttpSession httpSession);
+
+    Boolean updateStatusTypeById(Long deliveryInformationId, StatusType statusType) throws MessagingException;
+
+    List<DeliveryInformationVo> getByProfessionalId(Long professionalId);
+
 }
