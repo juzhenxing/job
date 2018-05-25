@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <title>查看宣讲会</title>
+    <link th:href="@{~/layui/css/layui.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{~/css/toastr.min.css}" rel="stylesheet"/>
+</head>
+<body class="layui-layout-body" style="padding: 15px;">
+        <table class="layui-table">
+            <colgroup>
+                <col width="30%">
+                <col width="70%">
+            </colgroup>
+            <!-- 提示：如果你不想用form，你可以换成div等任何一个普通元素 -->
+            <tbody>
+            <tr>
+                <td>所在高校</td>
+                <td><p th:text="${careerTalkVo.school}"></p></td>
+            </tr>
+            <tr>
+                <td>举办地点</td>
+                <td><p th:text="${careerTalkVo.location}"></p></td>
+            </tr>
+            <tr>
+                <td>宣讲时间</td>
+                <td><span th:text="${#dates.format(careerTalkVo.startTime,'yyyy-MM-dd HH:mm')}"></span> 到 <span th:text="${#dates.format(careerTalkVo.endTime,'yyyy-MM-dd HH:mm')}"></span></td>
+            </tr>
+            <tr>
+                <td>发布时间</td>
+                <td><p th:text="${{careerTalkVo.createTime}}"></p></td>
+            </tr>
+            <div th:if="${careerTalkVo.operationType} == '网申'">
+                <tr>
+                    <td>网申地址</td>
+                    <td><span th:text="${careerTalkVo.applyUrl}"></span></td>
+                </tr>
+            </div>
+            <div th:if="${careerTalkVo.operationType} == '投简历'">
+                <tr>
+                    <td>职位列表</td>
+                    <td>
+                        <table class="layui-table">
+                            <tbody>
+                            <tr th:each="professionalVo : ${careerTalkVo.professionalVoList}">
+                                <td style="width: 100%"><p th:text="${professionalVo.name}"></p></td>
+                                <!--<td style="width: 20%"><a class="layui-btn layui-btn-xs" lay-event="detail" style="width: 100%; height: 100%">详情</a></td>-->
+                            </tr>
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+            </div>
+            <tr>
+                <td>宣讲正文</td>
+                <td><a th:href="'/enterprise/download-preaching-text?preachingTextFileName=' + ${careerTalkVo.preachingTextFileName}"><p th:text=" ${careerTalkVo.preachingTextFileName}"/></a></td>
+            </tr>
+            </tbody>
+        </table>
+<script type="text/javascript" th:src="@{~/layui/layui.all.js}"></script>
+<script th:src="@{~/js/toastr.min.js}"></script>
+<script th:inline="javascript">
+    toastr.options.positionClass = 'toast-top-center';
+    toastr.options.timeOut = "1000";
+    /*[+
+        if([[${errorMessage}]] != null){
+            toastr.error([[${errorMessage}]]);
+        }
+    +]*/
+    /*[+
+        if([[${message}]] != null){
+            toastr.success([[${message}]]);
+        }
+    +]*/
+//    alert([[${careerTalkVo.operationType}]]);
+</script>
+</body>
+</html>

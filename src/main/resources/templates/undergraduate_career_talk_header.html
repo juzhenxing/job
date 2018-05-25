@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<link th:href="@{~/layui/css/layui.css}" rel="stylesheet" type="text/css"/>
+<div class="layui-header" th:fragment="undergraduate_career_talk_header">
+    <div class="layui-logo">
+        <a th:href="@{/visitor/index}"><img th:src="@{~/img/logo.png}" alt="通用的占位符缩略图" width="100px"/></a>
+    </div>
+    <!-- 头部区域（可配合layui已有的水平导航） -->
+    <ul class="layui-nav layui-layout-left">
+        <li class="layui-nav-item">
+            <a href="javascript:;">
+                <span id="select_province_span">北京</span>
+            </a>
+            <dl class="layui-nav-child">
+                <tr th:each="province : ${session.provinces}">
+                    <dd>
+                        <a th:href="'javascript:selectProvince('+${province.type}+')'"><span
+                                th:text="${province.name}"></span></a>
+                    </dd>
+                </tr>
+            </dl>
+        </li>
+        <li class="layui-nav-item">
+            <a th:href="@{/visitor/career-talk}">宣讲会</a>
+        </li>
+        <li class="layui-nav-item">
+            <a th:href="@{/visitor/campus-recruitment}">校招网申</a>
+        </li>
+    </ul>
+    <div th:if="${session.undergraduatePo eq null}">
+        <ul class="layui-nav layui-layout-right">
+            <li class="layui-nav-item">
+                <a th:href="@{/enterprise/index}">企业登录</a>
+            </li>
+            <li class="layui-nav-item">
+                <a th:href="@{/visitor/login}">学生登录</a>
+            </li>
+        </ul>
+    </div>
+    <div th:if="${session.undergraduatePo ne null}">
+        <ul class="layui-nav layui-layout-right">
+            <li class="layui-nav-item">
+                <a th:href="@{/undergraduate/personal-center}">我的简历</a>
+            </li>
+            <li class="layui-nav-item">
+                <a href="javascript:;">
+                    <p th:text="'hi, ' + ${session.undergraduatePo.email}"></p>
+                </a>
+                <dl class="layui-nav-child">
+                    <dd><a th:href="@{/undergraduate/personal-center}">个人中心</a></dd>
+                    <dd><a th:href="@{/undergraduate/logout}">退出登录</a></dd>
+                </dl>
+            </li>
+        </ul>
+    </div>
+    <div class="layui-side layui-bg-black">
+        <div class="layui-side-scroll">
+            <!-- 左侧导航区域（可配合layui已有的垂直导航） -->
+            <ul class="layui-nav layui-nav-tree">
+                <span th:if="${session.school} == ''">
+                    <li class="layui-nav-item layui-nav-itemed">
+                        <a href="javascript:selectSchool()">全部信息</a>
+                    </li>
+                </span>
+                <span th:unless="${session.school} == ''">
+                    <li class="layui-nav-item">
+                        <a href="javascript:selectSchool()">全部信息</a>
+                    </li>
+                </span>
+                <span id="school">
+
+                </span>
+            </ul>
+        </div>
+    </div>
+    <script type="text/javascript" th:src="@{~/js/jquery-3.3.1.min.js}"></script>
+    <script th:src="@{~/js/AllSchool.js}"></script>
+    <script th:inline="javascript">
+        function selectProvince(provinceType) {
+            window.location.href = 'http://localhost:8080/visitor/career-talk?province=' + provinceType;
+        }
+        /*[+
+            if([[${session.province}]] != null){
+                $("#select_province_span").text([[${session.province.name}]]);
+            }else{
+                window.location.href = 'http://localhost:8080/visitor/career-talk';
+            }
+        +]*/
+        function selectSchool(school) {
+            if(school == undefined){
+                window.location.href = 'http://localhost:8080/visitor/career-talk';
+            }else{
+                window.location.href = 'http://localhost:8080/visitor/career-talk?school=' + school;
+            }
+        }
+        $(document).ready(function(){
+            var provinceIndex = [[${session.province.type}]];
+            var selectCity = province[provinceIndex-1][0];
+//            alert(selectCity);
+            var citylist = city[selectCity];
+//            alert(citylist);
+            var cityArray = "";
+            var schoolUlStr = "";
+            for (var i = 0, len = citylist.length; i < len; i++) {
+                cityArray = citylist[i];
+                var selectschool = cityArray[0];
+//                alert(selectschool);
+                var schoolListStr = allschool[selectschool];
+                for (var j = 0, len2 = schoolListStr.length; j < len2; j++) {
+//                    alert(schoolListStr[j][2]);
+                    if([[${session.school}]] == schoolListStr[j][2]){
+                        schoolUlStr = schoolUlStr + '<span><li class="layui-nav-item layui-nav-itemed"><a>' + schoolListStr[j][2] +'</a></li></span>';
+                    }else{
+                        schoolUlStr = schoolUlStr + '<span><li class="layui-nav-item"><a>' + schoolListStr[j][2] +'</a></li></span>';
+                    }
+                }
+            }
+//            alert(schoolUlStr);
+            $("#school").html(schoolUlStr);
+            $("#school").delegate("a", "click", function(){
+                window.location.href = 'http://localhost:8080/visitor/career-talk?school=' + $(this).text();
+            });
+        });
+    </script>
+</div>
+</html>
