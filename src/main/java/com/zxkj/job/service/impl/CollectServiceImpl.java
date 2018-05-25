@@ -94,6 +94,23 @@ public class CollectServiceImpl extends BaseServiceImpl<CollectMapper, CollectPo
         return super.deleteById(collectId);
     }
 
+    @Override
+    public List<CollectVo> listByCareerTalkOrCampusRecruitmentId(CollectType type, Long careerTalkOrCampusRecruitmentId) {
+        EntityWrapper entityWrapper = new EntityWrapper();
+        entityWrapper.eq("type", type);
+        switch (type){
+            case CAREERTALK:
+                entityWrapper.eq("career_talk_id", careerTalkOrCampusRecruitmentId);
+                break;
+            case CAMPUSRECRUITMENT:
+                entityWrapper.eq("campus_recruitment_id", careerTalkOrCampusRecruitmentId);
+                break;
+        }
+        List<CollectPo> collectPoList = super.selectList(entityWrapper);
+        List<CollectVo> collectVoList = collectPoList.parallelStream().map(e -> collectPoToVo(e)).collect(Collectors.toList());
+        return collectVoList;
+    }
+
     public CollectVo collectPoToVo(CollectPo collectPo){
         CollectVo collectVo = new CollectVo();
         BeanUtil.copyProperties(collectPo, collectVo);

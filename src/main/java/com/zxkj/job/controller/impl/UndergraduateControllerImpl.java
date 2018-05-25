@@ -1,6 +1,7 @@
 package com.zxkj.job.controller.impl;
 
 import com.zxkj.job.bean.dto.*;
+import com.zxkj.job.bean.po.CareerTalkPo;
 import com.zxkj.job.bean.po.UndergraduatePo;
 import com.zxkj.job.bean.vo.DeliveryInformationVo;
 import com.zxkj.job.bean.vo.ResumeInfoVo;
@@ -179,7 +180,7 @@ public class UndergraduateControllerImpl extends BaseControllerImpl<Undergraduat
 
     @Override
     public String logout(HttpSession httpSession) {
-        httpSession.invalidate();
+        httpSession.removeAttribute("undergraduatePo");
         return "index";
     }
 
@@ -187,7 +188,7 @@ public class UndergraduateControllerImpl extends BaseControllerImpl<Undergraduat
     public ModelAndView getCampusRecruitmentById(Long campusRecruitmentId) {
         ModelAndView modelAndView = new ModelAndView();
         try {
-            modelAndView.addObject("jobCategoryType", JobCategoryType.values());
+            modelAndView.addObject("jobCategoryTypes", JobCategoryType.values());
             modelAndView.addObject("campusRecruitmentVo", campusRecruitmentService.getById(campusRecruitmentId));
         } catch (Exception e) {
             logger.error(e.getMessage());
@@ -239,14 +240,10 @@ public class UndergraduateControllerImpl extends BaseControllerImpl<Undergraduat
     }
 
     @Override
-    public ModelAndView personalCenter(HttpSession httpSession) {
-        ModelAndView modelAndView = new ModelAndView();
-        String email = checkLogin(modelAndView, httpSession);
-        if(org.springframework.util.StringUtils.isEmpty(email)){
-            return modelAndView;
-        }
+    public ModelAndView personalCenter(HttpSession httpSession, ModelAndView modelAndView) {
+        UndergraduatePo undergraduatePo = (UndergraduatePo)httpSession.getAttribute("undergraduatePo");
         try{
-            modelAndView.addObject("undergraduateVo", service.getByEmail(email));
+            modelAndView.addObject("undergraduateVo", service.getByEmail(undergraduatePo.getEmail()));
         }catch (Exception e){
             modelAndView.addObject("errorMessage", e.getMessage());
         }
@@ -257,12 +254,9 @@ public class UndergraduateControllerImpl extends BaseControllerImpl<Undergraduat
     @Override
     public ModelAndView infoUpdate(HttpSession httpSession) {
         ModelAndView modelAndView = new ModelAndView();
-        String email = checkLogin(modelAndView, httpSession);
-        if(org.springframework.util.StringUtils.isEmpty(email)){
-            return modelAndView;
-        }
         try{
-            modelAndView.addObject("undergraduateVo", service.getByEmail(email));
+            UndergraduatePo undergraduatePo = (UndergraduatePo)httpSession.getAttribute("undergraduatePo");
+            modelAndView.addObject("undergraduateVo", service.getByEmail(undergraduatePo.getEmail()));
             modelAndView.addObject("educationBackgroundType", EducationBackgroundType.values());
             modelAndView.setViewName("undergraduate_info_update");
             return modelAndView;
@@ -276,14 +270,11 @@ public class UndergraduateControllerImpl extends BaseControllerImpl<Undergraduat
     @Override
     public ModelAndView infoUpdate(UndergraduateDto undergraduateDto, HttpSession httpSession) {
         ModelAndView modelAndView = new ModelAndView();
-        String email = checkLogin(modelAndView, httpSession);
-        if(org.springframework.util.StringUtils.isEmpty(email)){
-            return modelAndView;
-        }
+        UndergraduatePo undergraduatePo = (UndergraduatePo)httpSession.getAttribute("undergraduatePo");
         try {
             if (service.infoUpdate(undergraduateDto, httpSession)) {
                 modelAndView.addObject("message", "更新成功");
-                modelAndView.addObject("undergraduateVo", service.getByEmail(email));
+                modelAndView.addObject("undergraduateVo", service.getByEmail(undergraduatePo.getEmail()));
                 modelAndView.setViewName("undergraduate_personal_center");
                 return modelAndView;
             } else {
@@ -294,7 +285,7 @@ public class UndergraduateControllerImpl extends BaseControllerImpl<Undergraduat
             logger.debug("e: ", e);
             modelAndView.addObject("errorMessage", e.getMessage());
         }
-        modelAndView.addObject("undergraduateVo", service.getByEmail(email));
+        modelAndView.addObject("undergraduateVo", service.getByEmail(undergraduatePo.getEmail()));
         modelAndView.addObject("educationBackgroundType", EducationBackgroundType.values());
         modelAndView.setViewName("undergraduate_info_update");
         return modelAndView;
@@ -310,14 +301,11 @@ public class UndergraduateControllerImpl extends BaseControllerImpl<Undergraduat
     @Override
     public ModelAndView resumeAdd(ResumeDto resumeDto, HttpSession httpSession) {
         ModelAndView modelAndView = new ModelAndView();
-        String email = checkLogin(modelAndView, httpSession);
-        if(org.springframework.util.StringUtils.isEmpty(email)){
-            return modelAndView;
-        }
+        UndergraduatePo undergraduatePo = (UndergraduatePo)httpSession.getAttribute("undergraduatePo");
         try {
             if (resumeService.add(resumeDto, httpSession)) {
                 modelAndView.addObject("message", "添加成功");
-                modelAndView.addObject("undergraduateVo", service.getByEmail(email));
+                modelAndView.addObject("undergraduateVo", service.getByEmail(undergraduatePo.getEmail()));
                 modelAndView.setViewName("undergraduate_personal_center");
                 return modelAndView;
             } else {
@@ -335,22 +323,12 @@ public class UndergraduateControllerImpl extends BaseControllerImpl<Undergraduat
     @Override
     public PagedResult listResume(PageDto pageDto, HttpSession httpSession) {
         ModelAndView modelAndView = new ModelAndView();
-        String email = checkLogin(modelAndView, httpSession);
-        if(org.springframework.util.StringUtils.isEmpty(email)){
-            throw JobException.NOT_LOGGED_IN_EXCEPTION;
-        }
         return resumeService.list(pageDto, httpSession);
     }
 
     @Override
     public ModelMap deleteResume(Long resumeId, HttpSession httpSession) {
-        ModelAndView modelAndView = new ModelAndView();
-        String email = checkLogin(modelAndView, httpSession);
         ModelMap modelMap = new ModelMap();
-        if(org.springframework.util.StringUtils.isEmpty(email)){
-            modelMap.addAttribute("errorMessage", "您还未登录");
-            return modelMap;
-        }
         try {
             if (resumeService.deleteByResumeId(resumeId, httpSession)) {
                 modelMap.addAttribute("message", "删除成功");
@@ -366,11 +344,8 @@ public class UndergraduateControllerImpl extends BaseControllerImpl<Undergraduat
 
     @Override
     public ModelAndView updateResume(Long resumeId, HttpSession httpSession, ModelAndView modelAndView) {
-        String email = checkLogin(modelAndView, httpSession);
-        if(org.springframework.util.StringUtils.isEmpty(email)){
-            return modelAndView;
-        }
-        modelAndView.addObject("undergraduateVo", service.getByEmail(email));
+        UndergraduatePo undergraduatePo = (UndergraduatePo)httpSession.getAttribute("undergraduatePo");
+        modelAndView.addObject("undergraduateVo", service.getByEmail(undergraduatePo.getEmail()));
         try {
             ResumeVo resumeVo = resumeService.selectOneById(resumeId, httpSession);
             modelAndView.addObject("resumeVo", resumeVo);
@@ -396,16 +371,13 @@ public class UndergraduateControllerImpl extends BaseControllerImpl<Undergraduat
     @Override
     public ModelAndView resumeEducationBackgroundAdd(EducationBackgroundDto educationBackgroundDto, HttpSession httpSession) {
         ModelAndView modelAndView = new ModelAndView();
-        String email = checkLogin(modelAndView, httpSession);
-        if(org.springframework.util.StringUtils.isEmpty(email)){
-            return modelAndView;
-        }
+        UndergraduatePo undergraduatePo = (UndergraduatePo)httpSession.getAttribute("undergraduatePo");
         try {
             if (educationBackgroundService.add(educationBackgroundDto)) {
                 modelAndView.addObject("message", "添加成功");
                 ResumeVo resumeVo = resumeService.selectOneById(educationBackgroundDto.getResumeId(), httpSession);
                 modelAndView.addObject("resumeVo", resumeVo);
-                modelAndView.addObject("undergraduateVo", service.getByEmail(email));
+                modelAndView.addObject("undergraduateVo", service.getByEmail(undergraduatePo.getEmail()));
                 modelAndView.setViewName("undergraduate_resume_update");
                 return modelAndView;
             } else {
@@ -479,11 +451,17 @@ public class UndergraduateControllerImpl extends BaseControllerImpl<Undergraduat
     }
 
     @Override
-    public ModelAndView deliverResume(Long professionalId, Long campusRecruitmentId, HttpSession httpSession, ModelAndView modelAndView) {
+    public ModelAndView deliverResume(Long professionalId, Long careerTalkOrCampusRecruitmentId, HttpSession httpSession, ModelAndView modelAndView) {
         modelAndView.addObject("professionalId", professionalId);
-        modelAndView.addObject("professionalVoList", campusRecruitmentService.getById(campusRecruitmentId).getProfessionalVoList());
+        CareerTalkPo careerTalkPo = careerTalkService.selectById(careerTalkOrCampusRecruitmentId);
+        if(careerTalkPo != null){
+            modelAndView.addObject("professionalVoList", careerTalkService.getByCareerTalkId(careerTalkOrCampusRecruitmentId).getProfessionalVoList());
+        }else{
+            modelAndView.addObject("professionalVoList", campusRecruitmentService.getById(careerTalkOrCampusRecruitmentId).getProfessionalVoList());
+        }
         UndergraduatePo undergraduatePo = (UndergraduatePo)httpSession.getAttribute("undergraduatePo");
         modelAndView.addObject("resumeVoList", resumeService.list(undergraduatePo.getId(), undergraduatePo.getAcquiescenceResumeId()));
+        modelAndView.addObject("careerTalkOrCampusRecruitmentId", careerTalkOrCampusRecruitmentId);
         modelAndView.setViewName("undergraduate_deliver_resume");
         return modelAndView;
     }
@@ -593,17 +571,6 @@ public class UndergraduateControllerImpl extends BaseControllerImpl<Undergraduat
         return updateResume(resumeDto.getId(), httpSession, modelAndView);
     }
 
-    public String checkLogin(ModelAndView modelAndView, HttpSession httpSession){
-        Object emailObj = httpSession.getAttribute("email");
-        if (org.springframework.util.StringUtils.isEmpty(emailObj)) {
-//            throw JobException.NOT_LOGGED_IN_EXCEPTION;
-            modelAndView.addObject("errorMessage", "您还未登录");
-            modelAndView.setViewName("undergraduate_login");
-            return null;
-        }
-        return emailObj.toString();
-    }
-
     @Override
     public ModelMap checkDeliverResumeUpdate(Long deliveryInformationId) {
         ModelMap modelMap = new ModelMap();
@@ -644,22 +611,6 @@ public class UndergraduateControllerImpl extends BaseControllerImpl<Undergraduat
     @Override
     public PagedResult listCollect(PageDto pageDto, HttpSession httpSession) {
         return collectService.list(pageDto, httpSession);
-    }
-
-    @Override
-    public ModelAndView getCareerTalkOrCampusRecruitmentById(Long id, CollectType type) {
-        if(type == CollectType.CAMPUSRECRUITMENT){
-            return getCampusRecruitmentById(id);
-        }else if(type == CollectType.CAREERTALK){
-            return getCareerTalkById(id, new ModelAndView());
-        }
-        return null;
-    }
-
-    @Override
-    public ModelAndView getCareerTalkById(Long careerTalkId, ModelAndView modelAndView) {
-        modelAndView.setViewName("career_talk_info");
-        return modelAndView;
     }
 
     @Override

@@ -22,7 +22,7 @@ public interface AdministratorService extends IService<AdministratorPo> {
 
     String register(String email, String code);
 
-    String login(LoginAdministratorDto loginAdministratorDto);
+    AdministratorPo login(LoginAdministratorDto loginAdministratorDto);
 
     /**
      * 管理员验证身份

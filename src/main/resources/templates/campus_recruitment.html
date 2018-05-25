@@ -23,6 +23,9 @@
     <div class="layui-body">
         <!-- 内容主体区域 -->
         <div style="padding: 15px;">
+            <div style="margin-bottom:10px">
+                <h1>校园招聘查询系统</h1>
+            </div>
             <blockquote class="layui-elem-quote">
                 <form class="layui-form">
                     <input type="text" id="myInput" onkeyup="myFunction()" placeholder="搜索 公司/职位">
@@ -32,7 +35,7 @@
                 <form class="layui-form">
                     <select lay-filter="province_filter">
                         <option value="">不限</option>
-                        <tr th:each="provinceType : ${provinceType}">
+                        <tr th:each="provinceType : ${session.provinces}">
                             <option th:value="${provinceType.type}"><span th:text="${provinceType.name}"></span>
                             </option>
                         </tr>
@@ -109,6 +112,7 @@
             height: 'full',
             url: '/visitor/list-campus-recruitment-by-professional-dto',
             even: true,
+            page:true,
             cols: [[ //表头
                 {align: 'center', field: 'title', unresize: true, title: '公司标题'},
                 {align: 'center', field: 'professionalVoList', unresize: true, templet: '#job_name_s', title: '招聘职位'},
@@ -126,6 +130,7 @@
             height: 'full',
             url: '/visitor/list-campus-recruitment-by-professional-dto',
             even: true,
+            page:true,
             cols: [[ //表头
                 {align: 'center', field: 'title', unresize: true, title: '公司标题'},
                 {align: 'center', field: 'professionalVoList', unresize: true, templet: '#job_name_s', title: '招聘职位'},

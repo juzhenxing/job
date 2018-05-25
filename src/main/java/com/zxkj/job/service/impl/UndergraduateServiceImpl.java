@@ -62,7 +62,6 @@ public class UndergraduateServiceImpl extends BaseServiceImpl<UndergraduateMappe
         } else if (!undergraduatePo.getPassword().equals(simpleUndergraduateDto.getPassword())) {
             throw JobException.WRONG_PASSWORD_EXCEPTION;
         } else {
-            httpSession.setAttribute("email", undergraduatePo.getEmail());
             httpSession.setAttribute("undergraduatePo", undergraduatePo);
         }
         return true;

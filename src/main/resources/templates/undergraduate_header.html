@@ -27,7 +27,7 @@
             <a th:href="@{/visitor/campus-recruitment}">校招网申</a>
         </li>
     </ul>
-    <div th:if="${session.email eq null}">
+    <div th:if="${session.undergraduatePo eq null}">
         <ul class="layui-nav layui-layout-right">
             <li class="layui-nav-item">
                 <a th:href="@{/enterprise/index}">企业登录</a>
@@ -37,14 +37,14 @@
             </li>
         </ul>
     </div>
-    <div th:if="${session.email ne null}">
+    <div th:if="${session.undergraduatePo ne null}">
         <ul class="layui-nav layui-layout-right">
             <li class="layui-nav-item">
                 <a th:href="@{/undergraduate/personal-center}">我的简历</a>
             </li>
             <li class="layui-nav-item">
                 <a href="javascript:;">
-                    <p th:text="'hi, ' + ${session.email}"></p>
+                    <p th:text="'hi, ' + ${session.undergraduatePo.email}"></p>
                 </a>
                 <dl class="layui-nav-child">
                     <dd><a th:href="@{/undergraduate/personal-center}">个人中心</a></dd>
@@ -60,9 +60,8 @@
 //        alert(provinceType);
             window.location.href = 'http://localhost:8080/visitor/index?province=' + provinceType;
         }
-//        alert([[${session.province.name}]]);
         /*[+
-            if([[${session.province.name}]] != null){
+            if([[${session.province}]] != null){
                 $("#select_province_span").text([[${session.province.name}]]);
             }else{
                 window.location.href = 'http://localhost:8080/visitor/index';

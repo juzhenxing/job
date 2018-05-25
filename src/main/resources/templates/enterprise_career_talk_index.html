@@ -32,7 +32,7 @@
                     <th lay-data="{align: 'center', field:'createTime', width:200, sort: true, unresize:true, rowspan: 2, templet: '#create_time'}">
                         发布时间
                     </th>
-                    <th lay-data="{align: 'center', width:150, toolbar: '#barDemo', unresize:true, rowspan: 2}">操作</th>
+                    <th lay-data="{align: 'center', toolbar: '#barDemo', unresize:true, rowspan: 2}">操作</th>
                 </tr>
                 <tr>
                     <th lay-data="{align: 'center', field:'startTime', width:200, sort: true, unresize:true, templet: '#start_time'}">
@@ -56,6 +56,7 @@
 <script type="text/javascript" th:src="@{~/js/jquery-3.3.1.min.js}"></script>
 <!--<script type="text/javascript" th:src="@{~/js/jquery.min.js}"></script>-->
 <script type="text/html" id="barDemo">
+    <a class="layui-btn layui-btn-xs" lay-event="detail">详情</a>
     <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
     <a class="layui-btn layui-btn-xs layui-btn-danger" lay-event="del">删除</a>
 </script>
@@ -81,13 +82,11 @@
     /*[+
         if([[${errorMessage}]] != null){
             toastr.error([[${errorMessage}]]);
-            toastr.cancel();
         }
     +]*/
     /*[+
         if([[${message}]] != null){
             toastr.success([[${message}]]);
-            toastr.cancel();
         }
     +]*/
 </script>
@@ -224,6 +223,41 @@
         $(document).on('click', '#add_form_btn', function () {
             var form = document.getElementById("form1");
             var formData = new FormData(form);
+            var startTime = document.getElementById("startTime");
+            var endTime = document.getElementById("endTime");
+            var location = document.getElementById("location");
+            var preachingText = document.getElementById("preachingText");
+            if(startTime.value == ""){
+                toastr.error("开始时间不能为空");
+                return false;
+            }
+            if(endTime.value == ""){
+                toastr.error("结束时间不能为空");
+                return false;
+            }
+            if(location.value == ""){
+                toastr.error("地点不能为空");
+                return false;
+            }
+            if(preachingText.value == ""){
+                toastr.error("宣讲正文不能为空");
+                return false;
+            }
+            var operationType = $('input[name="operationType"]:checked').val();
+            var applyUrl = document.getElementById("applyUrl");
+            if(operationType == 1){
+                if($("input[name='professionalIds']:checked").length == 0) {
+                    toastr.error("职位不能为空");
+                    return false;
+                }
+            }
+            if(operationType == 2){
+//                alert(applyUrl.value);
+                if(applyUrl.value == ""){
+                    toastr.error("网申地址不能为空");
+                    return false;
+                }
+            }
             $.ajax({
                 url: '/enterprise/add-career-talk',
                 type: 'POST',
@@ -245,6 +279,11 @@
             });
             layui.layer.close(layui.layer.index);
             $("#add_form").css("display", "none");
+            layui.table.reload('test', {
+                url: '/enterprise/list-career-talk'
+                , where: {} //设定异步数据接口的额外参数
+                //,height: 300
+            });
         });
     }
 
@@ -268,15 +307,8 @@
                             title: '修改宣讲会',
                             type: 2,
                             maxmin: true,
-                            area: ['900px', '400px'],
-                            content: ['http://localhost:8080/enterprise/update-career-talk?careerTalkId=' + data.id, 'no'], //这里content是一个URL，如果你不想让iframe出现滚动条，你还可以content: ['http://sentsin.com', 'no']
-                            end: function () {
-                                layui.table.reload('test', {
-                                    url: '/enterprise/list-career-talk'
-                                    , where: {} //设定异步数据接口的额外参数
-                                    //,height: 300
-                                });
-                            }
+                            area: ['900px', '500px'],
+                            content: ['http://localhost:8080/enterprise/update-career-talk?careerTalkId=' + data.id, 'no'] //这里content是一个URL，如果你不想让iframe出现滚动条，你还可以content: ['http://sentsin.com', 'no']
                         });
                     }
                 });
@@ -316,8 +348,31 @@
                     url: '/enterprise/list-career-talk'
                     , where: {} //设定异步数据接口的额外参数
                     //,height: 300
+                    ,page: {
+                        curr: 1 //重新从第 1 页开始
+                    }
                 });
+                location.reload();
             });
+        }else if(layEvent === 'detail'){ //查看
+            $.get("/enterprise/check-get-career-talk-by-id?careerTalkId="+ data.id,
+                function (result, status) {
+                    console.log("Data: " + result + "\nStatus: " + status);
+                    var json = result;
+                    if (json.errorMessage != null) {
+                        toastr.error(json.errorMessage);
+                    } else {
+                        console.log(data.id);
+                        //do somehing
+                        layer.open({
+                            title: ['详情', 'font-size:18px;'],
+                            type: 2,
+                            content: 'http://localhost:8080/enterprise/get-career-talk-by-id?careerTalkId='+ data.id,
+                            area: ['500px', '600px']
+                        });
+                    }
+                }
+            );
         }
     });
     //页面层
@@ -336,11 +391,51 @@
             }
         });
     });
-    //    layui.form.on('radio(filter)', function(data){
-    //        console.log(data.elem); //得到radio原始DOM对象
-    //        console.log(data.value); //被点击的radio的value值
-    //        layui.form.render();
-    //    });
+    function getChildrenData(data) {
+        var formData = new FormData(data);
+        $.ajax({
+            url: '/enterprise/update-career-talk',
+            type: 'POST',
+            data: formData,
+            cache: false,
+            processData: false,
+            contentType: false,
+            async: false,
+            success: function (data) {
+                console.log(data);
+                if (data.message != null) {
+                    toastr.success(data.message);
+                } else if (data.errorMessage != null) {
+                    toastr.error(data.errorMessage);
+                }
+            },
+            error: function (data) {
+                toastr.error("请求失败");
+            }
+        });
+        layui.table.reload('test', {
+            url: '/enterprise/list-career-talk'
+            , where: {} //设定异步数据接口的额外参数
+            //,height: 300
+        });
+    }
+    layui.form.on('radio(operationType)', function(data){
+        console.log(data.elem); //得到radio原始DOM对象
+        console.log(data.value); //被点击的radio的value值
+        if(data.value == 1){
+            $("#professionalIds_div").css("display", "inline");
+            $("#applyUrl_div").css("display", "none");
+        }else if(data.value == 2){
+            $("#professionalIds_div").css("display", "none");
+            $("#applyUrl_div").css("display", "inline");
+        }
+    });
+    document.onkeypress = function(){
+        if(event.keyCode == 13)
+        {
+            return  false;
+        }
+    }
 </script>
 </body>
 <div style="display: none;margin-top: 10px;padding: 10px" id="add_form" name="add_form">
@@ -349,17 +444,17 @@
             <label class="layui-form-label">所在高校</label>
             <div class="layui-input-block">
                 <div class="layui-input-inline" style="width: 200px;">
-                    <select id="province" name="province" lay-filter="province">
+                    <select id="province" name="province" lay-filter="province" lay-verify="required">
                         <!--<option value="">省份</option>-->
                     </select>
                 </div>
                 <div class="layui-input-inline" style="width: 200px;">
-                    <select id="city" name="city" lay-filter="city">
+                    <select id="city" name="city" lay-filter="city" lay-verify="required">
                         <!--<option value="">城市</option>-->
                     </select>
                 </div>
                 <div class="layui-input-inline" style="width: 200px;">
-                    <select id="school" name="school" lay-filter="school">
+                    <select id="school" name="school" lay-filter="school" lay-verify="required">
                         <!--<option value="">学校</option>-->
                     </select>
                 </div>
@@ -373,8 +468,8 @@
                            required lay-verify="required">
                 </div>
                 <div class="layui-input-inline" style="width: 200px;">
-                    <input type="text" class="layui-input" id="endTime" name="endTime" placeholder="请输入宣讲结束时间" required
-                           lay-verify="required">
+                    <input type="text" class="layui-input" id="endTime" name="endTime" placeholder="请输入宣讲结束时间"
+                           required lay-verify="required">
                 </div>
             </div>
         </div>
@@ -382,16 +477,9 @@
             <label class="layui-form-label">举办地点</label>
             <div class="layui-input-block">
                 <div class="layui-input-inline" style="width: 400px;">
-                    <input type="text" name="location" id="location" required lay-verify="required" placeholder="请输入举办地点"
+                    <input type="text" name="location" id="location" lay-verify="required" placeholder="请输入举办地点"
                            autocomplete="off" class="layui-input">
                 </div>
-            </div>
-        </div>
-        <div class="layui-form-item">
-            <label class="layui-form-label">申请方式</label>
-            <div class="layui-input-block">
-                <input type="radio" name="operationType" value="1" title="投简历">
-                <input type="radio" name="operationType" value="2" title="网申" checked>
             </div>
         </div>
         <div class="layui-form-item">
@@ -401,6 +489,13 @@
             </div>
         </div>
         <div class="layui-form-item">
+            <label class="layui-form-label">申请方式</label>
+            <div class="layui-input-block">
+                <input type="radio" name="operationType" value="1" title="投简历" checked lay-filter="operationType">
+                <input type="radio" name="operationType" value="2" title="网申" lay-filter="operationType">
+            </div>
+        </div>
+        <div class="layui-form-item" id="professionalIds_div">
             <label class="layui-form-label">职位</label>
             <div class="layui-input-block">
                 <tr th:each="professionalVo : ${professionalVoList}">
@@ -409,7 +504,13 @@
                 <!--<input type="hidden" th:name="professionalIds">-->
             </div>
         </div>
-        <div class="layui-form-item">
+        <div class="layui-form-item" style="display: none;" id="applyUrl_div">
+            <label class="layui-form-label">网申地址</label>
+            <div class="layui-input-block">
+                <input type="url" name="applyUrl" id="applyUrl" placeholder="请输入网申入口" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item" style="margin-top: 10px">
             <div class="layui-input-block">
                 <button type="button" class="layui-btn layui-btn-primary" id="add_form_btn">添加</button>
                 <button type="reset" class="layui-btn layui-btn-primary">重置</button>

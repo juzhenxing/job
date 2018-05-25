@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.zxkj.job.bean.dto.*;
 import com.zxkj.job.bean.po.CampusRecruitmentProfessionalRPo;
+import com.zxkj.job.bean.po.CareerTalkProfessionalRPo;
 import com.zxkj.job.bean.po.EnterprisePo;
 import com.zxkj.job.bean.po.ProfessionalPo;
 import com.zxkj.job.bean.vo.EnterpriseVo;
@@ -17,6 +18,7 @@ import com.zxkj.job.exp.JobException;
 import com.zxkj.job.mapper.EnterpriseMapper;
 import com.zxkj.job.mapper.ProfessionalMapper;
 import com.zxkj.job.service.CampusRecruitmentProfessionalRService;
+import com.zxkj.job.service.CareerTalkProfessionalRService;
 import com.zxkj.job.service.EnterpriseService;
 import com.zxkj.job.service.ProfessionalService;
 import com.zxkj.job.util.BeanUtil;
@@ -50,9 +52,12 @@ public class ProfessionalServiceImpl extends BaseServiceImpl<ProfessionalMapper,
     @Autowired
     CampusRecruitmentProfessionalRService campusRecruitmentProfessionalRService;
 
+    @Autowired
+    CareerTalkProfessionalRService careerTalkProfessionalRService;
+
     @Override
     public Boolean add(ProfessionalDto professionalDto, HttpSession httpSession) {
-        EnterpriseVo enterpriseVo = checkEnterpriseVo(httpSession);
+        EnterpriseVo enterpriseVo = (EnterpriseVo)httpSession.getAttribute("enterpriseVo");
         ProfessionalPo professionalPo = new ProfessionalPo();
         BeanUtil.copyProperties(professionalDto, professionalPo);
         checkId(enterpriseVo.getId());
@@ -73,21 +78,21 @@ public class ProfessionalServiceImpl extends BaseServiceImpl<ProfessionalMapper,
 
     @Override
     public Boolean deleteByProfessionalId(Long professionalId, HttpSession httpSession) {
-        EnterpriseVo enterpriseVo = checkEnterpriseVo(httpSession);
+        EnterpriseVo enterpriseVo = (EnterpriseVo)httpSession.getAttribute("enterpriseVo");
         checkProfessionalPo(professionalId, enterpriseVo.getId());
         return super.deleteById(professionalId);
     }
 
     @Override
     public ProfessionalVo getById(Long professionalId, HttpSession httpSession) {
-        EnterpriseVo enterpriseVo = checkEnterpriseVo(httpSession);
+        EnterpriseVo enterpriseVo = (EnterpriseVo)httpSession.getAttribute("enterpriseVo");
         ProfessionalPo professionalPo = checkProfessionalPo(professionalId, enterpriseVo.getId());
         return professionalPoToVo(professionalPo);
     }
 
     @Override
     public ProfessionalUpdateVo getProfessionalUpdateVoById(Long professionalId, HttpSession httpSession) {
-        EnterpriseVo enterpriseVo = checkEnterpriseVo(httpSession);
+        EnterpriseVo enterpriseVo = (EnterpriseVo)httpSession.getAttribute("enterpriseVo");
         ProfessionalPo professionalPo = checkProfessionalPo(professionalId, enterpriseVo.getId());
         ProfessionalUpdateVo professionalUpdateVo = new ProfessionalUpdateVo();
         BeanUtil.copyProperties(professionalPo, professionalUpdateVo);
@@ -96,7 +101,7 @@ public class ProfessionalServiceImpl extends BaseServiceImpl<ProfessionalMapper,
 
     @Override
     public Boolean updateById(ProfessionalDto professionalDto, HttpSession httpSession) {
-        EnterpriseVo enterpriseVo = checkEnterpriseVo(httpSession);
+        EnterpriseVo enterpriseVo = (EnterpriseVo)httpSession.getAttribute("enterpriseVo");
         ProfessionalPo professionalPo = checkProfessionalPo(professionalDto.getId(), enterpriseVo.getId());
         BeanUtil.copyProperties(professionalDto, professionalPo);
         return super.updateById(professionalPo);
@@ -141,6 +146,23 @@ public class ProfessionalServiceImpl extends BaseServiceImpl<ProfessionalMapper,
         return professionalPoToVo(professionalPo);
     }
 
+    @Override
+    public PagedResult listProfessionalByCareerTalkId(PageDto pageDto, Long careerTalkId) {
+        Page page = new Page(pageDto.getPage(), pageDto.getLimit());
+//        logger.error("起始页：" + pageDto.getPage() + ", 页面大小：" + pageDto.getLimit());
+        Wrapper wrapper = new EntityWrapper();
+        wrapper.eq("career_talk_id", careerTalkId);
+        Page careerTalkProfessionalRPoPage = careerTalkProfessionalRService.selectPage(page, wrapper);
+        List<CareerTalkProfessionalRPo> careerTalkProfessionalRPos = careerTalkProfessionalRPoPage.getRecords();
+        List<Long> professionalIds = careerTalkProfessionalRPos.parallelStream().map(e -> e.getProfessionalId()).collect(Collectors.toList());
+        List<ProfessionalPo> professionalPos = super.selectBatchIds(professionalIds);
+        List<ProfessionalVo> professionalVos = professionalPos.parallelStream().map(e -> professionalPoToVo(e)).collect(Collectors.toList());
+        PagedResult pagedResult = new PagedResult();
+        pagedResult.setData(professionalVos);
+        pagedResult.setCount(careerTalkProfessionalRPoPage.getTotal());
+        return pagedResult;
+    }
+
     public ProfessionalVo professionalPoToVo(ProfessionalPo professionalPo){
         ProfessionalVo professionalVo = new ProfessionalVo();
         BeanUtil.copyProperties(professionalPo, professionalVo);
@@ -161,13 +183,5 @@ public class ProfessionalServiceImpl extends BaseServiceImpl<ProfessionalMapper,
         if (StringUtils.isEmpty(id)) {
             throw JobException.NULL_ENTERPRISE_ID_EXCEPTION;
         }
-    }
-
-    public EnterpriseVo checkEnterpriseVo(HttpSession httpSession) {
-        Object enterpriseObj = httpSession.getAttribute("enterpriseVo");
-        if (StringUtils.isEmpty(enterpriseObj)) {
-            throw JobException.NOT_LOGGED_IN_EXCEPTION;
-        }
-        return (EnterpriseVo) enterpriseObj;
     }
 }

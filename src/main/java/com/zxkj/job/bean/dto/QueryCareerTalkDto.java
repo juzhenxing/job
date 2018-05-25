@@ -20,4 +20,6 @@ public class QueryCareerTalkDto {
 
     private String key;
 
+    private String school;
+
 }

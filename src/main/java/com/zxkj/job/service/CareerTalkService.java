@@ -8,6 +8,7 @@ import com.zxkj.job.bean.dto.SimpleUndergraduateDto;
 import com.zxkj.job.bean.po.CareerTalkPo;
 import com.zxkj.job.bean.po.UndergraduatePo;
 import com.zxkj.job.bean.vo.CareerTalkUpdateVo;
+import com.zxkj.job.bean.vo.CareerTalkVo;
 import com.zxkj.job.common.bean.PagedResult;
 import com.zxkj.job.enums.ProvinceType;
 
@@ -26,10 +27,12 @@ public interface CareerTalkService extends IService<CareerTalkPo> {
 
     CareerTalkUpdateVo selectOneById(Long careerTalkId, HttpSession httpSession);
 
-    Boolean updateById(CareerTalkDto careerTalkDto, HttpSession httpSession) throws ParseException;
+    Boolean updateById(CareerTalkDto careerTalkDto, HttpSession httpSession) throws ParseException, IOException;
 
     PagedResult list(PageDto pageDto);
 
     PagedResult listByQueryDto(QueryCareerTalkDto queryCareerTalkDto, PageDto pageDto);
+
+    CareerTalkVo getByCareerTalkId(Long careerTalkId);
 
 }

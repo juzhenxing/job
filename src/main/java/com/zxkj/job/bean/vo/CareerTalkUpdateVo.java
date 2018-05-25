@@ -8,6 +8,7 @@ import lombok.Data;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * 宣讲会类
@@ -30,5 +31,11 @@ public class CareerTalkUpdateVo extends BaseVo {
     private String school;
 
     private Integer operationType;
+
+    private String preachingTextFileName;
+
+    private List<ProfessionalVo> professionalVoList;
+
+    private String applyUrl;
 
 }

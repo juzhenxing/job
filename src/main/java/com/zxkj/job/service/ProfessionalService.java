@@ -35,4 +35,6 @@ public interface ProfessionalService extends IService<ProfessionalPo> {
     List<ProfessionalVo> listByProfessionalIds(List<Long> professionalIds);
 
     ProfessionalVo getById(Long professionalId);
+
+    PagedResult listProfessionalByCareerTalkId(PageDto pageDto, Long careerTalkId);
 }

@@ -28,7 +28,7 @@ public interface CampusRecruitmentService extends IService<CampusRecruitmentPo> 
 
     CampusRecruitmentVo getById(Long campusRecruitmentId, HttpSession httpSession);
 
-    ResponseEntity<InputStreamResource> downloadGeneralRegulation(String generalRegulationFileName) throws IOException;
+    void checkUpdateById(Long campusRecruitmentId);
 
     Boolean updateById(CampusRecruitmentDto campusRecruitmentDto, HttpSession httpSession) throws IOException;
 

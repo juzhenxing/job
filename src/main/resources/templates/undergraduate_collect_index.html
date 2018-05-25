@@ -104,9 +104,9 @@
             });
         }else if(layEvent === 'detail'){
             if(data.type === '校招'){
-                window.location.href = 'http://localhost:8080/undergraduate/get-career-talk-or-campus-recruitment-by-id?id='+ data.campusRecruitmentId + '&type=2';
+                window.location.href = 'http://localhost:8080/visitor/get-campus-recruitment-by-id?campusRecruitmentId=' + data.campusRecruitmentId;
             }else if(data.type === '宣讲会'){
-                window.location.href = 'http://localhost:8080/undergraduate/get-career-talk-or-campus-recruitment-by-id?id='+ data.careerTalkId + '&type=1';
+                window.location.href = 'http://localhost:8080/visitor/get-career-talk-by-id?careerTalkId=' + data.careerTalkId;
             }
         }
     });

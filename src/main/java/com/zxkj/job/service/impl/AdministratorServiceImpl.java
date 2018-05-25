@@ -86,7 +86,7 @@ public class AdministratorServiceImpl extends BaseServiceImpl<AdministratorMappe
     }
 
     @Override
-    public String login(LoginAdministratorDto loginAdministratorDto) {
+    public AdministratorPo login(LoginAdministratorDto loginAdministratorDto) {
         AdministratorPo administratorPo = super.baseMapper.selectOneByUsernameOrEmail(loginAdministratorDto.getUsernameOrEmail());
         if(administratorPo == null){
             throw JobException.NULL_ADMINISTRATOR_EXCEPTION;
@@ -95,7 +95,7 @@ public class AdministratorServiceImpl extends BaseServiceImpl<AdministratorMappe
                 throw JobException.WRONG_PASSWORD_EXCEPTION;
             }
         }
-        return administratorPo.getUserName();
+        return administratorPo;
     }
 
     @Override

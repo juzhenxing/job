@@ -72,8 +72,8 @@ public class AdministratorControllerImpl extends BaseControllerImpl<Administrato
     public ModelAndView login(LoginAdministratorDto loginAdministratorDto, HttpSession httpSession) {
         ModelAndView modelAndView = new ModelAndView();
         try{
-            String userName = service.login(loginAdministratorDto);
-            httpSession.setAttribute("userName", userName);
+            AdministratorPo administratorPo = service.login(loginAdministratorDto);
+            httpSession.setAttribute("administratorPo", administratorPo);
             modelAndView.setViewName("administrator_homepage");
         }catch (Exception e){
             e.printStackTrace();
@@ -85,7 +85,7 @@ public class AdministratorControllerImpl extends BaseControllerImpl<Administrato
 
     @Override
     public String logout(HttpSession httpSession) {
-        httpSession.invalidate();
+        httpSession.removeAttribute("administratorPo");
         return "administrator_login";
     }
 

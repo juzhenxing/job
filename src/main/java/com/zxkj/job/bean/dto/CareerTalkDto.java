@@ -48,7 +48,8 @@ public class CareerTalkDto {
     @NotNull(message = "宣讲正文不能为空")
     private MultipartFile preachingText;
 
-    @NotNull(message = "职位不能为空")
     private List<Long> professionalIds;
+
+    private String applyUrl;
 
 }

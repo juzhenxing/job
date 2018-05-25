@@ -92,16 +92,12 @@ public interface EnterpriseController {
     @ResponseBody
     ModelMap deleteCareerTalk(Long careerTalkId, HttpSession httpSession);
 
-    @GetMapping("check-update-career-talk")
-    @ResponseBody
-    ModelMap checkUpdateCareerTalk(Long careerTalkId, HttpSession httpSession);
-
     @GetMapping("update-career-talk")
-//    @ResponseBody
     ModelAndView updateCareerTalk(Long careerTalkId, HttpSession httpSession);
 
     @PostMapping("update-career-talk")
-    ModelAndView updateCareerTalk(CareerTalkDto careerTalkDto, HttpSession httpSession);
+    @ResponseBody
+    ModelMap updateCareerTalk(CareerTalkDto careerTalkDto, HttpSession httpSession);
 
     @GetMapping("add-professional")
     ModelAndView addProfessional();
@@ -187,4 +183,19 @@ public interface EnterpriseController {
     @GetMapping("check-deliver-resume-update")
     @ResponseBody
     ModelMap checkDeliverResumeUpdate(Long deliveryInformationId);
+
+    @GetMapping("check-update-career-talk")
+    @ResponseBody
+    ModelMap checkUpdateCareerTalk(Long careerTalkId, HttpSession httpSession);
+
+    @GetMapping("check-get-career-talk-by-id")
+    @ResponseBody
+    ModelMap checkGetCareerTalkById(Long careerTalkId, HttpSession httpSession);
+
+    @GetMapping("get-career-talk-by-id")
+    @ResponseBody
+    ModelAndView getCareerTalkById(Long careerTalkId, HttpSession httpSession, ModelAndView modelAndView);
+
+    @GetMapping("download-preaching-text")
+    ResponseEntity<InputStreamResource> downloadPreachingText(String preachingTextFileName);
 }

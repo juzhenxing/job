@@ -18,14 +18,14 @@
         <div class="navbar-header">
             <a class="navbar-brand">企业后台</a>
         </div>
-        <div th:if="${session.userName ne null}" class='navbar-right'>
+        <div th:if="${session.enterpriseVo ne null}" class='navbar-right'>
             <div style="margin-right: 20px">
                 <a th:href="@{/enterprise/logout}" class="btn btn-default navbar-btn navbar-right">
                     <span class="glyphicon glyphicon-off"></span>注销
                 </a>
             </div>
         </div>
-        <div th:if="${session.userName eq null}">
+        <div th:if="${session.enterpriseVo eq null}">
             <div>
                 <a th:href="@{/enterprise/login}" class="btn btn-default navbar-btn navbar-right" style="margin-right: 20px">
                     <span class="glyphicon glyphicon-log-in"></span> 登录
@@ -61,16 +61,16 @@
                         注册/登录
                     </div>
                 </div>
-                <div th:if="${session.userName ne null}">
+                <div th:if="${session.enterpriseVo ne null}">
                     <div class="panel-body">
-                        <p th:text="'欢迎您，' + ${session.userName}"></p>
+                        <p th:text="'欢迎您，' + ${session.enterpriseVo.userName}"></p>
                         <a class="btn btn-danger" th:href="@{/enterprise/hr-info-complete}">进入管理后台</a>
                     </div>
                     <div class="panel-body">
                         <a class="btn btn-success" th:href="@{/enterprise/logout}">退出登录</a>
                     </div>
                 </div>
-                <div th:if="${session.userName eq null}">
+                <div th:if="${session.enterpriseVo eq null}">
                     <div class="panel-body">
                         <p>如果您还没有注册，点击按钮注册。</p>
                         <a class="btn btn-danger" th:href="@{/enterprise/pre-register}">企业注册</a>

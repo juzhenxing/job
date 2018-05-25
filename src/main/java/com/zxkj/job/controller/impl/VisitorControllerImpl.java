@@ -15,7 +15,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.ModelAndView;
@@ -89,16 +91,24 @@ public class VisitorControllerImpl implements VisitorController {
             modelAndView.addObject("jobCategoryType", 0);
         }
         modelAndView.addObject("jobCategoryTypes", JobCategoryType.values());
-        modelAndView.addObject("provinceType", ProvinceType.values());
         modelAndView.setViewName("campus_recruitment");
         return modelAndView;
     }
 
     @Override
-    public ModelAndView careerTalk(ModelAndView modelAndView) {
+    public ModelAndView careerTalk(@RequestParam(required = false) ProvinceType province, @RequestParam(required = false) String school, ModelAndView modelAndView) {
         modelAndView.setViewName("career_talk");
-        modelAndView.addObject("jobCategoryType", JobCategoryType.values());
-        modelAndView.addObject("provinceType", ProvinceType.values());
+        if(province == null){
+            province = ProvinceType.BEI_JING;
+        }
+        if(StringUtils.isEmpty(school)){
+            school = "";
+        }
+        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+        HttpSession httpSession = request.getSession();
+        httpSession.setAttribute("province", province);
+        httpSession.setAttribute("provinces", ProvinceType.values());
+        httpSession.setAttribute("school", school);
         return modelAndView;
     }
 
@@ -240,5 +250,17 @@ public class VisitorControllerImpl implements VisitorController {
             return null;
         }
         return emailObj.toString();
+    }
+
+    @Override
+    public ModelAndView getCareerTalkById(Long careerTalkId, ModelAndView modelAndView) {
+        modelAndView.setViewName("career_talk_info");
+        modelAndView.addObject("careerTalkVo", careerTalkService.getByCareerTalkId(careerTalkId));
+        return modelAndView;
+    }
+
+    @Override
+    public PagedResult listProfessionalByCareerTalkId(PageDto pageDto, Long careerTalkId) {
+        return professionalService.listProfessionalByCareerTalkId(pageDto, careerTalkId);
     }
 }

@@ -17,6 +17,7 @@ import com.zxkj.job.enums.StatusType;
 import com.zxkj.job.exp.JobException;
 import com.zxkj.job.service.*;
 import com.zxkj.job.util.BeanUtil;
+import com.zxkj.job.util.FileUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.ResponseEntity;
@@ -71,6 +72,9 @@ public class EnterpriseControllerImpl extends BaseControllerImpl<EnterpriseServi
 
     @Autowired
     EducationBackgroundService educationBackgroundService;
+
+    @Autowired
+    FileUtil fileUtil;
 
     @Override
     public String preRegister() {
@@ -143,7 +147,7 @@ public class EnterpriseControllerImpl extends BaseControllerImpl<EnterpriseServi
 
     @Override
     public String logout(HttpSession httpSession) {
-        httpSession.invalidate();
+        httpSession.removeAttribute("enterpriseVo");
         return "enterprise_index";
     }
 
@@ -157,7 +161,6 @@ public class EnterpriseControllerImpl extends BaseControllerImpl<EnterpriseServi
         ModelAndView modelAndView = new ModelAndView();
         try {
             EnterprisePo enterprisePo = service.login(loginEnterpriseDto);
-            httpSession.setAttribute("userName", enterprisePo.getUserName());
             httpSession.setAttribute("enterpriseVo", service.getById(enterprisePo.getId()));
             if (StringUtils.isEmpty(enterprisePo.getCheckState())) {
                 modelAndView.setViewName("hr_info_complete");
@@ -258,8 +261,8 @@ public class EnterpriseControllerImpl extends BaseControllerImpl<EnterpriseServi
 
     @Override
     public ModelMap addCareerTalk(CareerTalkDto careerTalkDto, HttpSession httpSession) {
-        logger.error(careerTalkDto.getSchool());
-        logger.error("职位数量：" + careerTalkDto.getProfessionalIds().size());
+//        logger.error(careerTalkDto.getSchool());
+//        logger.error("职位数量：" + careerTalkDto.getProfessionalIds().size());
         ModelMap modelMap = new ModelMap();
         try {
             if (careerTalkService.add(careerTalkDto, httpSession)) {
@@ -276,12 +279,7 @@ public class EnterpriseControllerImpl extends BaseControllerImpl<EnterpriseServi
 
     @Override
     public PagedResult listCareerTalk(PageDto pageDto, HttpSession httpSession) {
-        Object enterpriseObj = httpSession.getAttribute("enterpriseVo");
-        if (StringUtils.isEmpty(enterpriseObj)) {
-//            throw JobException.NOT_LOGGED_IN_EXCEPTION;
-            logger.error("您还未登录");
-        }
-        EnterpriseVo enterpriseVo = (EnterpriseVo) enterpriseObj;
+        EnterpriseVo enterpriseVo = (EnterpriseVo)httpSession.getAttribute("enterpriseVo");
         PagedResult pagedResult = careerTalkService.list(pageDto, enterpriseVo.getId());
         return pagedResult;
     }
@@ -303,19 +301,6 @@ public class EnterpriseControllerImpl extends BaseControllerImpl<EnterpriseServi
     }
 
     @Override
-    public ModelMap checkUpdateCareerTalk(Long careerTalkId, HttpSession httpSession) {
-        ModelMap modelMap = new ModelMap();
-        try {
-//            logger.error("careerTalkId: " + careerTalkId);
-            careerTalkService.selectOneById(careerTalkId, httpSession);
-        } catch (Exception e) {
-            logger.error(e.getMessage());
-            modelMap.addAttribute("errorMessage", e.getMessage());
-        }
-        return modelMap;
-    }
-
-    @Override
     public ModelAndView updateCareerTalk(Long careerTalkId, HttpSession httpSession) {
         ModelAndView modelAndView = new ModelAndView();
         try {
@@ -323,6 +308,8 @@ public class EnterpriseControllerImpl extends BaseControllerImpl<EnterpriseServi
 //            modelAndView.addObject("careerTalkUpdateVo", objectMapper.writeValueAsString(careerTalkUpdateVo));
             logger.error(objectMapper.writeValueAsString(careerTalkUpdateVo));
             modelAndView.addObject("careerTalkUpdateVo", careerTalkUpdateVo);
+            EnterpriseVo enterpriseVo = (EnterpriseVo)httpSession.getAttribute("enterpriseVo");
+            modelAndView.addObject("professionalVoList", professionalService.list(enterpriseVo.getId()));
             modelAndView.setViewName("enterprise_career_talk_update");
         } catch (Exception e) {
             logger.error(e.getMessage());
@@ -333,19 +320,19 @@ public class EnterpriseControllerImpl extends BaseControllerImpl<EnterpriseServi
     }
 
     @Override
-    public ModelAndView updateCareerTalk(CareerTalkDto careerTalkDto, HttpSession httpSession) {
-        ModelAndView modelAndView = new ModelAndView("enterprise_career_talk_index");
+    public ModelMap updateCareerTalk(CareerTalkDto careerTalkDto, HttpSession httpSession) {
+        ModelMap modelMap = new ModelMap();
         try {
             if (careerTalkService.updateById(careerTalkDto, httpSession)) {
-                modelAndView.addObject("message", "更新成功");
+                modelMap.addAttribute("message", "更新成功");
             } else {
-                modelAndView.addObject("errorMessage", "更新失败");
+                modelMap.addAttribute("errorMessage", "更新失败");
             }
         } catch (Exception e) {
-            logger.error(e.getMessage());
-            modelAndView.addObject("errorMessage", e.getMessage());
+            logger.error("e", e);
+            modelMap.addAttribute("errorMessage", e.getMessage());
         }
-        return modelAndView;
+        return modelMap;
     }
 
     @Override
@@ -557,7 +544,7 @@ public class EnterpriseControllerImpl extends BaseControllerImpl<EnterpriseServi
     @Override
     public ResponseEntity<InputStreamResource> downloadGeneralRegulation(String generalRegulationFileName) {
         try {
-            return campusRecruitmentService.downloadGeneralRegulation(generalRegulationFileName);
+            return fileUtil.downloadFile(generalRegulationFileName);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -566,15 +553,13 @@ public class EnterpriseControllerImpl extends BaseControllerImpl<EnterpriseServi
 
     @Override
     public ModelAndView updateCampusRecruitment(Long campusRecruitmentId, HttpSession httpSession) {
-        Object enterpriseObj = httpSession.getAttribute("enterpriseVo");
         ModelAndView modelAndView = new ModelAndView();
         try {
-            if (StringUtils.isEmpty(enterpriseObj)) {
-                throw JobException.NOT_LOGGED_IN_EXCEPTION;
-            }
-            EnterpriseVo enterpriseVo = (EnterpriseVo) enterpriseObj;
+            campusRecruitmentService.checkUpdateById(campusRecruitmentId);
+            EnterpriseVo enterpriseVo = (EnterpriseVo)httpSession.getAttribute("enterpriseVo");
             modelAndView.addObject("professionalVoList", professionalService.list(enterpriseVo.getId()));
-            modelAndView.addObject("campusRecruitmentVo", campusRecruitmentService.getById(campusRecruitmentId, httpSession));
+            CampusRecruitmentVo campusRecruitmentVo = campusRecruitmentService.getById(campusRecruitmentId, httpSession);
+            modelAndView.addObject("campusRecruitmentVo", campusRecruitmentVo);
             modelAndView.setViewName("enterprise_campus_recruitment_update");
             return modelAndView;
         } catch (Exception e) {
@@ -600,11 +585,7 @@ public class EnterpriseControllerImpl extends BaseControllerImpl<EnterpriseServi
             logger.error(e.getMessage());
             modelAndView.addObject("errorMessage", e.getMessage());
         }
-        Object enterpriseObj = httpSession.getAttribute("enterpriseVo");
-        if (StringUtils.isEmpty(enterpriseObj)) {
-            throw JobException.NOT_LOGGED_IN_EXCEPTION;
-        }
-        EnterpriseVo enterpriseVo = (EnterpriseVo) enterpriseObj;
+        EnterpriseVo enterpriseVo = (EnterpriseVo)httpSession.getAttribute("enterpriseVo");
         modelAndView.addObject("professionalVoList", professionalService.list(enterpriseVo.getId()));
         modelAndView.addObject("campusRecruitmentVo", campusRecruitmentService.getById(campusRecruitmentDto.getId(), httpSession));
         modelAndView.setViewName("enterprise_campus_recruitment_update");
@@ -692,5 +673,47 @@ public class EnterpriseControllerImpl extends BaseControllerImpl<EnterpriseServi
         }
 //        logger.error(modelMap.get("errorMessage").toString());
         return modelMap;
+    }
+
+    @Override
+    public ModelMap checkUpdateCareerTalk(Long careerTalkId, HttpSession httpSession) {
+        ModelMap modelMap = new ModelMap();
+        try {
+//            logger.error("careerTalkId: " + careerTalkId);
+            careerTalkService.selectOneById(careerTalkId, httpSession);
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            modelMap.addAttribute("errorMessage", e.getMessage());
+        }
+        return modelMap;
+    }
+
+    @Override
+    public ModelMap checkGetCareerTalkById(Long careerTalkId, HttpSession httpSession) {
+        ModelMap modelMap = new ModelMap();
+        try {
+            careerTalkService.getByCareerTalkId(careerTalkId);
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            modelMap.addAttribute("errorMessage", e.getMessage());
+        }
+        return modelMap;
+    }
+
+    @Override
+    public ModelAndView getCareerTalkById(Long careerTalkId, HttpSession httpSession, ModelAndView modelAndView) {
+        modelAndView.setViewName("enterprise_career_talk_info");
+        modelAndView.addObject("careerTalkVo", careerTalkService.getByCareerTalkId(careerTalkId));
+        return modelAndView;
+    }
+
+    @Override
+    public ResponseEntity<InputStreamResource> downloadPreachingText(String preachingTextFileName) {
+        try{
+            return fileUtil.downloadFile(preachingTextFileName);
+        }catch (Exception e){
+            logger.error(e.getMessage());
+        }
+        return null;
     }
 }

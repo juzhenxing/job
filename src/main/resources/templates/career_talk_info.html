@@ -1,16 +1,158 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>宣讲会</title>
-    <!-- 新 Bootstrap 核心 CSS 文件 -->
-    <link href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
-    <!-- jQuery文件。务必在bootstrap.min.js 之前引入 -->
-    <script src="https://cdn.bootcss.com/jquery/2.1.1/jquery.min.js"></script>
-    <!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
-    <script type="text/javascript" th:src="@{~/bootstrap/js/bootstrap.min.js}"></script>
+    <title>宣讲会详情</title>
+    <link th:href="@{~/layui/css/layui.css}" rel="stylesheet" type="text/css"/>
+    <link th:href="@{~/css/toastr.min.css}" rel="stylesheet"/>
 </head>
-<body>
-<img th:src="@{~/img/logo.png}" alt="通用的占位符缩略图" class="thumbnail"/>
+<body class="layui-layout-body">
+<div class="layui-layout layui-layout-admin">
+    <div th:replace="undergraduate_career_talk_header :: undergraduate_career_talk_header"></div>
+    <div class="layui-body">
+        <!-- 内容主体区域 -->
+        <div style="padding: 15px;">
+            <table class="layui-table">
+                <colgroup>
+                    <col width="30%">
+                    <col width="70%">
+                </colgroup>
+                <!-- 提示：如果你不想用form，你可以换成div等任何一个普通元素 -->
+                <tbody>
+                <tr>
+                    <td>所在高校</td>
+                    <td><p th:text="${careerTalkVo.school}"></p></td>
+                </tr>
+                <tr>
+                    <td>举办地点</td>
+                    <td><p th:text="${careerTalkVo.location}"></p></td>
+                </tr>
+                <tr>
+                    <td>宣讲时间</td>
+                    <td><span th:text="${#dates.format(careerTalkVo.startTime,'yyyy-MM-dd HH:mm')}"></span> 到 <span th:text="${#dates.format(careerTalkVo.endTime,'yyyy-MM-dd HH:mm')}"></span></td>
+                </tr>
+                <tr>
+                    <td>发布时间</td>
+                    <td><p th:text="${{careerTalkVo.createTime}}"></p></td>
+                </tr>
+                <tr>
+                    <td>宣讲正文</td>
+                    <td><a th:href="'/enterprise/download-preaching-text?preachingTextFileName=' + ${careerTalkVo.preachingTextFileName}"><p th:text=" ${careerTalkVo.preachingTextFileName}"/></a></td>
+                </tr>
+                </tbody>
+            </table>
+            <div th:if="${careerTalkVo.operationType} == '网申'" style="text-align:center;margin:0 auto;">
+                <a th:href="${careerTalkVo.applyUrl}" class="layui-btn layui-btn-lg">网申入口</a>
+            </div>
+            <div th:if="${careerTalkVo.operationType} == '投简历'">
+                <table id="professional_table" class="layui-table" lay-filter="roles"></table>
+            </div>
+        </div>
+    </div>
+    <div class="layui-footer">
+        <!-- 底部固定区域 -->
+        © layui.com - 底部固定区域
+    </div>
+</div>
+<script type="text/javascript" th:src="@{~/layui/layui.all.js}"></script>
+<script type="text/javascript" th:src="@{~/js/jquery-3.3.1.min.js}"></script>
+<!--<script type="text/javascript" th:src="@{~/js/jquery.min.js}"></script>-->
+<script th:src="@{~/js/toastr.min.js}"></script>
+<script th:inline="javascript">
+    toastr.options.positionClass = 'toast-top-center';
+    //    toastr.options.timeOut = "5000";
+    /*[+
+        if([[${errorMessage}]] != null){
+            toastr.error([[${errorMessage}]]);
+            toastr.cancel();
+        }
+    +]*/
+    /*[+
+        if([[${message}]] != null){
+            toastr.success([[${message}]]);
+            toastr.cancel();
+        }
+    +]*/
+</script>
+<script th:inline="javascript">
+    layui.table.render({
+        elem: '#professional_table'
+        ,height: 'full'
+        ,url: '/visitor/list-professional-by-career-talk-id' //数据接口
+        ,page: true //开启分页
+        ,even:true
+        ,where: {careerTalkId: [[${careerTalkVo.id}]]}
+        ,cols: [[ //表头
+            {align: 'center', field:'type', width:120, sort: true, unresize:true, title: '职位类别'}
+            ,{align: 'center', field:'name', width:150, sort: true, unresize:true, title: '招聘职位'}
+            ,{align: 'center', field:'hiring', width:120, sort: true, unresize:true, title: '招聘人数'}
+            ,{align: 'center', field:'educationBackground', width:120, sort: true, unresize:true, title: '学历要求'}
+            ,{align: 'center', field:'majorField', width:200, sort: true, unresize:true, title: '专业要求'}
+            ,{align: 'center', field:'workplace', width:267, sort: true, unresize:true, title: '工作地点'}
+            ,{align: 'center', toolbar: '#professionalBar', width:150, unresize:true, title: '操作'}
+        ]]
+    });
+</script>
+<script type="text/html" id="professionalBar">
+    <a class="layui-btn layui-btn-xs" lay-event="professional_detail">详情</a>
+    <a class="layui-btn layui-btn-xs" lay-event="professional_deliver_resume" >投递简历</a>
+</script>
+<script th:inline="javascript">
+    //监听工具条
+    layui.table.on('tool(roles)', function (obj) { //注：tool是工具条事件名，test是table原始容器的属性 lay-filter="对应的值"
+        var data = obj.data; //获得当前行数据
+        var layEvent = obj.event; //获得 lay-event 对应的值（也可以是表头的 event 参数对应的值）
+        var tr = obj.tr; //获得当前行 tr 的DOM对象
+        var layer = layui.layer;
+        if(layEvent === 'professional_detail'){ //查看
+            $.get("/visitor/check-get-professional-by-id?professionalId="+ data.id,
+                function (result, status) {
+                    console.log("Data: " + result + "\nStatus: " + status);
+                    var json = result;
+                    if (json.errorMessage != null) {
+                        toastr.error(json.errorMessage);
+                    } else {
+                        console.log(data.id);
+                        //do somehing
+                        layer.open({
+                            title: ['详情', 'font-size:18px;'],
+                            type: 2,
+                            content: 'http://localhost:8080/visitor/get-professional-by-id?professionalId='+ data.id,
+                            area: ['500px', '600px']
+                        });
+                    }
+                });
+        }else if (layEvent === 'professional_deliver_resume') {
+            if ([[${session.undergraduatePo}]] == null) {
+                window.location.href = 'http://localhost:8080/visitor/login?errorMessage='+ "您还未登录";
+            } else {
+                console.log(data.id);
+                //do somehing
+                layer.open({
+                    title: '确认投递信息',
+                    type: 2,
+                    area: ['900px', '400px'],
+                    content: ['http://localhost:8080/undergraduate/deliver-resume?professionalId=' + data.id + '&careerTalkOrCampusRecruitmentId=' + [[${careerTalkVo.id}]], 'no'] //这里content是一个URL，如果你不想让iframe出现滚动条，你还可以content: ['http://sentsin.com', 'no']
+                });
+            }
+        }
+    });
+    function getChildrenData(data) {
+        console.log(data);
+        $.post("/undergraduate/deliver-resume",
+            {
+                professionalId: data.professionalId,
+                resumeId: data.resumeId,
+                careerTalkOrCampusRecruitmentId: data.careerTalkOrCampusRecruitmentId
+            },
+            function (data, status) {
+                if (data.message != null) {
+                    toastr.success(data.message);
+                } else if (data.errorMessage != null) {
+                    toastr.error(data.errorMessage);
+                }
+            });
+    }
+</script>
 </body>
 </html>

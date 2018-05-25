@@ -18,38 +18,19 @@
 </head>
 <body class="layui-layout-body">
 <div class="layui-layout layui-layout-admin">
-    <div th:replace="undergraduate_header :: undergraduate_header"></div>
-    <div class="layui-side layui-bg-black">
-        <div class="layui-side-scroll">
-            <!-- 左侧导航区域（可配合layui已有的垂直导航） -->
-            <ul class="layui-nav layui-nav-tree">
-                <tr th:each="jobCategoryType : ${jobCategoryType}">
-                    <li class="layui-nav-item">
-                        <a><span th:text="${jobCategoryType.name}"></span></a>
-                    </li>
-                </tr>
-            </ul>
-        </div>
-    </div>
+    <div th:replace="undergraduate_career_talk_header :: undergraduate_career_talk_header"></div>
     <div class="layui-body">
         <!-- 内容主体区域 -->
         <div style="padding: 15px;">
+            <div style="margin-bottom:10px">
+                <h1>宣讲会查询系统</h1>
+            </div>
             <blockquote class="layui-elem-quote">
                 <form class="layui-form">
-                    <input type="text" id="myInput" onkeyup="myFunction()" placeholder="搜索 公司/职位">
+                    <input type="text" id="myInput" onkeyup="myFunction()" placeholder="搜索 宣讲会">
                 </form>
             </blockquote>
-            <blockquote class="layui-elem-quote">
-                <form class="layui-form">
-                    <select lay-filter="province_filter">
-                        <option value="">不限</option>
-                        <tr th:each="provinceType : ${provinceType}">
-                            <option th:value="${provinceType.type}"><span th:text="${provinceType.name}"></span></option>
-                        </tr>
-                    </select>
-                </form>
-            </blockquote>
-            <table class="layui-table" id="career_talk_table">
+            <table class="layui-table" id="career_talk_table"  lay-filter="roles">
             </table>
             <i class="layui-icon">&#xe60c;</i>
         </div>
@@ -73,13 +54,11 @@
     /*[+
         if([[${errorMessage}]] != null){
             toastr.error([[${errorMessage}]]);
-            toastr.cancel();
         }
     +]*/
     /*[+
         if([[${message}]] != null){
             toastr.success([[${message}]]);
-            toastr.cancel();
         }
     +]*/
 </script>
@@ -91,15 +70,15 @@
         var tr = obj.tr; //获得当前行 tr 的DOM对象
         var layer = layui.layer;
         if (layEvent === 'detail') { //查看
-            window.location.href = 'http://localhost:8080/visitor/get-campus-recruitment-by-id?campusRecruitmentId=' + data.id;
+            window.location.href = 'http://localhost:8080/visitor/get-career-talk-by-id?careerTalkId=' + data.id;
         } else if (layEvent == 'collect') {
             if ([[${session.undergraduatePo}]] == null) {
                 window.location.href = 'http://localhost:8080/visitor/login?errorMessage=' + "您还未登录";
             } else {
                 $.post("/undergraduate/add-collect",
                     {
-                        type: 2,
-                        campusRecruitmentId: data.id,
+                        type: 1,
+                        careerTalkId: data.id,
                     },
                     function (data, status) {
                         if (data.message != null) {
@@ -112,62 +91,82 @@
             }
         }
     });
-    //第一个实例
-    layui.table.render({
-        elem: '#career_talk_table',
-        height:'full',
-        url:'/visitor/list-career-talk-by-dto',
-        even:true,
-        cols: [[ //表头
-            {align: 'center', field:'name', sort: true, unresize:true, rowspan: 2, title: '公司标题'},
-            {align: 'center', field:'school', width:120, sort: true, unresize:true, rowspan: 2, title: '举办学校'},
-            {align: 'center', colspan: 2, unresize:true, title: '举办时间'},
-            {align: 'center', field:'location', width:120, unresize:true, rowspan: 2, title: '举办地点'},
-            {align: 'center', field:'hits', width:100, sort: true, unresize:true, rowspan: 2, title: '点击量'},
-            {align: 'center', field:'createTime', width:200, sort: true, unresize:true, rowspan: 2, title: '发布时间'}
-        ],[
-            {align: 'center', field:'startTime', width:200, sort: true, unresize:true, title: '开始时间'},
-            {align: 'center', field:'endTime', width:200, sort: true, unresize:true, title: '结束时间'}
-        ]],
-        where: {
-            province: [[${session.province.type}]]
-        }
-    });
-    function myFunction(){
-        var key = $("#myInput").val();
-        layui.table.reload('campus_recruitment_table', {
-            url: '/visitor/list-campus-recruitment-by-dto',
+
+    if([[${session.school}]] != ''){
+        layui.table.render({
+            elem: '#career_talk_table',
+            height:'full',
+            url:'/visitor/list-career-talk-by-dto',
+            even:true,
+            page:true,
+            cols: [[ //表头
+                {align: 'center', field:'name', sort: true, unresize:true, rowspan: 2, title: '公司标题'},
+                {align: 'center', field:'school', width:120, sort: true, unresize:true, rowspan: 2, title: '举办学校'},
+                {align: 'center', colspan: 2, unresize:true, title: '举办时间'},
+                {align: 'center', field:'location', width:120, unresize:true, rowspan: 2, title: '举办地点'},
+//            {align: 'center', field:'hits', width:100, sort: true, unresize:true, rowspan: 2, title: '点击量'},
+                {align: 'center', field:'createTime', width:200, sort: true, unresize:true, rowspan: 2, title: '发布时间'},
+                {align: 'center', toolbar: '#barDemo', unresize: true, rowspan: 2, title: '操作'}
+            ],[
+                {align: 'center', field:'startTime', width:200, sort: true, unresize:true, title: '开始时间'},
+                {align: 'center', field:'endTime', width:200, sort: true, unresize:true, title: '结束时间'}
+            ]],
             where: {
                 province: [[${session.province.type}]],
-                key: key
-            },
-            page: {
-                curr: 1 //重新从第 1 页开始
+                school: [[${session.school}]]
+            }
+        });
+    }else{
+        layui.table.render({
+            elem: '#career_talk_table',
+            height:'full',
+            url:'/visitor/list-career-talk-by-dto',
+            even:true,
+            page:true,
+            cols: [[ //表头
+                {align: 'center', field:'name', sort: true, unresize:true, rowspan: 2, title: '公司标题'},
+                {align: 'center', field:'school', width:120, sort: true, unresize:true, rowspan: 2, title: '举办学校'},
+                {align: 'center', colspan: 2, unresize:true, title: '举办时间'},
+                {align: 'center', field:'location', width:120, unresize:true, rowspan: 2, title: '举办地点'},
+//            {align: 'center', field:'hits', width:100, sort: true, unresize:true, rowspan: 2, title: '点击量'},
+                {align: 'center', field:'createTime', width:200, sort: true, unresize:true, rowspan: 2, title: '发布时间'},
+                {align: 'center', toolbar: '#barDemo', unresize: true, rowspan: 2, title: '操作'}
+            ],[
+                {align: 'center', field:'startTime', width:200, sort: true, unresize:true, title: '开始时间'},
+                {align: 'center', field:'endTime', width:200, sort: true, unresize:true, title: '结束时间'}
+            ]],
+            where: {
+                province: [[${session.province.type}]]
             }
         });
     }
-    layui.form.on('select(province_filter)', function(data){
-        console.log(data);
-        layui.table.reload('campus_recruitment_table', {
-            url: '/visitor/list-campus-recruitment-by-dto',
-            where: {
-                province: data.value,
-            },
-            page: {
-                curr: 1 //重新从第 1 页开始
-            }
-        });
-    });
-</script>
-<script th:inline="javascript" type="text/html" id="job_name_s">
-    {{#
-    var jobNames = '';
-    layui.each(d.professionalVoList, function(index, item){
-    jobNames = jobNames + item.name;
-    jobNames = jobNames + ',';
-    });
-    return jobNames.substr(0, jobNames.length-1);
-    }}
+    function myFunction(){
+        var key = $("#myInput").val();
+        if([[${session.school}]] != ''){
+            layui.table.reload('career_talk_table', {
+                url: '/visitor/list-career-talk-by-dto',
+                where: {
+                    province: [[${session.province.type}]],
+                    key: key,
+                    school: [[${session.school}]]
+                },
+                page: {
+                    curr: 1 //重新从第 1 页开始
+                }
+            });
+        }else{
+            layui.table.reload('career_talk_table', {
+                url: '/visitor/list-career-talk-by-dto',
+                where: {
+                    province: [[${session.province.type}]],
+                    key: key
+                },
+                page: {
+                    curr: 1 //重新从第 1 页开始
+                }
+            });
+        }
+    }
 </script>
 </body>
 </html>

@@ -22,4 +22,6 @@ public interface CollectService extends IService<CollectPo> {
 
     Boolean deleteByCollectId(Long collectId);
 
+    List<CollectVo> listByCareerTalkOrCampusRecruitmentId(CollectType type, Long careerTalkOrCampusRecruitmentId);
+
 }

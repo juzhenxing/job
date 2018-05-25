@@ -96,7 +96,7 @@ public interface UndergraduateController {
     ModelMap checkGetProfessionalById(Long professionalId);
 
     @GetMapping("personal-center")
-    ModelAndView personalCenter(HttpSession httpSession);
+    ModelAndView personalCenter(HttpSession httpSession, ModelAndView modelAndView);
 
     @GetMapping("info-update")
     ModelAndView infoUpdate(HttpSession httpSession);
@@ -142,7 +142,7 @@ public interface UndergraduateController {
     ModelAndView updateResumeEducationBackground(EducationBackgroundDto educationBackgroundDto, HttpSession httpSession);
 
     @GetMapping("deliver-resume")
-    ModelAndView deliverResume(Long professionalId, Long campusRecruitmentId, HttpSession httpSession, ModelAndView modelAndView);
+    ModelAndView deliverResume(Long professionalId, Long careerTalkOrCampusRecruitmentId, HttpSession httpSession, ModelAndView modelAndView);
 
     @PostMapping("deliver-resume")
     @ResponseBody
@@ -185,12 +185,6 @@ public interface UndergraduateController {
     @GetMapping("list-collect")
     @ResponseBody
     PagedResult listCollect(PageDto pageDto, HttpSession httpSession);
-
-    @GetMapping("get-career-talk-or-campus-recruitment-by-id")
-    ModelAndView getCareerTalkOrCampusRecruitmentById(Long id, CollectType type);
-
-    @GetMapping("get-career-talk-by-id")
-    ModelAndView getCareerTalkById(Long careerTalkId, ModelAndView modelAndView);
 
     @PostMapping("delete-collect")
     @ResponseBody

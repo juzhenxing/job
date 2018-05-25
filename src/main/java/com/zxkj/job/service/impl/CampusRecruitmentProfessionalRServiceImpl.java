@@ -49,14 +49,6 @@ public class CampusRecruitmentProfessionalRServiceImpl extends BaseServiceImpl<C
 
     @Override
     public Boolean deleteByCampusRecruitmentId(Long campusRecruitmentId) {
-        CampusRecruitmentVo campusRecruitmentVo = campusRecruitmentService.getById(campusRecruitmentId);
-        List<ProfessionalVo> professionalVoList = campusRecruitmentVo.getProfessionalVoList();
-        for(ProfessionalVo professionalVo : professionalVoList){
-            List<DeliveryInformationVo> deliveryInformationVoList = deliveryInformationService.getByProfessionalId(professionalVo.getId());
-            if(deliveryInformationVoList != null && deliveryInformationVoList.size() > 0){
-                throw JobException.CAMPUSRECRUITMENT_DELETE_EXCEPTION;
-            }
-        }
         EntityWrapper<CampusRecruitmentProfessionalRPo> ew = new EntityWrapper<>();
         ew.eq("campus_recruitment_id", campusRecruitmentId);
         return super.delete(ew);

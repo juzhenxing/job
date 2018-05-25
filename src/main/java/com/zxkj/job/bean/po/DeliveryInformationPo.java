@@ -26,4 +26,6 @@ public class DeliveryInformationPo extends BasePo<DeliveryInformationPo> {
 
     private StatusType status;
 
+    private Long careerTalkOrCampusRecruitmentId;
+
 }

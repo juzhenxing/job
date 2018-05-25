@@ -11,4 +11,10 @@ import java.util.List;
 
 public interface CareerTalkProfessionalRService extends IService<CareerTalkProfessionalRPo> {
 
+    List<CareerTalkProfessionalRPo> listByCareerTalkId(Long careerTalkId);
+
+    Boolean deleteByCareerTalkId(Long careerTalkId);
+
+    Boolean deleteByProfessionalIds(Long careerTalkId, List<Long> professionalIds);
+
 }

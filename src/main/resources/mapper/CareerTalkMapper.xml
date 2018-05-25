@@ -14,6 +14,8 @@
         <result column="enterprise_id" jdbcType="BIGINT" property="enterpriseId"/>
         <result column="hits" jdbcType="BIGINT" property="hits"/>
         <result column="operation_type" jdbcType="TINYINT" property="operationType"/>
+        <result column="apply_url" jdbcType="VARCHAR" property="applyUrl"/>
+        <result column="preaching_text_file_name" jdbcType="VARCHAR" property="preachingTextFileName"/>
         <result column="gmt_create" jdbcType="TIMESTAMP" property="gmtCreate"/>
         <result column="gmt_modified" jdbcType="TIMESTAMP" property="gmtModified"/>
     </resultMap>

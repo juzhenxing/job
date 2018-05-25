@@ -59,9 +59,9 @@ public class JobException extends BaseException {
 
     public static final JobException NULL_CAREERTALK_EXCEPTION = new JobException(JobOutput.NULL_CAREERTALK);
 
-    public static final JobException CAREERTALK_DELETE_EXCEPTION = new JobException(JobOutput.CAREERTALK_DELETE);
+    public static final JobException CAREERTALK_DELETE_TIME_EXCEPTION = new JobException(JobOutput.CAREERTALK_DELETE_TIME);
 
-    public static final JobException CAREERTALK_UPDATE_EXCEPTION = new JobException(JobOutput.CAREERTALK_UPDATE);
+    public static final JobException CAREERTALK_UPDATE_TIME_EXCEPTION = new JobException(JobOutput.CAREERTALK_UPDATE_TIME);
 
     public static final JobException NULL_ID_EXCEPTION = new JobException(JobOutput.NULL_ID);
 
@@ -89,12 +89,30 @@ public class JobException extends BaseException {
 
     public static final JobException APPLY_ALREADY_ARRANGED_EXCEPTION = new JobException(JobOutput.APPLY_ALREADY_ARRANGED);
 
-    public static final JobException CAMPUSRECRUITMENT_DELETE_EXCEPTION = new JobException(JobOutput.CAMPUSRECRUITMENT_DELETE);
+    public static final JobException CAMPUSRECRUITMENT_PROFESSIONAL_DELETE_EXCEPTION = new JobException(JobOutput.CAMPUSRECRUITMENT_PROFESSIONAL_DELETE);
 
     public static final JobException DELIVERYINFORMATIONPO_UPDATE_EXCEPTION = new JobException(JobOutput.DELIVERYINFORMATIONPO_UPDATE);
 
     public static final JobException COLLECTPO_EXIST_EXCEPTION = new JobException(JobOutput.COLLECTPO_EXIST);
 
     public static final JobException CAREERTALK_ADD_EXCEPTION = new JobException(JobOutput.CAREERTALK_ADD);
+
+    public static final JobException CAREERTALK_PROFESSIONAL_DELETE_EXCEPTION = new JobException(JobOutput.CAREERTALK_PROFESSIONAL_DELETE);
+
+    public static final JobException CAREERTALK_COLLECT_DELETE_EXCEPTION = new JobException(JobOutput.CAREERTALK_COLLECT_DELETE);
+
+    public static final JobException CAMPUSRECRUITMENT_COLLECT_DELETE_EXCEPTION = new JobException(JobOutput.CAMPUSRECRUITMENT_COLLECT_DELETE);
+
+    public static final JobException CAREERTALK_DELETE_EXCEPTION = new JobException(JobOutput.CAREERTALK_DELETE);
+
+    public static final JobException CAMPUSRECRUITMENT_UPDATE_COLLECT_EXCEPTION = new JobException(JobOutput.CAMPUSRECRUITMENT_UPDATE_COLLECT);
+
+    public static final JobException CAMPUSRECRUITMENT_UPDATE_PROFESSIONAL_EXCEPTION = new JobException(JobOutput.CAMPUSRECRUITMENT_UPDATE_PROFESSIONAL);
+
+    public static final JobException CAREERTALK_UPDATE_COLLECT_EXCEPTION = new JobException(JobOutput.CAREERTALK_UPDATE_COLLECT);
+
+    public static final JobException CAREERTALK_UPDATE_PROFESSIONAL_EXCEPTION = new JobException(JobOutput.CAREERTALK_UPDATE_PROFESSIONAL);
+
+    public static final JobException CAREERTALK_UPDATE_EXCEPTION = new JobException(JobOutput.CAREERTALK_UPDATE);
 }
 

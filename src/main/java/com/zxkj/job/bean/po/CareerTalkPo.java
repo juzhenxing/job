@@ -39,4 +39,6 @@ public class CareerTalkPo extends BasePo<CareerTalkPo> {
 
     private String preachingTextFileName;
 
+    private String applyUrl;
+
 }

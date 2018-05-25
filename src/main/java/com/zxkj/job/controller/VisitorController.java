@@ -34,7 +34,7 @@ public interface VisitorController {
     ModelAndView campusRecruitment(@RequestParam(required = false) JobCategoryType jobCategoryType, ModelAndView modelAndView);
 
     @GetMapping("career-talk")
-    ModelAndView careerTalk(ModelAndView modelAndView);
+    ModelAndView careerTalk(@RequestParam(required = false) ProvinceType province, @RequestParam(required = false) String school, ModelAndView modelAndView);
 
     /**
      * 学生登录
@@ -96,4 +96,12 @@ public interface VisitorController {
     @GetMapping("list-campus-recruitment-by-professional-dto")
     @ResponseBody
     PagedResult listCampusRecruitmentByQueryProfessionalDto(QueryProfessionalDto queryProfessionalDto, PageDto pageDto);
+
+    @GetMapping("get-career-talk-by-id")
+    ModelAndView getCareerTalkById(Long careerTalkId, ModelAndView modelAndView);
+
+    @GetMapping("list-professional-by-career-talk-id")
+    @ResponseBody
+    PagedResult listProfessionalByCareerTalkId(PageDto pageDto, Long careerTalkId);
+
 }

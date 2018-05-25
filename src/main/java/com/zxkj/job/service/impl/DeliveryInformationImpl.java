@@ -138,6 +138,15 @@ public class DeliveryInformationImpl extends BaseServiceImpl<DeliveryInformation
         entityWrapper.eq("professional_id", professionalId);
         List<DeliveryInformationPo> deliveryInformationPoList = super.selectList(entityWrapper);
         return deliveryInformationPoList.parallelStream().map(e -> deliveryInformationPoToVo((DeliveryInformationPo) e)).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<DeliveryInformationVo> getByCareerTalkOrCampusRecruitmentId(Long careerTalkOrCampusRecruitmentId) {
+        EntityWrapper entityWrapper = new EntityWrapper();
+        entityWrapper.eq("career_talk_or_campus_recruitment_id", careerTalkOrCampusRecruitmentId);
+        List<DeliveryInformationPo> deliveryInformationPoList = super.selectList(entityWrapper);
+        return deliveryInformationPoList.parallelStream().map(e -> deliveryInformationPoToVo((DeliveryInformationPo) e)).collect(Collectors.toList());
+
 
     }
 

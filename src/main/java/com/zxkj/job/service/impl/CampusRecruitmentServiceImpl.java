@@ -10,19 +10,16 @@ import com.zxkj.job.bean.dto.QueryCampusRecruitmentDto;
 import com.zxkj.job.bean.po.CampusRecruitmentPo;
 import com.zxkj.job.bean.po.CampusRecruitmentProfessionalRPo;
 import com.zxkj.job.bean.po.ProfessionalPo;
-import com.zxkj.job.bean.vo.CampusRecruitmentVo;
-import com.zxkj.job.bean.vo.EnterpriseVo;
-import com.zxkj.job.bean.vo.ProfessionalUpdateVo;
-import com.zxkj.job.bean.vo.ProfessionalVo;
+import com.zxkj.job.bean.vo.*;
 import com.zxkj.job.common.BaseServiceImpl;
 import com.zxkj.job.common.bean.PagedResult;
+import com.zxkj.job.enums.CollectType;
 import com.zxkj.job.exp.JobException;
 import com.zxkj.job.mapper.CampusRecruitmentMapper;
 import com.zxkj.job.mapper.ProfessionalMapper;
-import com.zxkj.job.service.CampusRecruitmentProfessionalRService;
-import com.zxkj.job.service.CampusRecruitmentService;
-import com.zxkj.job.service.ProfessionalService;
+import com.zxkj.job.service.*;
 import com.zxkj.job.util.BeanUtil;
+import com.zxkj.job.util.FileUtil;
 import com.zxkj.job.util.IdUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,6 +56,15 @@ public class CampusRecruitmentServiceImpl extends BaseServiceImpl<CampusRecruitm
     @Autowired
     ProfessionalService professionalService;
 
+    @Autowired
+    FileUtil fileUtil;
+
+    @Autowired
+    CollectService collectService;
+
+    @Autowired
+    DeliveryInformationService deliveryInformationService;
+
     @Override
     public Boolean add(CampusRecruitmentDto campusRecruitmentDto, HttpSession httpSession) throws IOException {
         CampusRecruitmentPo campusRecruitmentPo = new CampusRecruitmentPo();
@@ -66,7 +72,7 @@ public class CampusRecruitmentServiceImpl extends BaseServiceImpl<CampusRecruitm
         EnterpriseVo enterpriseVo = (EnterpriseVo)httpSession.getAttribute("enterpriseVo");
         campusRecruitmentPo.setEnterpriseId(enterpriseVo.getId());
         MultipartFile generalRegulation = campusRecruitmentDto.getGeneralRegulation();
-        String fileName = saveFile(generalRegulation);
+        String fileName = fileUtil.saveFile(generalRegulation);
         campusRecruitmentPo.setGeneralRegulationFileName(fileName);
         campusRecruitmentPo.setId(IdUtil.nextId());
         campusRecruitmentPo.setGmtCreate(new Date());
@@ -98,6 +104,14 @@ public class CampusRecruitmentServiceImpl extends BaseServiceImpl<CampusRecruitm
     public Boolean deleteByCampusRecruitmentId(Long campusRecruitmentId, HttpSession httpSession) {
         EnterpriseVo enterpriseVo = (EnterpriseVo)httpSession.getAttribute("enterpriseVo");
         checkCampusRecruitmentPo(campusRecruitmentId, enterpriseVo.getId());
+        List<CollectVo> collectVoList = collectService.listByCareerTalkOrCampusRecruitmentId(CollectType.CAMPUSRECRUITMENT, campusRecruitmentId);
+        if(collectVoList != null && collectVoList.size() > 0){
+            throw JobException.CAMPUSRECRUITMENT_COLLECT_DELETE_EXCEPTION;
+        }
+        List<DeliveryInformationVo> deliveryInformationVoList = deliveryInformationService.getByCareerTalkOrCampusRecruitmentId(campusRecruitmentId);
+        if(deliveryInformationVoList != null && deliveryInformationVoList.size() > 0){
+            throw JobException.CAMPUSRECRUITMENT_PROFESSIONAL_DELETE_EXCEPTION;
+        }
         if(!campusRecruitmentProfessionalRService.deleteByCampusRecruitmentId(campusRecruitmentId)){
             throw JobException.CAMPUS_RECRUITMENT_DELETE_EXCEPTION;
         }
@@ -112,21 +126,15 @@ public class CampusRecruitmentServiceImpl extends BaseServiceImpl<CampusRecruitm
     }
 
     @Override
-    public ResponseEntity<InputStreamResource> downloadGeneralRegulation(String generalRegulationFileName) throws IOException {
-        String filePath = tmpPath + generalRegulationFileName;
-        FileSystemResource file = new FileSystemResource(filePath);
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Cache-Control", "no-cache, no-store, must-revalidate");
-        headers.add("Content-Disposition", String.format("attachment; filename=\"%s\"", new String(file.getFilename().getBytes("UTF-8"),"iso-8859-1")));
-        headers.add("Pragma", "no-cache");
-        headers.add("Expires", "0");
-
-        return ResponseEntity
-                .ok()
-                .headers(headers)
-                .contentLength(file.contentLength())
-                .contentType(MediaType.parseMediaType("application/octet-stream"))
-                .body(new InputStreamResource(file.getInputStream()));
+    public void checkUpdateById(Long campusRecruitmentId) {
+        List<CollectVo> collectVoList = collectService.listByCareerTalkOrCampusRecruitmentId(CollectType.CAMPUSRECRUITMENT, campusRecruitmentId);
+        if(collectVoList != null && collectVoList.size() > 0){
+            throw JobException.CAMPUSRECRUITMENT_UPDATE_COLLECT_EXCEPTION;
+        }
+        List<DeliveryInformationVo> deliveryInformationVoList = deliveryInformationService.getByCareerTalkOrCampusRecruitmentId(campusRecruitmentId);
+        if(deliveryInformationVoList != null && deliveryInformationVoList.size() > 0){
+            throw JobException.CAMPUSRECRUITMENT_UPDATE_PROFESSIONAL_EXCEPTION;
+        }
     }
 
     @Override
@@ -138,7 +146,7 @@ public class CampusRecruitmentServiceImpl extends BaseServiceImpl<CampusRecruitm
         CampusRecruitmentPo campusRecruitmentPo = checkCampusRecruitmentPo(campusRecruitmentDto.getId(), enterpriseVo.getId());
         BeanUtil.copyProperties(campusRecruitmentDto, campusRecruitmentPo);
         MultipartFile generalRegulation = campusRecruitmentDto.getGeneralRegulation();
-        String fileName = saveFile(generalRegulation);
+        String fileName = fileUtil.saveFile(generalRegulation);
         campusRecruitmentPo.setGeneralRegulationFileName(fileName);
         if(!super.updateById(campusRecruitmentPo)){
             throw JobException.CAMPUS_RECRUITMENT_UPDATE_EXCEPTION;
@@ -210,27 +218,6 @@ public class CampusRecruitmentServiceImpl extends BaseServiceImpl<CampusRecruitm
         campusRecruitmentVo.setProfessionalVoList(professionalVoList);
 //        logger.error("professionalVoList:" + professionalVoList.size());
         return campusRecruitmentVo;
-    }
-
-    public String saveFile(MultipartFile multipartFile) throws IOException {
-        String originalFilename = multipartFile.getOriginalFilename();
-        int pointIndex = originalFilename.lastIndexOf(".");
-        String fileType = originalFilename.substring(pointIndex + 1);
-        String fileName = originalFilename.substring(0, pointIndex) + "_" + System.currentTimeMillis() + "." + fileType;
-        File file = new File(tmpPath + fileName);
-        //判断目标文件所在的目录是否存在
-        if (!file.getParentFile().exists()) {
-            //如果目标文件所在的目录不存在，则创建父目录
-            if (!file.getParentFile().mkdirs()) {
-                logger.info("创建临时保存文件的目录失败");
-                throw JobException.LICENSE_TEMP_DIRECTORY_EXCEPTION;
-            } else {
-                multipartFile.transferTo(file);
-            }
-        } else {
-            multipartFile.transferTo(file);
-        }
-        return fileName;
     }
 
     @Override

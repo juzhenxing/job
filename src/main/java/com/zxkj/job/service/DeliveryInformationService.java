@@ -34,4 +34,6 @@ public interface DeliveryInformationService extends IService<DeliveryInformation
 
     List<DeliveryInformationVo> getByProfessionalId(Long professionalId);
 
+    List<DeliveryInformationVo> getByCareerTalkOrCampusRecruitmentId(Long careerTalkOrCampusRecruitmentId);
+
 }

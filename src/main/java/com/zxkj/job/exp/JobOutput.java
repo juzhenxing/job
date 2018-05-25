@@ -60,9 +60,9 @@ public enum JobOutput {
 
     NULL_CAREERTALK(124, "该宣讲会不存在"),
 
-    CAREERTALK_DELETE(125, "该宣讲会开始时间不足一天，无法删除！"),
+    CAREERTALK_DELETE_TIME(125, "该宣讲会开始时间不足一天，无法删除！"),
 
-    CAREERTALK_UPDATE(126, "该宣讲会开始时间不足一天，无法更新！"),
+    CAREERTALK_UPDATE_TIME(126, "该宣讲会开始时间不足一天，无法更新！"),
 
     NULL_ID(127, "id不能为空"),
 
@@ -90,13 +90,31 @@ public enum JobOutput {
 
     APPLY_ALREADY_ARRANGED(136, "申请已被处理完成，不可修改"),
 
-    CAMPUSRECRUITMENT_DELETE(139, "该校招网申记录已有人申请, 无法删除"),
+    CAMPUSRECRUITMENT_PROFESSIONAL_DELETE(139, "该校招网申记录所提供的职位已有人申请, 无法删除"),
 
     DELIVERYINFORMATIONPO_UPDATE(140, "投递记录更新失败"),
 
     COLLECTPO_EXIST(141, "已收藏"),
 
     CAREERTALK_ADD(142, "宣讲会增加失败"),
+
+    CAREERTALK_PROFESSIONAL_DELETE(143, "该宣讲会记录所提供的职位已有人申请, 无法删除"),
+
+    CAREERTALK_COLLECT_DELETE(144, "该宣讲会记录已有人收藏, 无法删除"),
+
+    CAMPUSRECRUITMENT_COLLECT_DELETE(145, "该校招网申记录已有人收藏, 无法删除"),
+
+    CAREERTALK_DELETE(146, "宣讲会删除失败"),
+
+    CAMPUSRECRUITMENT_UPDATE_COLLECT(147, "该校招网申记录已有人收藏, 无法更新"),
+
+    CAMPUSRECRUITMENT_UPDATE_PROFESSIONAL(148, "该校招网申记录所提供的职位已有人申请, 无法更新"),
+
+    CAREERTALK_UPDATE_COLLECT(149, "该宣讲会记录已有人收藏, 无法更新"),
+
+    CAREERTALK_UPDATE_PROFESSIONAL(150, "该宣讲会记录所提供的职位已有人申请, 无法更新"),
+
+    CAREERTALK_UPDATE(151, "宣讲会更新失败"),
     ;
 
     private int code;

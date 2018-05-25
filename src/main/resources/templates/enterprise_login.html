@@ -12,7 +12,7 @@
     <script type="text/javascript" th:src="@{~/bootstrap/js/bootstrap.min.js}"></script>
 </head>
 <head>
-    <link rel="stylesheet" href="http://jqueryvalidation.org/files/demo/site-demos.css">
+    <link rel="stylesheet" th:href="@{~/jquery-validation-1.14.0/demo/site-demos.css}">
     <link th:href="@{~/css/toastr.min.css}" rel="stylesheet"/>
     <title>企业登录</title>
 </head>
@@ -124,8 +124,8 @@
         </li>
     </ul>
 </div>
-<script src="http://jqueryvalidation.org/files/dist/jquery.validate.min.js"></script>
-<script src="http://jqueryvalidation.org/files/dist/additional-methods.min.js"></script>
+<script th:src="@{~/jquery-validation-1.14.0/dist/jquery.validate.min.js}"></script>
+<script th:src="@{~/jquery-validation-1.14.0/dist/additional-methods.min.js}"></script>
 
 <script th:src="@{~/js/toastr.min.js}"></script>
 
@@ -169,19 +169,16 @@
     /*[+
         if([[${errorMessage}]] != null){
             toastr.error([[${errorMessage}]]);
-            toastr.cancel();
         }
     +]*/
     /*[+
            if([[${param.errorMessage}]] != null){
                toastr.error([[${param.errorMessage}]]);
-               toastr.cancel();
            }
        +]*/
     /*[+
         if([[${message}]] != null){
             toastr.success([[${message}]]);
-            toastr.cancel();
         }
     +]*/
 </script>
