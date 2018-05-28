@@ -22,6 +22,7 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.text.ParseException;
+import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.mail.*;
@@ -42,12 +43,23 @@ public class UndergraduateServiceImpl extends BaseServiceImpl<UndergraduateMappe
     FileUtil fileUtil;
 
     @Override
-    public String add(SimpleUndergraduateDto simpleUndergraduateDto) {
-        checkEmail(simpleUndergraduateDto.getEmail(), null);
+    public String add(SimpleUndergraduateDto simpleUndergraduateDto, HttpSession httpSession) {
+        String email = simpleUndergraduateDto.getEmail();
+        checkEmail(email, null);
+        if(!redisTemplate.hasKey(email)){
+            throw JobException.NULL_CODE_EXCEPTION;
+        }
+        String correctCode = redisTemplate.opsForValue().get(email).toString();
+        if(!correctCode.equalsIgnoreCase(simpleUndergraduateDto.getCode())){
+            throw JobException.WRONG_CODE_EXCEPTION;
+        }
         UndergraduatePo undergraduatePo = new UndergraduatePo();
         BeanUtil.copyProperties(simpleUndergraduateDto, undergraduatePo);
+        undergraduatePo.setId(IdUtil.nextId());
+        undergraduatePo.setGmtCreate(new Date());
         Boolean result = super.insert(undergraduatePo);
         if (result) {
+            httpSession.setAttribute("undergraduatePo", undergraduatePo);
             return undergraduatePo.getEmail();
         } else {
             throw JobException.UNDERGRADUATE_ADD_EXCEPTION;
@@ -139,6 +151,14 @@ public class UndergraduateServiceImpl extends BaseServiceImpl<UndergraduateMappe
         UndergraduateVo undergraduateVo = new UndergraduateVo();
         BeanUtil.copyProperties(undergraduatePo, undergraduateVo);
         return undergraduateVo;
+    }
+
+    @Override
+    public void registerAcquireCode(String email) throws MessagingException {
+        checkEmail(email, null);
+        String code= RandomStringUtils.randomAlphanumeric(10);
+        redisTemplate.opsForValue().set(email, code);
+        EmailUtil.sendEmail(email, "求职者注册", "验证码为：" + code);
     }
 
     public void checkId(Long id){

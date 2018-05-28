@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <link th:href="@{~/layui/css/layui.css}" rel="stylesheet" type="text/css"/>
-<div class="layui-header" th:fragment="undergraduate_header">
+<div class="layui-header" th:fragment="undergraduate_header" >
     <div class="layui-logo">
-        <a th:href="@{/visitor/index}"><img th:src="@{~/img/logo.png}" alt="通用的占位符缩略图" width="100px"/></a>
+        <a th:href="@{/visitor/index}"><img th:src="@{~/img/logo-c.png}" alt="通用的占位符缩略图" width="150px"/></a>
     </div>
     <!-- 头部区域（可配合layui已有的水平导航） -->
     <ul class="layui-nav layui-layout-left">
@@ -14,8 +14,7 @@
             <dl class="layui-nav-child">
                 <tr th:each="province : ${session.provinces}">
                     <dd>
-                        <a th:href="'javascript:selectProvince('+${province.type}+')'"><span
-                                th:text="${province.name}"></span></a>
+                        <a th:href="'javascript:selectProvince('+${province.type}+')'"><span th:text="${province.name}"></span></a>
                     </dd>
                 </tr>
             </dl>
@@ -58,13 +57,13 @@
         function selectProvince(provinceType) {
 //        alert(provinceName);
 //        alert(provinceType);
-            window.location.href = 'http://localhost:8080/visitor/index?province=' + provinceType;
+            window.location.href = 'http://localhost:8080/visitor/campus-recruitment?province=' + provinceType;
         }
         /*[+
             if([[${session.province}]] != null){
                 $("#select_province_span").text([[${session.province.name}]]);
             }else{
-                window.location.href = 'http://localhost:8080/visitor/index';
+                window.location.href = 'http://localhost:8080/visitor/campus-recruitment';
             }
         +]*/
     </script>

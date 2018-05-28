@@ -2,6 +2,7 @@ package com.zxkj.job.controller.impl;
 
 import com.zxkj.job.bean.dto.*;
 import com.zxkj.job.bean.po.UndergraduatePo;
+import com.zxkj.job.bean.vo.CareerTalkVo;
 import com.zxkj.job.bean.vo.ResumeVo;
 import com.zxkj.job.common.BaseControllerImpl;
 import com.zxkj.job.common.bean.PagedResult;
@@ -25,7 +26,9 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
+import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 @Controller
 @RequestMapping("visitor")
@@ -58,8 +61,7 @@ public class VisitorControllerImpl implements VisitorController {
     public ModelAndView add(SimpleUndergraduateDto simpleUndergraduateDto, HttpSession httpSession) {
         ModelAndView modelAndView = new ModelAndView();
         try{
-            String email = undergraduateService.add(simpleUndergraduateDto);
-            httpSession.setAttribute("email", email);
+            undergraduateService.add(simpleUndergraduateDto, httpSession);
             modelAndView.setViewName("index");
         }catch (JobException jobException){
             jobException.printStackTrace();
@@ -83,13 +85,20 @@ public class VisitorControllerImpl implements VisitorController {
     }
 
     @Override
-    public ModelAndView campusRecruitment(JobCategoryType jobCategoryType, ModelAndView modelAndView) {
+    public ModelAndView campusRecruitment(@RequestParam(required = false) ProvinceType province, JobCategoryType jobCategoryType, ModelAndView modelAndView) {
         if(jobCategoryType != null){
             logger.error(jobCategoryType.getName());
             modelAndView.addObject("jobCategoryType", jobCategoryType);
         }else{
             modelAndView.addObject("jobCategoryType", 0);
         }
+        if(province == null){
+            province = ProvinceType.BEI_JING;
+        }
+        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+        HttpSession httpSession = request.getSession();
+        httpSession.setAttribute("province", province);
+        httpSession.setAttribute("provinces", ProvinceType.values());
         modelAndView.addObject("jobCategoryTypes", JobCategoryType.values());
         modelAndView.setViewName("campus_recruitment");
         return modelAndView;
@@ -151,6 +160,66 @@ public class VisitorControllerImpl implements VisitorController {
     @Override
     public String findPassword() {
         return "find_password";
+    }
+    @Override
+    public ModelAndView checkIdentity(String email, HttpSession httpSession) {
+        ModelAndView modelAndView = new ModelAndView();
+        try {
+            undergraduateService.checkIdentity(email);
+            httpSession.setAttribute("emailKey", email);
+            modelAndView.setViewName("check_identity");
+        } catch (Exception e) {
+            e.printStackTrace();
+            modelAndView.addObject("errorMessage", e.getMessage());
+            modelAndView.setViewName("find_password");
+        }
+        return modelAndView;
+    }
+
+    @Override
+    public ModelMap reCheckIdentity(@NotNull(message = "邮箱不能为空") @NotBlank(message = "邮箱不能为空") @Email(message = "邮箱格式不正确") String email, HttpSession httpSession) {
+        ModelMap modelMap = new ModelMap();
+        try {
+            undergraduateService.checkIdentity(email);
+            httpSession.setAttribute("emailKey", email);
+            modelMap.addAttribute("message", "验证码重新获取成功");
+        } catch (Exception e) {
+            e.printStackTrace();
+            modelMap.addAttribute("errorMessage", "验证码重新获取失败");
+        }
+        return modelMap;
+    }
+
+    @Override
+    public ModelAndView resetPassword(String code, HttpSession httpSession) {
+        ModelAndView modelAndView = new ModelAndView();
+        try {
+            undergraduateService.resetPassword(code, httpSession);
+            modelAndView.setViewName("reset_password");
+        } catch (Exception e) {
+            e.printStackTrace();
+            modelAndView.addObject("errorMessage", e.getMessage());
+            modelAndView.setViewName("check_identity");
+        }
+        return modelAndView;
+    }
+
+    @Override
+    public ModelAndView setSuccess(String password, HttpSession httpSession) {
+        ModelAndView modelAndView = new ModelAndView();
+        try {
+            if(undergraduateService.setSuccess(password, httpSession)){
+                modelAndView.setViewName("finish");
+            }else{
+                modelAndView.setViewName("reset_password");
+                modelAndView.addObject("errorMessage", "重置密码失败");
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+            modelAndView.setViewName("reset_password");
+            modelAndView.addObject("errorMessage", e.getMessage());
+        }
+        return modelAndView;
     }
 
     @Override
@@ -253,14 +322,30 @@ public class VisitorControllerImpl implements VisitorController {
     }
 
     @Override
-    public ModelAndView getCareerTalkById(Long careerTalkId, ModelAndView modelAndView) {
+    public ModelAndView getCareerTalkById(Long careerTalkId, ModelAndView modelAndView, HttpSession httpSession) {
         modelAndView.setViewName("career_talk_info");
-        modelAndView.addObject("careerTalkVo", careerTalkService.getByCareerTalkId(careerTalkId));
+        CareerTalkVo careerTalkVo = careerTalkService.getByCareerTalkId(careerTalkId);
+        modelAndView.addObject("careerTalkVo", careerTalkVo);
+        httpSession.setAttribute("school", careerTalkVo.getSchool());
         return modelAndView;
     }
 
     @Override
     public PagedResult listProfessionalByCareerTalkId(PageDto pageDto, Long careerTalkId) {
         return professionalService.listProfessionalByCareerTalkId(pageDto, careerTalkId);
+    }
+
+    @Override
+    public ModelMap registerAcquireCode(@NotNull(message = "邮箱不能为空") @NotBlank(message = "邮箱不能为空") @Email(message = "邮箱格式不正确") String email, HttpSession httpSession) {
+        ModelMap modelMap = new ModelMap();
+        try {
+            undergraduateService.registerAcquireCode(email);
+            httpSession.setAttribute("emailKey", email);
+            modelMap.addAttribute("message", "验证码获取成功");
+        } catch (Exception e) {
+            e.printStackTrace();
+            modelMap.addAttribute("errorMessage", e.getMessage());
+        }
+        return modelMap;
     }
 }

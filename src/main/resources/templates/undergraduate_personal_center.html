@@ -6,14 +6,6 @@
     <link th:href="@{~/layui/css/layui.css}" rel="stylesheet" type="text/css"/>
     <link th:href="@{~/css/toastr.min.css}" rel="stylesheet"/>
 
-    <!-- 新 Bootstrap 核心 CSS 文件 -->
-    <link th:href="@{~/bootstrap/css/bootstrap.min.css}" rel="stylesheet" type="text/css" />
-    <!-- 可选的Bootstrap主题文件（一般不使用） -->
-    <link th:href="@{~/bootstrap/css/bootstrap-theme.min.css}" rel="stylesheet" type="text/css"/>
-    <!-- jQuery文件。务必在bootstrap.min.js 之前引入 -->
-    <script type="text/javascript" th:src="@{~/js/jquery-3.3.1.min.js}"></script>
-    <!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
-    <script type="text/javascript" th:src="@{~/bootstrap/js/bootstrap.min.js}"></script>
 </head>
 <body class="layui-layout-body">
 <div class="layui-layout layui-layout-admin">
@@ -23,20 +15,20 @@
     <div class="layui-body">
         <!-- 内容主体区域 -->
         <div style="padding: 15px;">
-            <div class="header">
-                <h3 style="display: inline-block;">我的简历</h3>
+            <div class="layui-card-header">
+                <h1 style="display: inline-block;">我的简历</h1>
                 <span class="text-ellipsis" style="margin-left: 10px">完善的简历可提高求职成功率</span>
             </div>
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h3 class="panel-title">
+            <div class="layui-card">
+                <div class="layui-card-header">
+                    <h3>
                         小名片
-                        <a th:href="@{/undergraduate/info-update}" class="pull-right">
+                        <a th:href="@{/undergraduate/info-update}" style="margin-left: 90%">
                             <i class="layui-icon">&#xe642;</i>编辑
                         </a>
                     </h3>
                 </div>
-                <div class="panel-body">
+                <div class="layui-card-body">
                     <table class="layui-table">
                         <colgroup>
                             <col width="20%">
@@ -91,19 +83,19 @@
                     </table>
                 </div>
             </div>
-            <div class="panel panel-default">
-                <div class="panel-heading">
+            <div class="layui-card">
+                <div class="layui-card-header">
                     <h3 class="panel-title">
                         我的简历
-                        <a th:href="@{/undergraduate/resume-add}" class="pull-right">
+                        <a th:href="@{/undergraduate/resume-add}" style="margin-left: 72%">
                             <i class="layui-icon">&#xe654;</i>上传附件简历
                         </a>
-                        <a th:href="@{/undergraduate/resume-add}" class="pull-right">
+                        <a th:href="@{/undergraduate/resume-add}">
                             <i class="layui-icon">&#xe654;</i>新增在线简历
                         </a>
                     </h3>
                 </div>
-                <div class="panel-body">
+                <div class="layui-card-body">
                     <table class="layui-table"
                            lay-data="{height:'full', url:'/undergraduate/list-resume', page:true, id:'test', even:true}"
                            lay-filter="roles">
@@ -113,13 +105,12 @@
                                 <th lay-data="{align: 'center', field:'acquiescence', width:200, sort: true, unresize:true, templet: '#acquiescence'}">是否默认</th>
                                 <th lay-data="{align: 'center', field:'type', width:200, sort: true, unresize:true, templet: '#type'}">类型</th>
                                 <th lay-data="{align: 'center', field:'createTime', width:200, sort: true, unresize:true, templet: '#create_time'}">创建日期</th>
-                                <th lay-data="{align: 'center', toolbar: '#barDemo', width:280, unresize:true}">操作</th>
+                                <th lay-data="{align: 'center', toolbar: '#barDemo', unresize:true}">操作</th>
                             </tr>
                         </thead>
                     </table>
                 </div>
             </div>
-            <i class="layui-icon">&#xe60c;</i>
         </div>
     </div>
     <div class="layui-footer">
@@ -204,12 +195,12 @@
                             toastr.error(data.errorMessage);
                             toastr.clear();
                         }
+                        layui.table.reload('test', {
+                            url: '/undergraduate/list-resume'
+                            , where: {} //设定异步数据接口的额外参数
+                            //,height: 300
+                        });
                     });
-                layui.table.reload('test', {
-                    url: '/undergraduate/list-resume'
-                    , where: {} //设定异步数据接口的额外参数
-                    //,height: 300
-                });
             });
         }
     });

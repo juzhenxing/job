@@ -13,6 +13,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
+import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
@@ -31,7 +32,7 @@ public interface VisitorController {
     ModelAndView index(@RequestParam(required = false) ProvinceType province, ModelAndView modelAndView);
 
     @GetMapping("campus-recruitment")
-    ModelAndView campusRecruitment(@RequestParam(required = false) JobCategoryType jobCategoryType, ModelAndView modelAndView);
+    ModelAndView campusRecruitment(@RequestParam(required = false) ProvinceType province, @RequestParam(required = false) JobCategoryType jobCategoryType, ModelAndView modelAndView);
 
     @GetMapping("career-talk")
     ModelAndView careerTalk(@RequestParam(required = false) ProvinceType province, @RequestParam(required = false) String school, ModelAndView modelAndView);
@@ -55,6 +56,19 @@ public interface VisitorController {
 
     @GetMapping("find-password")
     String findPassword();
+
+    @PostMapping("check-identity")
+    ModelAndView checkIdentity(@NotNull(message = "邮箱不能为空")@NotBlank(message = "邮箱不能为空") @Email(message = "邮箱格式不正确") String email, HttpSession httpSession);
+
+    @PostMapping("re-check-identity")
+    @ResponseBody
+    ModelMap reCheckIdentity(@NotNull(message = "邮箱不能为空")@NotBlank(message = "邮箱不能为空") @Email(message = "邮箱格式不正确") String email, HttpSession httpSession);
+
+    @PostMapping("reset-password")
+    ModelAndView resetPassword(@NotNull(message = "验证码不能为空")@NotBlank(message = "验证码不能为空") String code, HttpSession httpSession);
+
+    @PostMapping("set-success")
+    ModelAndView setSuccess(@NotNull(message = "密码不能为空")@NotBlank(message = "密码不能为空") String password, HttpSession httpSession);
 
     @GetMapping("list-career-talk")
     @ResponseBody
@@ -98,10 +112,15 @@ public interface VisitorController {
     PagedResult listCampusRecruitmentByQueryProfessionalDto(QueryProfessionalDto queryProfessionalDto, PageDto pageDto);
 
     @GetMapping("get-career-talk-by-id")
-    ModelAndView getCareerTalkById(Long careerTalkId, ModelAndView modelAndView);
+    ModelAndView getCareerTalkById(Long careerTalkId, ModelAndView modelAndView, HttpSession httpSession);
 
     @GetMapping("list-professional-by-career-talk-id")
     @ResponseBody
     PagedResult listProfessionalByCareerTalkId(PageDto pageDto, Long careerTalkId);
+
+    @PostMapping("register-acquire-code")
+    @ResponseBody
+    ModelMap registerAcquireCode(@NotNull(message = "邮箱不能为空")@NotBlank(message = "邮箱不能为空") @Email(message = "邮箱格式不正确") String email, HttpSession httpSession);
+
 
 }

@@ -114,5 +114,14 @@ public class JobException extends BaseException {
     public static final JobException CAREERTALK_UPDATE_PROFESSIONAL_EXCEPTION = new JobException(JobOutput.CAREERTALK_UPDATE_PROFESSIONAL);
 
     public static final JobException CAREERTALK_UPDATE_EXCEPTION = new JobException(JobOutput.CAREERTALK_UPDATE);
+
+    public static final JobException PROFESSIONAL_DELETE_CAREERTALK_EXCEPTION = new JobException(JobOutput.PROFESSIONAL_DELETE_CAREERTALK);
+
+    public static final JobException PROFESSIONAL_DELETE_CAMPUSRECRUITMENT_EXCEPTION = new JobException(JobOutput.PROFESSIONAL_DELETE_CAMPUSRECRUITMENT);
+
+    public static final JobException PROFESSIONAL_UPDATE_CAREERTALK_EXCEPTION = new JobException(JobOutput.PROFESSIONAL_UPDATE_CAREERTALK);
+
+    public static final JobException PROFESSIONAL_UPDATE_CAMPUSRECRUITMENT_EXCEPTION = new JobException(JobOutput.PROFESSIONAL_UPDATE_CAMPUSRECRUITMENT);
+
 }
 

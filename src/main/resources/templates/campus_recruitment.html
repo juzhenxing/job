@@ -31,7 +31,7 @@
                     <input type="text" id="myInput" onkeyup="myFunction()" placeholder="搜索 公司/职位">
                 </form>
             </blockquote>
-            <blockquote class="layui-elem-quote">
+            <!--<blockquote class="layui-elem-quote">
                 <form class="layui-form">
                     <select lay-filter="province_filter">
                         <option value="">不限</option>
@@ -41,7 +41,7 @@
                         </tr>
                     </select>
                 </form>
-            </blockquote>
+            </blockquote>-->
             <table class="layui-table" id="campus_recruitment_table" lay-filter="roles">
             </table>
             <i class="layui-icon">&#xe60c;</i>
@@ -121,7 +121,8 @@
                 {align: 'center', toolbar: '#barDemo', unresize: true, title: '操作'}
             ]],
             where: {
-                jobCategoryType:[[${jobCategoryType}]]
+                jobCategoryType:[[${jobCategoryType}]],
+                province: [[${session.province.type}]]
             }
         });
     } else {
@@ -138,7 +139,9 @@
                 {align: 'center', field: 'releaseTime', width: 200, sort: true, unresize: true, title: '发布时间'},
                 {align: 'center', toolbar: '#barDemo', unresize: true, title: '操作'}
             ]],
-            where: {}
+            where: {
+                province: [[${session.province.type}]]
+            }
         });
     }
 

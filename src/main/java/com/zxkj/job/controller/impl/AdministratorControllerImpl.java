@@ -11,6 +11,7 @@ import com.zxkj.job.service.AdministratorService;
 import com.zxkj.job.service.EnterpriseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -153,16 +154,19 @@ public class AdministratorControllerImpl extends BaseControllerImpl<Administrato
     }
 
     @Override
-    public ModelAndView checkApplication(Long enterpriseId, CheckStateType checkStateType) {
-        ModelAndView modelAndView = new ModelAndView();
-        try{
-            service.checkApplication(enterpriseId, checkStateType);
-        }catch (Exception e){
+    public ModelMap checkApplication(Long enterpriseId, CheckStateType checkStateType) {
+        ModelMap modelMap = new ModelMap();
+        try {
+            if (service.checkApplication(enterpriseId, checkStateType)) {
+                modelMap.addAttribute("message", "审核成功");
+            } else {
+                modelMap.addAttribute("errorMessage", "审核失败");
+            }
+        } catch (Exception e) {
             e.printStackTrace();
-            modelAndView.addObject("errorMessage", e.getMessage());
+            modelMap.addAttribute("errorMessage", e.getMessage());
         }
-        modelAndView.setViewName("administrator_check_application");
-        return modelAndView;
+        return modelMap;
     }
 
     @Override

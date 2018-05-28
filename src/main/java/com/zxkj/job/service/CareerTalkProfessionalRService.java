@@ -17,4 +17,6 @@ public interface CareerTalkProfessionalRService extends IService<CareerTalkProfe
 
     Boolean deleteByProfessionalIds(Long careerTalkId, List<Long> professionalIds);
 
+    List<CareerTalkProfessionalRPo> listByProfessionalId(Long professionalId);
+
 }

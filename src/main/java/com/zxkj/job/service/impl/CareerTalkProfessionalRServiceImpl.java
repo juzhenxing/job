@@ -65,4 +65,11 @@ public class CareerTalkProfessionalRServiceImpl extends BaseServiceImpl<CareerTa
         ew.in("professional_id", professionalIds);
         return super.delete(ew);
     }
+
+    @Override
+    public List<CareerTalkProfessionalRPo> listByProfessionalId(Long professionalId) {
+        EntityWrapper entityWrapper = new EntityWrapper();
+        entityWrapper.eq("professional_id", professionalId);
+        return super.selectList(entityWrapper);
+    }
 }

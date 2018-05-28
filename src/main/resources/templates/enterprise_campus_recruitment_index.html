@@ -109,16 +109,16 @@
                                 toastr.error(data.errorMessage);
                                 toastr.clear();
                             }
-                        });
-                        table.reload('test', {
-                        url: '/enterprise/list-campus-recruitment'
-                        , where: {} //设定异步数据接口的额外参数
-                        //,height: 300
-                        ,page: {
-                            curr: 1 //重新从第 1 页开始
+                            layui.table.reload('test', {
+                                url: '/enterprise/list-campus-recruitment'
+                                , where: {} //设定异步数据接口的额外参数
+                                //,height: 300
+                                ,page: {
+                                    curr: 1 //重新从第 1 页开始
+                                }
+                            });
                         }
-                    });
-                    $(".layui-laypage-btn")[0].click();
+                    );
                 });
             }
         });

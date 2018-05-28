@@ -52,7 +52,7 @@
 <script th:src="@{~/js/toastr.min.js}"></script>
 <script th:inline="javascript">
     toastr.options.positionClass = 'toast-top-center';
-    //    toastr.options.timeOut = "5000";
+    toastr.options.timeOut = "1000";
     /*[+
         if([[${errorMessage}]] != null){
             toastr.error([[${errorMessage}]]);
@@ -106,17 +106,15 @@
                     function (data, status) {
                         if (data.message != null) {
                             toastr.success(data.message);
-                            toastr.clear();
                         } else if (data.errorMessage != null) {
                             toastr.error(data.errorMessage);
-                            toastr.clear();
                         }
+                        layui.table.reload('test', {
+                            url: '/enterprise/list-professional'
+                            , where: {} //设定异步数据接口的额外参数
+                            //,height: 300
+                        });
                     });
-                layui.table.reload('test', {
-                    url: '/enterprise/list-professional'
-                    , where: {} //设定异步数据接口的额外参数
-                    //,height: 300
-                });
             });
         }
     });

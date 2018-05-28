@@ -73,4 +73,11 @@ public class CampusRecruitmentProfessionalRServiceImpl extends BaseServiceImpl<C
         return pagedResult;
     }
 
+    @Override
+    public List<CampusRecruitmentProfessionalRPo> listByProfessionalId(Long professionalId) {
+        EntityWrapper<CampusRecruitmentProfessionalRPo> ew = new EntityWrapper<>();
+        ew.eq("professional_id", professionalId);
+        return super.selectList(ew);
+    }
+
 }

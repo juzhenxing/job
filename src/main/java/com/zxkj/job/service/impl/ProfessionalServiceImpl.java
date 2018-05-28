@@ -80,6 +80,14 @@ public class ProfessionalServiceImpl extends BaseServiceImpl<ProfessionalMapper,
     public Boolean deleteByProfessionalId(Long professionalId, HttpSession httpSession) {
         EnterpriseVo enterpriseVo = (EnterpriseVo)httpSession.getAttribute("enterpriseVo");
         checkProfessionalPo(professionalId, enterpriseVo.getId());
+        List<CareerTalkProfessionalRPo> careerTalkProfessionalRPos = careerTalkProfessionalRService.listByProfessionalId(professionalId);
+        if(careerTalkProfessionalRPos != null && careerTalkProfessionalRPos.size() > 0){
+            throw JobException.PROFESSIONAL_DELETE_CAREERTALK_EXCEPTION;
+        }
+        List<CampusRecruitmentProfessionalRPo> campusRecruitmentProfessionalRPos = campusRecruitmentProfessionalRService.listByProfessionalId(professionalId);
+        if(campusRecruitmentProfessionalRPos != null && campusRecruitmentProfessionalRPos.size() > 0){
+            throw JobException.PROFESSIONAL_DELETE_CAMPUSRECRUITMENT_EXCEPTION;
+        }
         return super.deleteById(professionalId);
     }
 

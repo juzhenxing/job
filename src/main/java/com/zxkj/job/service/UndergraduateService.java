@@ -21,7 +21,7 @@ public interface UndergraduateService extends IService<UndergraduatePo> {
      * @param simpleUndergraduateDto
      * @return
      */
-    String add(SimpleUndergraduateDto simpleUndergraduateDto);
+    String add(SimpleUndergraduateDto simpleUndergraduateDto, HttpSession httpSession);
 
     /**
      * 学生登录
@@ -47,5 +47,7 @@ public interface UndergraduateService extends IService<UndergraduatePo> {
     Boolean infoUpdate(UndergraduateDto undergraduateDto, HttpSession httpSession) throws IOException, ParseException;
 
     UndergraduateVo getByUndergraduateId(Long undergraduateId);
+
+    void registerAcquireCode(String email) throws MessagingException;
 
 }

@@ -9,6 +9,10 @@
         <if test="queryProfessionalDto.jobCategoryType != null">
             and t_job_professional.type = #{queryProfessionalDto.jobCategoryType}
         </if>
+        <if test="queryProfessionalDto.province != null">
+            <bind name="province" value="'%'+queryProfessionalDto.province.name+'%'"/>
+            and t_job_campus_recruitment.workplace like #{province}
+        </if>
         LIMIT #{startLine}, #{pageSize};
     </select>
 
@@ -18,6 +22,10 @@
         WHERE t_job_campus_recruitment.id = t_job_campus_recruitment_professional_r.campus_recruitment_id and t_job_professional.id = t_job_campus_recruitment_professional_r.professional_id
         <if test="queryProfessionalDto.jobCategoryType != null">
             and t_job_professional.type = #{queryProfessionalDto.jobCategoryType}
+        </if>
+        <if test="queryProfessionalDto.province != null">
+            <bind name="province" value="'%'+queryProfessionalDto.province.name+'%'"/>
+            and t_job_campus_recruitment.workplace like #{province}
         </if>;
     </select>
 

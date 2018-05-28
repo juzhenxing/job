@@ -3,6 +3,7 @@ package com.zxkj.job.controller;
 import com.zxkj.job.bean.dto.*;
 import com.zxkj.job.common.bean.PagedResult;
 import com.zxkj.job.enums.CheckStateType;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -74,7 +75,8 @@ public interface AdministratorController {
     PagedResult checkApplication(PageDto pageDto);
 
     @PostMapping("check-application")
-    ModelAndView checkApplication(Long enterpriseId, CheckStateType checkStateType);
+    @ResponseBody
+    ModelMap checkApplication(Long enterpriseId, CheckStateType checkStateType);
 
     @GetMapping("get-enterprise-by-id")
     ModelAndView getEnterpriseById(Long enterpriseId);

@@ -59,6 +59,15 @@
             },
             function(data,status){
 //                alert("Data: " + data + "\nStatus: " + status);
+                if (data.message != null) {
+                    toastr.success(data.message);
+                } else if (data.errorMessage != null) {
+                    toastr.error(data.errorMessage);
+                }
+                layui.table.reload('test', {
+                    url: '/administrator/check-application'
+                    ,where: {} //设定异步数据接口的额外参数
+                });
             });
     }
     //监听工具条
@@ -83,21 +92,12 @@
                     //按钮【按钮一】的回调
                     updateCheckStateType(data.id, 2);
                     layer.close(index);
-                    layui.table.reload('test', {
-                        url: '/administrator/check-application'
-                        ,where: {} //设定异步数据接口的额外参数
-                        //,height: 300
-                    });
                 }
                 ,btn2: function(index, layero){
 //                    alert("审核不通过");
                     //按钮【按钮二】的回调
                     updateCheckStateType(data.id, 3);
                     layer.close(index);
-                    layui.table.reload('test', {
-                        url: '/administrator/check-application'
-                        ,where: {} //设定异步数据接口的额外参数
-                    });
                     //return false 开启该代码可禁止点击该按钮关闭
                 }
                 ,cancel: function(){
@@ -113,13 +113,18 @@
 </script>
 <link th:href="@{~/css/toastr.min.css}" rel="stylesheet" />
 <script th:src="@{~/js/toastr.min.js}"></script>
-<script>
+<script th:inline="javascript">
     toastr.options.positionClass = 'toast-top-center';
     toastr.options.timeOut = "1000";
     /*[+
         if([[${errorMessage}]] != null){
             toastr.error([[${errorMessage}]]);
             toastr.cancel();
+        }
+    +]*/
+    /*[+
+        if([[${message}]] != null){
+            toastr.success([[${message}]]);
         }
     +]*/
 </script>

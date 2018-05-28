@@ -6,6 +6,9 @@ import lombok.Data;
 
 import java.util.Date;
 
+/**
+ * 项目/比赛
+ */
 @Data
 @TableName("t_job_project_competition")
 public class ProjectCompetitionPo extends BasePo<ProjectCompetitionPo> {

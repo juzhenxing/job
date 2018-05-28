@@ -150,6 +150,10 @@ public class AdministratorServiceImpl extends BaseServiceImpl<AdministratorMappe
         if(enterprisePo == null){
             throw JobException.NULL_ENTERPRISE_EXCEPTION;
         }
+        CheckStateType checkState = enterprisePo.getCheckState();
+        if(checkState == CheckStateType.NO_PASS || checkState == CheckStateType.PASS){
+            throw JobException.APPLY_ALREADY_ARRANGED_EXCEPTION;
+        }
         enterprisePo.setCheckState(checkStateType);
         if(!enterpriseService.updateById(enterprisePo)){
             throw JobException.ENTERPRISE_UPDATE_EXCEPTION;

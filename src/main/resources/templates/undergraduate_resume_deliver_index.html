@@ -5,15 +5,6 @@
     <title>个人中心</title>
     <link th:href="@{~/layui/css/layui.css}" rel="stylesheet" type="text/css"/>
     <link th:href="@{~/css/toastr.min.css}" rel="stylesheet"/>
-
-    <!-- 新 Bootstrap 核心 CSS 文件 -->
-    <link th:href="@{~/bootstrap/css/bootstrap.min.css}" rel="stylesheet" type="text/css" />
-    <!-- 可选的Bootstrap主题文件（一般不使用） -->
-    <link th:href="@{~/bootstrap/css/bootstrap-theme.min.css}" rel="stylesheet" type="text/css"/>
-    <!-- jQuery文件。务必在bootstrap.min.js 之前引入 -->
-    <script type="text/javascript" th:src="@{~/js/jquery-3.3.1.min.js}"></script>
-    <!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
-    <script type="text/javascript" th:src="@{~/bootstrap/js/bootstrap.min.js}"></script>
 </head>
 <body class="layui-layout-body">
 <div class="layui-layout layui-layout-admin">
@@ -24,15 +15,15 @@
     <div class="layui-body">
         <!-- 内容主体区域 -->
         <div style="padding: 15px;">
-            <div class="header">
-                <h3 style="display: inline-block">简历投递记录</h3>
+            <div class="layui-card-header">
+                <h1 style="display: inline-block">简历投递记录</h1>
                 <span class="text-ellipsis">记录了平台所有的简历投递信息，方便统一查看</span>
             </div>
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h3 class="panel-title">投递记录</h3>
+            <div class="layui-card">
+                <div class="layui-card-header">
+                    <h1>投递记录</h1>
                 </div>
-                <div class="panel-body">
+                <div class="layui-card-header">
                     <table class="layui-table"
                            lay-data="{height:'full', url:'/undergraduate/list-resume-deliver', page:true, id:'test', even:true}"
                            lay-filter="roles">
@@ -43,17 +34,17 @@
                             <th lay-data="{align: 'center', field:'deliveryTime', width:200, sort: true, unresize:true}">投递时间</th>
                             <th lay-data="{align: 'center', field:'status', width:150, sort: true, unresize:true}">状态</th>
                             <th lay-data="{align: 'center', field:'time', width:200, unresize:true}">状态更新时间</th>
-                            <th lay-data="{align: 'center', toolbar: '#barDemo', width:129, unresize:true}">操作</th>
+                            <th lay-data="{align: 'center', toolbar: '#barDemo', unresize:true}">操作</th>
                         </tr>
                         </thead>
                     </table>
                 </div>
             </div>
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h3 class="panel-title">简历投递要注意什么</h3>
+            <div class="layui-card" style="margin-top: 250px">
+                <div class="layui-card-header">
+                    <h1>简历投递要注意什么</h1>
                 </div>
-                <div class="panel-body">
+                <div class="layui-card-body">
                     <ul>
                         <li><h4>投递简历之前应尽可能完善简历，资料越完善被录用的概率越高。</h4></li>
                         <li><h4>尽量上传真实登记照头像，能体现应聘者的认真与重视。系统统计数据显示，有头像的用户比没有的HR反馈率高出65%。</h4></li>
@@ -61,7 +52,6 @@
                     </ul>
                    </div>
             </div>
-            <i class="layui-icon">&#xe60c;</i>
         </div>
     </div>
     <div class="layui-footer">

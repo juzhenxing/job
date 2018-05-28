@@ -21,4 +21,6 @@ public interface CampusRecruitmentProfessionalRService extends IService<CampusRe
     Boolean deleteByProfessionalIds(Long campusRecruitmentId, List<Long> professionalIds);
 
     PagedResult listCampusRecruitmentByQueryProfessionalDto(QueryProfessionalDto queryProfessionalDto, PageDto pageDto);
+
+    List<CampusRecruitmentProfessionalRPo> listByProfessionalId(Long professionalId);
 }

@@ -16,11 +16,11 @@
     <script th:src="@{~/js/toastr.min.js}"></script>
 </head>
 <body style="padding: 200px">
-<nav class="navbar navbar-default navbar-fixed-top" role="navigation" style="height: 50px">
+<nav class="navbar navbar-default navbar-fixed-top" role="navigation">
     <div class="container-fluid">
-        <div class="navbar-header" style="padding-top: 5px">
-            <a th:href="@{/undergraduate/index}">
-                <img th:src="@{~/img/logo.png}" alt="通用的占位符缩略图" class="thumbnail" height="40px" width="100px"/>
+        <div class="navbar-header">
+            <a th:href="@{/visitor/index}">
+                <img th:src="@{~/img/logo-b.png}" alt="通用的占位符缩略图" height="50px" width="150px"/>
             </a>
         </div>
         <div class="navbar-header" style="margin-left: 10px">
@@ -33,12 +33,12 @@
                         旗下平台 <b class="caret"></b>
                     </a>
                     <ul class="dropdown-menu">
-                        <li><a th:href="@{/undergraduate/campus-recruitment}" class="text-center">校招</a></li>
+                        <li><a th:href="@{/visitor/campus-recruitment}" class="text-center">校招</a></li>
                         <li class="divider"></li>
-                        <li><a th:href="@{/undergraduate/career-talk}" class="text-center">宣讲会</a></li>
+                        <li><a th:href="@{/visitor/career-talk}" class="text-center">宣讲会</a></li>
                     </ul>
                 </li>
-                <li><a th:href="@{/undergraduate/index}">返回首页</a></li>
+                <li><a th:href="@{/visitor/index}">返回首页</a></li>
             </ul>
         </div>
     </div>
@@ -46,7 +46,7 @@
 <div style="padding-left: 10%; padding-right: 10%;">
     <h2 class="text-center">验证身份</h2>
     <br>
-    <form role="form" th:action="@{/undergraduate/reset-password}" method="post" id="check_identity">
+    <form role="form" th:action="@{/visitor/reset-password}" method="post" id="check_identity">
         <div class="col-sm-6 col-sm-offset-3 row">
             <b><p th:text="'验证码已发送到邮箱：' + ${session.emailKey}" class="col-sm-12"></p></b>
         </div>
@@ -54,7 +54,7 @@
         <br>
         <div class="col-sm-6 col-sm-offset-3 row">
             <input class="col-xs-8" type="text" id="code" name="code" placeholder="请输入验证码">
-            <button class="btn btn-default col-xs-3" style="margin-left: 5px" id="reacquire">重新获取</button>
+            <input type="button" class="btn btn-default col-xs-3" style="margin-left: 5px" id="reacquire" value="重新获取">
         </div>
         <br>
         <br>
@@ -88,13 +88,17 @@
             }
         }
     });
-    $("reacquire").click(function(){
-        $.post("/undergraduate/check-identity",
+    $("#reacquire").click(function(){
+        $.post("/visitor/re-check-identity",
             {
                 email:[[${session.emailKey}]]
             },
             function(data,status){
-                alert("数据: \n" + data + "\n状态: " + status);
+                if (data.message != null) {
+                    toastr.success(data.message);
+                } else if (data.errorMessage != null) {
+                    toastr.error(data.errorMessage);
+                }
             });
     });
     toastr.options.positionClass = 'toast-top-center';

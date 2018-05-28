@@ -244,14 +244,14 @@
                             toastr.error(data.errorMessage);
                             toastr.clear();
                         }
+                        layui.table.reload('test', {
+                            url: '/undergraduate/list-resume-education-background'
+                            , where: {
+                                resumeId: data.resumeId
+                            } //设定异步数据接口的额外参数
+                            //,height: 300
+                        });
                     });
-                layui.table.reload('test', {
-                    url: '/undergraduate/list-resume-education-background'
-                    , where: {
-                        resumeId: data.resumeId
-                    } //设定异步数据接口的额外参数
-                    //,height: 300
-                });
             });
         }
     });

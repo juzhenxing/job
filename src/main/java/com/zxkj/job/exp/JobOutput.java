@@ -115,6 +115,14 @@ public enum JobOutput {
     CAREERTALK_UPDATE_PROFESSIONAL(150, "该宣讲会记录所提供的职位已有人申请, 无法更新"),
 
     CAREERTALK_UPDATE(151, "宣讲会更新失败"),
+
+    PROFESSIONAL_DELETE_CAREERTALK(152, "该招聘岗位已被包含在某宣讲会中, 无法删除"),
+
+    PROFESSIONAL_DELETE_CAMPUSRECRUITMENT(153, "该招聘岗位已被包含在某校园招聘中, 无法删除"),
+
+    PROFESSIONAL_UPDATE_CAREERTALK(152, "该招聘岗位已被包含在某宣讲会中, 无法更新"),
+
+    PROFESSIONAL_UPDATE_CAMPUSRECRUITMENT(153, "该招聘岗位已被包含在某校园招聘中, 无法更新"),
     ;
 
     private int code;

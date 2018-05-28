@@ -88,7 +88,7 @@
                 <table style="display: block; margin: 6px 0; padding: 8px 0; border-bottom: 1px solid #eee;">
                     <div th:each="educationBackgroundVo : ${educationBackgroundVoList}">
                         <tr style="border:0;">
-                            <td style="font-size: 13px; font-weight: normal; padding: 0; color: #999; line-height: 25px; width: 125px;border:0;"><span th:text="${educationBackgroundVo.startTime}"></span>-<span th:text="${educationBackgroundVo.endTime}"></span></td>
+                            <td style="font-size: 13px; font-weight: normal; padding: 0; color: #999; line-height: 25px; width: 125px;border:0;"><span th:text="${educationBackgroundVo.startTime}"></span> 到 <span th:text="${educationBackgroundVo.endTime}"></span></td>
                             <td style="line-height: 25px;width: 280px;padding: 0 8px;border:0;"><span th:text="${educationBackgroundVo.school}"></span></td>
                             <td style="line-height: 25px;width: 220px;padding: 0 8px;border:0;"><span th:text="${educationBackgroundVo.profession}"></span></td>
                             <td style="line-height: 25px;width: 150px;padding-left: 8px;text-align: right;border:0;"><span th:text="${educationBackgroundVo.educationBackground}"></span><span style="font-size: 13px; font-weight: normal; padding: 0; color: #999; width:80px">(<span th:text="${educationBackgroundVo.ranking}"></span>)</span>

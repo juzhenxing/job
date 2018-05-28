@@ -3,9 +3,7 @@ package com.zxkj.job.controller.impl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.tools.javac.comp.Enter;
 import com.zxkj.job.bean.dto.*;
-import com.zxkj.job.bean.po.CampusRecruitmentPo;
-import com.zxkj.job.bean.po.EnterprisePo;
-import com.zxkj.job.bean.po.UndergraduatePo;
+import com.zxkj.job.bean.po.*;
 import com.zxkj.job.bean.vo.*;
 import com.zxkj.job.common.BaseControllerImpl;
 import com.zxkj.job.common.bean.PagedResult;
@@ -43,6 +41,7 @@ import javax.validation.Valid;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Controller
@@ -75,6 +74,12 @@ public class EnterpriseControllerImpl extends BaseControllerImpl<EnterpriseServi
 
     @Autowired
     FileUtil fileUtil;
+
+    @Autowired
+    CareerTalkProfessionalRService careerTalkProfessionalRService;
+
+    @Autowired
+    CampusRecruitmentProfessionalRService campusRecruitmentProfessionalRService;
 
     @Override
     public String preRegister() {
@@ -426,7 +431,16 @@ public class EnterpriseControllerImpl extends BaseControllerImpl<EnterpriseServi
     public ModelAndView updateProfessional(Long professionalId, HttpSession httpSession) {
         ModelAndView modelAndView = new ModelAndView();
         try {
-            modelAndView.addObject("professionalUpdateVo", professionalService.getProfessionalUpdateVoById(professionalId, httpSession));
+            ProfessionalUpdateVo professionalUpdateVo = professionalService.getProfessionalUpdateVoById(professionalId, httpSession);
+            List<CareerTalkProfessionalRPo> careerTalkProfessionalRPos = careerTalkProfessionalRService.listByProfessionalId(professionalId);
+            if(careerTalkProfessionalRPos != null && careerTalkProfessionalRPos.size() > 0){
+                throw JobException.PROFESSIONAL_UPDATE_CAREERTALK_EXCEPTION;
+            }
+            List<CampusRecruitmentProfessionalRPo> campusRecruitmentProfessionalRPos = campusRecruitmentProfessionalRService.listByProfessionalId(professionalId);
+            if(campusRecruitmentProfessionalRPos != null && campusRecruitmentProfessionalRPos.size() > 0){
+                throw JobException.PROFESSIONAL_UPDATE_CAMPUSRECRUITMENT_EXCEPTION;
+            }
+            modelAndView.addObject("professionalUpdateVo", professionalUpdateVo);
             modelAndView.addObject("jobCategoryType", JobCategoryType.values());
             modelAndView.addObject("educationBackgroundType", EducationBackgroundType.values());
             modelAndView.setViewName("enterprise_professional_update");

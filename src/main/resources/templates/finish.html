@@ -13,11 +13,11 @@
     <script type="text/javascript" th:src="@{~/bootstrap/js/bootstrap.min.js}"></script>
 </head>
 <body style="padding: 200px">
-<nav class="navbar navbar-default navbar-fixed-top" role="navigation" style="height: 50px">
+<nav class="navbar navbar-default navbar-fixed-top" role="navigation">
     <div class="container-fluid">
-        <div class="navbar-header" style="padding-top: 5px">
-            <a th:href="@{/undergraduate/index}">
-                <img th:src="@{~/img/logo.png}" alt="通用的占位符缩略图" class="thumbnail" height="40px" width="100px"/>
+        <div class="navbar-header">
+            <a th:href="@{/visitor/index}">
+                <img th:src="@{~/img/logo-b.png}" alt="通用的占位符缩略图" height="50px" width="150px"/>
             </a>
         </div>
         <div class="navbar-header" style="margin-left: 10px">
@@ -30,12 +30,12 @@
                         旗下平台 <b class="caret"></b>
                     </a>
                     <ul class="dropdown-menu">
-                        <li><a th:href="@{/undergraduate/campus-recruitment}" class="text-center">校招</a></li>
+                        <li><a th:href="@{/visitor/campus-recruitment}" class="text-center">校招</a></li>
                         <li class="divider"></li>
-                        <li><a th:href="@{/undergraduate/career-talk}" class="text-center">宣讲会</a></li>
+                        <li><a th:href="@{/visitor/career-talk}" class="text-center">宣讲会</a></li>
                     </ul>
                 </li>
-                <li><a th:href="@{/undergraduate/index}">返回首页</a></li>
+                <li><a th:href="@{/visitor/index}">返回首页</a></li>
             </ul>
         </div>
     </div>
@@ -46,7 +46,7 @@
     <div class="success-msg">
         <h3>密码设置成功！</h3>
         <p>你可以使用新密码登录大学生求职网</p>
-        <a class='btn btn-default col-sm-12' th:href="@{/undergraduate/login}">立即登录</a>
+        <a class='btn btn-default col-sm-12' th:href="@{/visitor/login}">立即登录</a>
     </div>
 </div>
 <script th:inline="javascript">

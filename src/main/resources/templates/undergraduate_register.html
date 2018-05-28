@@ -23,7 +23,7 @@
     <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
         <div class="container-fluid">
             <div class="navbar-header">
-                <a class="navbar-brand" th:href="@{/undergraduate/index}">大学生求职网</a>
+                <a class="navbar-brand" th:href="@{/visitor/index}">大学生求职网</a>
             </div>
             <div>
                 <ul class="nav navbar-nav">
@@ -32,45 +32,43 @@
                             旗下平台 <b class="caret"></b>
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a th:href="@{/undergraduate/campus-recruitment}">校招</a></li>
+                            <li><a th:href="@{/visitor/campus-recruitment}">校招</a></li>
                             <li class="divider"></li>
-                            <li><a th:href="@{/undergraduate/career-talk}">宣讲会</a></li>
+                            <li><a th:href="@{/visitor/career-talk}">宣讲会</a></li>
                         </ul>
                     </li>
-                    <li><a th:href="@{/undergraduate/index}">返回首页</a></li>
+                    <li><a th:href="@{/visitor/index}">返回首页</a></li>
                 </ul>
             </div>
         </div>
     </nav>
     <div>
-        <div class="thumbnail">
-            <img th:src="@{~/img/logo.png}" alt="通用的占位符缩略图"/>
-            <!--<img src="/img/logo.png"/>-->
-            <div class="caption" style="text-align: center;">
-                <h3>大学生求职搜索引擎</h3>
-            </div>
-        </div>
+        <img th:src="@{~/img/logo.png}" alt="通用的占位符缩略图"/>
     </div>
     <div class="col-sm-12">
-        <form role="form" class="form-horizontal" id="register" th:action="@{/undergraduate/add}" method="post">
-            <div class="col-sm-offset-2 ">
-                <label for="email" class="col-sm-2 control-label" style="text-align: center;">邮箱</label>
-                <div class="col-sm-6">
-                    <input type="email" class="form-control" id="email" name="email" placeholder="请输入邮箱">
+        <form role="form" class="form-horizontal" id="register" th:action="@{/visitor/add}" method="post">
+            <div class="col-sm-offset-3 ">
+                <div class="col-sm-8">
+                    <input type="email" class="col-xs-11 input" id="email" name="email" placeholder="请输入邮箱">
                 </div>
             </div>
             <br>
-            <div class="col-sm-offset-2">
-                <label for="password" class="col-sm-2 control-label" style="text-align: center;">密码</label>
-                <div class="col-sm-6">
-                    <input type="password" class="form-control password" id="password" name="password" placeholder="请输入新密码(长度在5到10之间)">
+            <div class="col-sm-offset-3 ">
+                <div class="col-sm-8">
+                    <input class="col-xs-8 input" type="text" id="code" name="code" placeholder="请输入验证码">
+                    <input type="button" class="btn btn-default col-xs-3" style="margin-left: 1px" id="acquire" value="获取">
                 </div>
             </div>
             <br>
-            <div class="col-sm-offset-2">
-                <label for="passworded" class="col-sm-2 control-label" style="text-align: center;">确认密码</label>
-                <div class="col-sm-6">
-                    <input type="password" class="form-control" id="passworded" name="passworded" placeholder="请再次输入新密码">
+            <div class="col-sm-offset-3">
+                <div class="col-sm-8">
+                    <input type="password" class="col-xs-11 input password" id="password" name="password" placeholder="请输入新密码(长度在5到10之间)">
+                </div>
+            </div>
+            <br>
+            <div class="col-sm-offset-3">
+                <div class="col-sm-8">
+                    <input type="password" class="col-xs-11 input" id="passworded" name="passworded" placeholder="请再次输入新密码">
                 </div>
             </div>
             <div>
@@ -78,22 +76,26 @@
                 <input type="submit" class="btn btn-default col-sm-12" value="注册">
             </div>
         </form>
+        <br/>
+        <br/>
         <div>
-            <a class='btn btn-default col-sm-12' th:href="@{/undergraduate/login}">登录</a>
+            <a class='btn btn-default col-sm-12' th:href="@{/visitor/login}">登录</a>
         </div>
+        <br/>
+        <br/>
         <div>
             <a class='btn btn-default col-sm-12' th:href="@{/enterprise/index}">企业注册入口</a>
         </div>
     </div>
     <ul class="nav navbar-nav navbar-fixed-bottom" style="left: 43.5%">
         <li class="">
-            <a th:href="@{/undergraduate/index}">首页</a>
+            <a th:href="@{/visitor/index}">首页</a>
         </li>
         <li class="">
-            <a th:href="@{/undergraduate/campus-recruitment}">校招</a>
+            <a th:href="@{/visitor/campus-recruitment}">校招</a>
         </li>
         <li class="">
-            <a th:href="@{/undergraduate/career-talk}">宣讲会</a>
+            <a th:href="@{/visitor/career-talk}">宣讲会</a>
         </li>
     </ul>
 </div>
@@ -146,6 +148,38 @@
             toastr.cancel();
         }
     +]*/
+    var email = document.getElementById("email");
+    $("#acquire").click(function(){
+        $.post("/visitor/register-acquire-code",
+            {
+                email:email.value
+            },
+            function(data,status){
+                if (data.message != null) {
+                    toastr.success(data.message);
+                } else if (data.errorMessage != null) {
+                    toastr.error(data.errorMessage);
+                }
+            });
+    });
 </script>
+<style>
+    input {
+        height: 34px;
+        padding: 6px 12px;
+        font-size: 14px;
+        line-height: 1.42857143;
+        color: #555;
+        background-color: #fff;
+        background-image: none;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
+        box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
+        -webkit-transition: border-color ease-in-out .15s,-webkit-box-shadow ease-in-out .15s;
+        -o-transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
+        transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
+    }
+</style>
 </body>
 </html>

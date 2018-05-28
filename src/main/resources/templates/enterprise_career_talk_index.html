@@ -343,16 +343,15 @@
                         } else if (data.errorMessage != null) {
                             toastr.error(data.errorMessage);
                         }
+                        layui.table.reload('test', {
+                            url: '/enterprise/list-career-talk'
+                            , where: {} //设定异步数据接口的额外参数
+                            //,height: 300
+                            ,page: {
+                                curr: 1 //重新从第 1 页开始
+                            }
+                        });
                     });
-                layui.table.reload('test', {
-                    url: '/enterprise/list-career-talk'
-                    , where: {} //设定异步数据接口的额外参数
-                    //,height: 300
-                    ,page: {
-                        curr: 1 //重新从第 1 页开始
-                    }
-                });
-                location.reload();
             });
         }else if(layEvent === 'detail'){ //查看
             $.get("/enterprise/check-get-career-talk-by-id?careerTalkId="+ data.id,
@@ -408,15 +407,15 @@
                 } else if (data.errorMessage != null) {
                     toastr.error(data.errorMessage);
                 }
+                layui.table.reload('test', {
+                    url: '/enterprise/list-career-talk'
+                    , where: {} //设定异步数据接口的额外参数
+                    //,height: 300
+                });
             },
             error: function (data) {
                 toastr.error("请求失败");
             }
-        });
-        layui.table.reload('test', {
-            url: '/enterprise/list-career-talk'
-            , where: {} //设定异步数据接口的额外参数
-            //,height: 300
         });
     }
     layui.form.on('radio(operationType)', function(data){
