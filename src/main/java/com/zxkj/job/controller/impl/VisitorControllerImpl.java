@@ -177,7 +177,7 @@ public class VisitorControllerImpl implements VisitorController {
     }
 
     @Override
-    public ModelMap reCheckIdentity(@NotNull(message = "邮箱不能为空") @NotBlank(message = "邮箱不能为空") @Email(message = "邮箱格式不正确") String email, HttpSession httpSession) {
+    public ModelMap reCheckIdentity(String email, HttpSession httpSession) {
         ModelMap modelMap = new ModelMap();
         try {
             undergraduateService.checkIdentity(email);
@@ -239,7 +239,7 @@ public class VisitorControllerImpl implements VisitorController {
 
     @Override
     public PagedResult listCampusRecruitmentByQueryDto(QueryCampusRecruitmentDto queryCampusRecruitmentDto, PageDto pageDto) {
-        return campusRecruitmentService.listByQueryCampusRecruitmentDto(queryCampusRecruitmentDto, pageDto);
+        return campusRecruitmentProfessionalRService.listCampusRecruitmentByQueryCampusRecruitmentDto(queryCampusRecruitmentDto, pageDto);
     }
 
     @Override
@@ -303,11 +303,6 @@ public class VisitorControllerImpl implements VisitorController {
         modelAndView.setViewName("search");
         modelAndView.addObject("key", key);
         return modelAndView;
-    }
-
-    @Override
-    public PagedResult listCampusRecruitmentByQueryProfessionalDto(QueryProfessionalDto queryProfessionalDto, PageDto pageDto) {
-        return campusRecruitmentProfessionalRService.listCampusRecruitmentByQueryProfessionalDto(queryProfessionalDto, pageDto);
     }
 
     public String checkLogin(ModelAndView modelAndView, HttpSession httpSession){

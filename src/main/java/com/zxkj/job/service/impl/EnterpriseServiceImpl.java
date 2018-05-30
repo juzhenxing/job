@@ -52,12 +52,11 @@ public class EnterpriseServiceImpl extends BaseServiceImpl<EnterpriseMapper, Ent
         EnterprisePo enterprisePo = new EnterprisePo();
         BeanUtil.copyProperties(simpleEnterpriseDto, enterprisePo);
         enterprisePo.setActivate(false);
-        Boolean result = super.insert(enterprisePo);
-        if (result) {
-            String code= RandomStringUtils.randomAlphanumeric(10);
-            redisTemplate.opsForValue().set(enterprisePo.getEmail(), code);
-            EmailUtil.sendEmail(simpleEnterpriseDto.getEmail(), "[大学生求职网]企业注册", "验证链接：http://localhost:8080/enterprise/register?email=" + enterprisePo.getEmail()
-                    + "&code=" + code);
+        String code= RandomStringUtils.randomAlphanumeric(10);
+        redisTemplate.opsForValue().set(enterprisePo.getEmail(), code);
+        EmailUtil.sendEmail(simpleEnterpriseDto.getEmail(), "[大学生求职网]企业注册", "验证链接：http://localhost:8080/enterprise/register?email=" + enterprisePo.getEmail()
+                + "&code=" + code);
+        if (super.insert(enterprisePo)) {
             return enterprisePo.getEmail();
         } else {
             throw JobException.ENTERPRISE_ADD_EXCEPTION;
@@ -65,7 +64,7 @@ public class EnterpriseServiceImpl extends BaseServiceImpl<EnterpriseMapper, Ent
     }
 
     @Override
-    public String register(String email, String code) {
+    public EnterpriseVo register(String email, String code) {
         checkEmailMatcher(email);
         EnterprisePo enterprisePo = super.baseMapper.selectOneByEmail(email);
 //        logger.error(enterprisePo.toString());
@@ -85,7 +84,7 @@ public class EnterpriseServiceImpl extends BaseServiceImpl<EnterpriseMapper, Ent
         redisTemplate.delete(email);
         enterprisePo.setActivate(true);
         if(super.updateById(enterprisePo)){
-            return enterprisePo.getUserName();
+            return enterprisePoToVo(enterprisePo);
         }else{
             throw JobException.ENTERPRISE_UPDATE_EXCEPTION;
         }
@@ -124,7 +123,7 @@ public class EnterpriseServiceImpl extends BaseServiceImpl<EnterpriseMapper, Ent
     }
 
     @Override
-    public String resetPassword(String email, String code) {
+    public EnterpriseVo resetPassword(String email, String code) {
         checkEmailMatcher(email);
         EnterprisePo enterprisePo = super.baseMapper.selectOneByEmail(email);
 //        logger.error(enterprisePo.toString());
@@ -139,13 +138,13 @@ public class EnterpriseServiceImpl extends BaseServiceImpl<EnterpriseMapper, Ent
             throw JobException.WRONG_CODE_EXCEPTION;
         }
         redisTemplate.delete(email);
-        return enterprisePo.getUserName();
+        return enterprisePoToVo(enterprisePo);
     }
 
     @Override
     public Boolean resetPasswordNext(String password, HttpSession httpSession) {
-        String userName = getUserName(httpSession);
-        EnterprisePo enterprisePo = checkEnterprisePoByUserName(userName);
+        EnterpriseVo enterpriseVo = (EnterpriseVo) httpSession.getAttribute("enterpriseVo");
+        EnterprisePo enterprisePo = checkEnterprisePoByUserName(enterpriseVo.getUserName());
         enterprisePo.setPassword(password);
         return super.updateById(enterprisePo);
     }
@@ -158,13 +157,6 @@ public class EnterpriseServiceImpl extends BaseServiceImpl<EnterpriseMapper, Ent
         return enterprisePo;
     }
 
-    public String getUserName(HttpSession httpSession){
-        Object userName = httpSession.getAttribute("userName");
-        if(StringUtils.isEmpty(userName)){
-            throw JobException.NULL_USERNAME_EXCEPTION;
-        }
-        return userName.toString();
-    }
 
     @Override
     public EnterprisePo selectOneByUserName(String userName) {
@@ -173,8 +165,8 @@ public class EnterpriseServiceImpl extends BaseServiceImpl<EnterpriseMapper, Ent
 
     @Override
     public Boolean hrInfoComplete(EnterpriseDto enterpriseDto, HttpSession httpSession) throws IOException {
-        String userName = getUserName(httpSession);
-        EnterprisePo enterprisePo = checkEnterprisePoByUserName(userName);
+        EnterpriseVo enterpriseVo = (EnterpriseVo) httpSession.getAttribute("enterpriseVo");
+        EnterprisePo enterprisePo = checkEnterprisePoByUserName(enterpriseVo.getUserName());
         BeanUtil.copyProperties(enterpriseDto, enterprisePo);
         MultipartFile license = enterpriseDto.getLicense();
         String fileName = saveFile(license);
@@ -197,11 +189,11 @@ public class EnterpriseServiceImpl extends BaseServiceImpl<EnterpriseMapper, Ent
 
     @Override
     public EnterpriseVo getById(Long enterpriseId) {
-        EnterprisePo e = super.baseMapper.selectById(enterpriseId);
-        if(e == null){
+        EnterprisePo enterprisePo = super.baseMapper.selectById(enterpriseId);
+        if(enterprisePo == null){
             throw JobException.NULL_ENTERPRISE_EXCEPTION;
         }
-        return enterprisePoToVo(e);
+        return enterprisePoToVo(enterprisePo);
     }
 
     @Override
@@ -210,6 +202,7 @@ public class EnterpriseServiceImpl extends BaseServiceImpl<EnterpriseMapper, Ent
         return enterprisePoToVo(enterprisePo);
     }
 
+    @Override
     public EnterpriseVo enterprisePoToVo(EnterprisePo enterprisePo){
         EnterpriseVo enterpriseVo = new EnterpriseVo();
         BeanUtil.copyProperties(enterprisePo, enterpriseVo);

@@ -50,21 +50,23 @@
                     <div class="layui-form-item">
                         <label class="layui-form-label">学历</label>
                         <div class="layui-input-block">
-                            <select name="educationBackground">
-                                <tr th:each="educationBackgroundType : ${educationBackgroundType}">
-                                    <option th:value="${educationBackgroundType.type}"><span th:text="${educationBackgroundType.name}"></span></option>
-                                </tr>
-                            </select>
+                            <div class="layui-input-inline" style="width: 620px;">
+                                <select name="educationBackground">
+                                    <tr th:each="educationBackgroundType : ${educationBackgroundType}">
+                                        <option th:value="${educationBackgroundType.type}"><span th:text="${educationBackgroundType.name}"></span></option>
+                                    </tr>
+                                </select>
+                            </div>
                         </div>
                     </div>
                     <div class="layui-form-item">
                         <label class="layui-form-label">就读时间</label>
                         <div class="layui-input-block">
-                            <div class="layui-input-inline" style="width: 200px;">
+                            <div class="layui-input-inline" style="width: 305px;">
                                 <input type="text" class="layui-input" id="startTime" name="startTime" placeholder="请输入开始时间"
                                        required lay-verify="required">
                             </div>
-                            <div class="layui-input-inline" style="width: 200px;">
+                            <div class="layui-input-inline" style="width: 305px;">
                                 <input type="text" class="layui-input" id="endTime" name="endTime" placeholder="请输入结束时间" required
                                        lay-verify="required">
                             </div>
@@ -73,26 +75,32 @@
                     <div class="layui-form-item">
                         <label class="layui-form-label">专业名称</label>
                         <div class="layui-input-block">
-                            <script type="text/javascript" th:src="@{~/select/major_func.js}"></script>
-                            <input id="btn_MajorID_2" type="text" placeholder="请选择专业" onclick="majorSelect_2()" class="layui-input" lay-verify="required"/>
-                            <input id="MajorID_2" type="hidden" name="profession" value="" class="layui-input"/>
-                        </div>
+                            <div class="layui-input-inline" style="width: 620px;">
+                                <script type="text/javascript" th:src="@{~/select/major_func.js}"></script>
+                                <input id="btn_MajorID_2" type="text" placeholder="请选择专业" onclick="majorSelect_2()" class="layui-input" lay-verify="required"/>
+                                <input id="MajorID_2" type="hidden" name="profession" value="" class="layui-input"/>
+                            </div>
+                            </div>
                     </div>
                     <div class="layui-form-item">
                         <label class="layui-form-label">专业排名</label>
                         <div class="layui-input-block">
-                            <select name="ranking">
-                                <tr th:each="rankType : ${rankType}">
-                                    <option th:value="${rankType.type}"><span th:text="${rankType.name}"></span></option>
-                                </tr>
-                            </select>
+                            <div class="layui-input-inline" style="width: 620px;">
+                                <select name="ranking">
+                                    <tr th:each="rankType : ${rankType}">
+                                        <option th:value="${rankType.type}"><span th:text="${rankType.name}"></span></option>
+                                    </tr>
+                                </select>
+                            </div>
                         </div>
                     </div>
                     <div class="layui-form-item">
                         <label class="layui-form-label">专业描述</label>
                         <div class="layui-input-block">
-                            <textarea rows="3" cols="20" class="layui-input" name="description" style="resize: none;" placeholder="这里可以介绍你的主修课程等等"></textarea>
-                        </div>
+                            <div class="layui-input-inline" style="width: 620px;">
+                                <textarea rows="5" cols="100" name="description" style="resize: none;" placeholder="这里可以介绍你的主修课程等等"></textarea>
+                            </div>
+                            </div>
                     </div>
                     <input type="hidden" name="resumeId" th:value="${resumeId}">
                     <div class="layui-form-item">
@@ -107,10 +115,7 @@
             <div class="layui-col-md3"></div>
         </div>
     </div>
-    <div class="layui-footer">
-        <!-- 底部固定区域 -->
-        © layui.com - 底部固定区域
-    </div>
+    <div th:replace="footer :: footer"></div>
 </div>
 <!-- alpha div -->
 <div id="maskLayer" style="display:none">

@@ -3,6 +3,7 @@ package com.zxkj.job.service.impl;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.zxkj.job.bean.dto.CampusRecruitmentDto;
 import com.zxkj.job.bean.dto.PageDto;
+import com.zxkj.job.bean.dto.QueryCampusRecruitmentDto;
 import com.zxkj.job.bean.dto.QueryProfessionalDto;
 import com.zxkj.job.bean.po.CampusRecruitmentPo;
 import com.zxkj.job.bean.po.CampusRecruitmentProfessionalRPo;
@@ -63,13 +64,13 @@ public class CampusRecruitmentProfessionalRServiceImpl extends BaseServiceImpl<C
     }
 
     @Override
-    public PagedResult listCampusRecruitmentByQueryProfessionalDto(QueryProfessionalDto queryProfessionalDto, PageDto pageDto) {
+    public PagedResult listCampusRecruitmentByQueryCampusRecruitmentDto(QueryCampusRecruitmentDto queryCampusRecruitmentDto, PageDto pageDto) {
         Integer startLine = (pageDto.getPage() - 1) * pageDto.getLimit();
-        List<CampusRecruitmentPo> campusRecruitmentPos = super.baseMapper.selectPageByQueryProfessionalDto(queryProfessionalDto, startLine, pageDto.getLimit());
+        List<CampusRecruitmentPo> campusRecruitmentPos = super.baseMapper.selectPageByQueryCampusRecruitmentDto(queryCampusRecruitmentDto, startLine, pageDto.getLimit());
         List<CampusRecruitmentVo> campusRecruitmentVos = campusRecruitmentPos.parallelStream().map(e -> campusRecruitmentService.campusRecruitmentPoToVo(e)).collect(Collectors.toList());
         PagedResult<CampusRecruitmentVo> pagedResult = new PagedResult<>();
         pagedResult.setData(campusRecruitmentVos);
-        pagedResult.setCount(super.baseMapper.selectCountByQueryProfessionalDto(queryProfessionalDto));
+        pagedResult.setCount(super.baseMapper.selectCountByQueryCampusRecruitmentDto(queryCampusRecruitmentDto));
         return pagedResult;
     }
 

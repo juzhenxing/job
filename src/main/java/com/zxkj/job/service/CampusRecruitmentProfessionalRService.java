@@ -3,6 +3,7 @@ package com.zxkj.job.service;
 import com.baomidou.mybatisplus.service.IService;
 import com.zxkj.job.bean.dto.CampusRecruitmentDto;
 import com.zxkj.job.bean.dto.PageDto;
+import com.zxkj.job.bean.dto.QueryCampusRecruitmentDto;
 import com.zxkj.job.bean.dto.QueryProfessionalDto;
 import com.zxkj.job.bean.po.CampusRecruitmentPo;
 import com.zxkj.job.bean.po.CampusRecruitmentProfessionalRPo;
@@ -20,7 +21,7 @@ public interface CampusRecruitmentProfessionalRService extends IService<CampusRe
 
     Boolean deleteByProfessionalIds(Long campusRecruitmentId, List<Long> professionalIds);
 
-    PagedResult listCampusRecruitmentByQueryProfessionalDto(QueryProfessionalDto queryProfessionalDto, PageDto pageDto);
+    PagedResult listCampusRecruitmentByQueryCampusRecruitmentDto(QueryCampusRecruitmentDto queryCampusRecruitmentDto, PageDto pageDto);
 
     List<CampusRecruitmentProfessionalRPo> listByProfessionalId(Long professionalId);
 }

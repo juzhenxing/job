@@ -18,9 +18,9 @@ public interface AdministratorService extends IService<AdministratorPo> {
      * @param administratorDto
      * @return
      */
-    String register(AdministratorDto administratorDto) throws MessagingException;
+    AdministratorPo register(AdministratorDto administratorDto) throws MessagingException;
 
-    String register(String email, String code);
+    AdministratorPo register(String email, String code);
 
     AdministratorPo login(LoginAdministratorDto loginAdministratorDto);
 

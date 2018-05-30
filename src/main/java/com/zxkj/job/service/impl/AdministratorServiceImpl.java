@@ -40,7 +40,7 @@ public class AdministratorServiceImpl extends BaseServiceImpl<AdministratorMappe
     EnterpriseService enterpriseService;
 
     @Override
-    public String register(AdministratorDto administratorDto) throws MessagingException {
+    public AdministratorPo register(AdministratorDto administratorDto) throws MessagingException {
         checkUserName(administratorDto.getUserName());
         checkEmail(administratorDto.getEmail(), null);
         AdministratorPo administratorPo = new AdministratorPo();
@@ -52,14 +52,14 @@ public class AdministratorServiceImpl extends BaseServiceImpl<AdministratorMappe
             redisTemplate.opsForValue().set(administratorPo.getEmail(), code);
             EmailUtil.sendEmail(administratorDto.getEmail(), "[大学生求职网]管理员注册", "验证链接：http://localhost:8080/administrator/register?email=" + administratorPo.getEmail()
                     + "&code=" + code);
-            return administratorPo.getEmail();
+            return administratorPo;
         } else {
             throw JobException.ADMINISTRATOR_ADD_EXCEPTION;
         }
     }
 
     @Override
-    public String register(String email, String code) {
+    public AdministratorPo register(String email, String code) {
         checkEmailMatcher(email);
         AdministratorPo administratorPo = super.baseMapper.selectOneByEmail(email);
         if(administratorPo == null){
@@ -79,7 +79,7 @@ public class AdministratorServiceImpl extends BaseServiceImpl<AdministratorMappe
         administratorPo.setActivate(true);
         administratorPo.setCheckState(CheckStateType.UNCHECKED);
         if(super.updateById(administratorPo)){
-            return administratorPo.getUserName();
+            return administratorPo;
         }else{
             throw JobException.ADMINISTRATOR_UPDATE_EXCEPTION;
         }

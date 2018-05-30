@@ -1,6 +1,7 @@
 package com.zxkj.job.mapper;
 
 import com.baomidou.mybatisplus.mapper.BaseMapper;
+import com.zxkj.job.bean.dto.QueryCampusRecruitmentDto;
 import com.zxkj.job.bean.dto.QueryProfessionalDto;
 import com.zxkj.job.bean.po.CampusRecruitmentPo;
 import com.zxkj.job.bean.po.CampusRecruitmentProfessionalRPo;
@@ -11,10 +12,10 @@ import java.util.List;
 
 public interface CampusRecruitmentProfessionalRMapper extends BaseMapper<CampusRecruitmentProfessionalRPo> {
 
-    List<CampusRecruitmentPo> selectPageByQueryProfessionalDto(
-            @Param("queryProfessionalDto") QueryProfessionalDto queryProfessionalDto,
+    List<CampusRecruitmentPo> selectPageByQueryCampusRecruitmentDto(
+            @Param("queryCampusRecruitmentDto") QueryCampusRecruitmentDto queryCampusRecruitmentDto,
             @Param("startLine") Integer startLine,
             @Param("pageSize") Integer pageSize);
 
-    Integer selectCountByQueryProfessionalDto(@Param("queryProfessionalDto") QueryProfessionalDto queryProfessionalDto);
+    Integer selectCountByQueryCampusRecruitmentDto(@Param("queryCampusRecruitmentDto") QueryCampusRecruitmentDto queryCampusRecruitmentDto);
 }

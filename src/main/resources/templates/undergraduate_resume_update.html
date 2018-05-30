@@ -6,14 +6,6 @@
     <link th:href="@{~/layui/css/layui.css}" rel="stylesheet" type="text/css"/>
     <link th:href="@{~/css/toastr.min.css}" rel="stylesheet"/>
 
-    <!-- 新 Bootstrap 核心 CSS 文件 -->
-    <link th:href="@{~/bootstrap/css/bootstrap.min.css}" rel="stylesheet" type="text/css" />
-    <!-- 可选的Bootstrap主题文件（一般不使用） -->
-    <link th:href="@{~/bootstrap/css/bootstrap-theme.min.css}" rel="stylesheet" type="text/css"/>
-    <!-- jQuery文件。务必在bootstrap.min.js 之前引入 -->
-    <script type="text/javascript" th:src="@{~/js/jquery-3.3.1.min.js}"></script>
-    <!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
-    <script type="text/javascript" th:src="@{~/bootstrap/js/bootstrap.min.js}"></script>
 </head>
 <body class="layui-layout-body">
 <div class="layui-layout layui-layout-admin">
@@ -24,29 +16,29 @@
     <div class="layui-body">
         <!-- 内容主体区域 -->
         <div style="padding: 15px;">
-            <div class="header">
-                <h3 style="display: inline-block;">我的简历</h3>
+            <div class="layui-card-header">
+                <h2 style="display: inline-block;">我的简历</h2>
                 <span class="text-ellipsis" style="margin-left: 10px">完善的简历可提高求职成功率</span>
             </div>
-            <div class="panel panel-default">
-                <div class="panel-body">
-                    <span th:text="${resumeVo.name}"></span>
-                    <span th:if="${resumeVo.acquiescence eq true}">
-                        (默认)
-                    </span>
-                    <span th:text="${#dates.format(resumeVo.createTime,'yyyy-MM-dd')}"></span>
-                    <!--<div class="layui-progress" lay-showPercent="true" lay-filter="demo">-->
-                        <!--<div id="progressBar" class="layui-progress-bar" lay-percent="0%"></div>-->
-                    <!--</div>-->
-                </div>
-            </div>
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h3 class="panel-title">
+            <!--<div class="layui-card">-->
+                <!--<div class="layui-card-body">-->
+                    <!--<span th:text="${resumeVo.name}"></span>-->
+                    <!--<span th:if="${resumeVo.acquiescence eq true}">-->
+                        <!--(默认)-->
+                    <!--</span>-->
+                    <!--<span th:text="${#dates.format(resumeVo.createTime,'yyyy-MM-dd')}"></span>-->
+                    <!--&lt;!&ndash;<div class="layui-progress" lay-showPercent="true" lay-filter="demo">&ndash;&gt;-->
+                        <!--&lt;!&ndash;<div id="progressBar" class="layui-progress-bar" lay-percent="0%"></div>&ndash;&gt;-->
+                    <!--&lt;!&ndash;</div>&ndash;&gt;-->
+                <!--</div>-->
+            <!--</div>-->
+            <div class="layui-card">
+                <div class="layui-card-header">
+                    <h3>
                         小名片
                     </h3>
                 </div>
-                <div class="panel-body">
+                <div class="layui-card-body">
                     <table class="layui-table">
                         <colgroup>
                             <col width="20%">
@@ -101,16 +93,16 @@
                     </table>
                 </div>
             </div>
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h3 class="panel-title">
+            <div class="layui-card">
+                <div class="layui-card-header">
+                    <h3>
                         基本信息
-                        <a class="pull-right" id="resume_basic_update_a">
+                        <a style="margin-left: 88%" id="resume_basic_update_a">
                             <i class="layui-icon">&#xe642;</i>编辑
                         </a>
                     </h3>
                 </div>
-                <div class="panel-body">
+                <div class="layui-card-body">
                     <table class="layui-table">
                         <colgroup>
                             <col width="33%">
@@ -137,27 +129,23 @@
                     </table>
                 </div>
             </div>
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h3 class="panel-title">
+            <div class="layui-card">
+                <div class="layui-card-header">
+                    <h3>
                         教育背景
-                        <a class="pull-right" id="add_btn">
+                        <a style="margin-left: 88%" id="add_btn">
                             <i class="layui-icon">&#xe654;</i> 添加
                         </a>
                     </h3>
                 </div>
-                <div class="panel-body">
+                <div class="layui-card-body">
                     <table class="layui-table" id="education_background_table" lay-filter="roles">
                     </table>
                 </div>
             </div>
-            <i class="layui-icon">&#xe60c;</i>
         </div>
     </div>
-    <div class="layui-footer">
-        <!-- 底部固定区域 -->
-        © layui.com - 底部固定区域
-    </div>
+    <div th:replace="footer :: footer"></div>
 </div>
 <script type="text/html" id="barDemo">
     <a class="layui-btn layui-btn-xs" lay-event="edit" >编辑</a>
@@ -170,7 +158,7 @@
 <script th:src="@{~/js/AllSchool.js}"></script>
 <script th:inline="javascript">
     toastr.options.positionClass = 'toast-top-center';
-    //    toastr.options.timeOut = "5000";
+    toastr.options.timeOut = "1000";
     /*[+
         if([[${errorMessage}]] != null){
             toastr.error([[${errorMessage}]]);

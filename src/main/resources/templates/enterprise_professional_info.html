@@ -8,30 +8,34 @@
 </head>
 <body class="layui-layout-body" style="padding: 15px;">
         <table class="layui-table">
+            <colgroup>
+                <col width="20%">
+                <col width="80%">
+            </colgroup>
             <!-- 提示：如果你不想用form，你可以换成div等任何一个普通元素 -->
             <tbody>
             <tr>
-                <td>职位类别</td>
+                <td class="td">职位类别</td>
                 <td><p th:text="${professionalVo.type}"></p></td>
             </tr>
             <tr>
-                <td>招聘职位</td>
+                <td class="td">招聘职位</td>
                 <td><p th:text="${professionalVo.name}"></p></td>
             </tr>
             <tr>
-                <td>招聘人数</td>
+                <td class="td">招聘人数</td>
                 <td><p th:text="${professionalVo.hiring}"></p></td>
             </tr>
             <tr>
-                <td>学历要求</td>
+                <td class="td">学历要求</td>
                 <td><p th:text="${professionalVo.educationBackground}"></p></td>
             </tr>
             <tr>
-                <td>专业要求</td>
+                <td class="td">专业要求</td>
                 <td><p th:text="${professionalVo.majorField}"></p></td>
             </tr>
             <tr>
-                <td>工作地点</td>
+                <td class="td">工作地点</td>
                 <td><p th:text="${professionalVo.workplace}"></p></td>
             </tr>
             <tr>
@@ -64,5 +68,10 @@
         }
     +]*/
 </script>
+<style>
+    .td{
+        width: 30px;
+    }
+</style>
 </body>
 </html>

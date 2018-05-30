@@ -44,13 +44,9 @@
             </blockquote>-->
             <table class="layui-table" id="campus_recruitment_table" lay-filter="roles">
             </table>
-            <i class="layui-icon">&#xe60c;</i>
         </div>
     </div>
-    <div class="layui-footer">
-        <!-- 底部固定区域 -->
-        © layui.com - 底部固定区域
-    </div>
+    <div th:replace="footer :: footer"></div>
 </div>
 <script type="text/javascript" th:src="@{~/layui/layui.all.js}"></script>
 <script type="text/javascript" th:src="@{~/js/jquery-3.3.1.min.js}"></script>
@@ -110,7 +106,7 @@
         layui.table.render({
             elem: '#campus_recruitment_table',
             height: 'full',
-            url: '/visitor/list-campus-recruitment-by-professional-dto',
+            url: '/visitor/list-campus-recruitment-by-dto',
             even: true,
             page:true,
             cols: [[ //表头
@@ -129,7 +125,7 @@
         layui.table.render({
             elem: '#campus_recruitment_table',
             height: 'full',
-            url: '/visitor/list-campus-recruitment-by-professional-dto',
+            url: '/visitor/list-campus-recruitment-by-dto',
             even: true,
             page:true,
             cols: [[ //表头

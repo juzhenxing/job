@@ -26,7 +26,7 @@ public class CampusRecruitmentVo extends BaseVo {
 
     private String workplace;
 
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm", timezone="GMT+8")
     private Date releaseTime;
 
     private List<ProfessionalVo> professionalVoList;

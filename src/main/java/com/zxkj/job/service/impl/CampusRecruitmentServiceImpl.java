@@ -212,6 +212,7 @@ public class CampusRecruitmentServiceImpl extends BaseServiceImpl<CampusRecruitm
         CampusRecruitmentVo campusRecruitmentVo = new CampusRecruitmentVo();
         BeanUtil.copyProperties(campusRecruitmentPo, campusRecruitmentVo);
         campusRecruitmentVo.setReleaseTime(campusRecruitmentPo.getGmtCreate());
+        logger.error(campusRecruitmentVo.getReleaseTime().toString());
         List<CampusRecruitmentProfessionalRPo> campusRecruitmentProfessionalRPos = campusRecruitmentProfessionalRService.listByCampusRecruitmentId(campusRecruitmentPo.getId());
         List<Long> professionalIds = campusRecruitmentProfessionalRPos.parallelStream().map(e -> e.getProfessionalId()).collect(Collectors.toList());
         List<ProfessionalVo> professionalVoList = professionalService.listByProfessionalIds(professionalIds);

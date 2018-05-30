@@ -114,19 +114,14 @@ public class EnterpriseControllerImpl extends BaseControllerImpl<EnterpriseServi
     @Override
     public ModelAndView hrInfoComplete(HttpSession httpSession) {
         ModelAndView modelAndView = new ModelAndView();
-        Object userName = httpSession.getAttribute("userName");
-        if (StringUtils.isEmpty(userName)) {
-            modelAndView.addObject("errorMessage", "用户未登录");
-            modelAndView.setViewName("enterprise_login");
-            return modelAndView;
-        }
-        EnterprisePo enterprisePo = service.selectOneByUserName(userName.toString());
+        EnterpriseVo enterpriseVo = (EnterpriseVo) httpSession.getAttribute("enterpriseVo");
+        EnterprisePo enterprisePo = service.selectOneByUserName(enterpriseVo.getUserName());
         if (enterprisePo == null) {
             modelAndView.addObject("errorMessage", "该企业账户不存在");
             modelAndView.setViewName("enterprise_login");
             return modelAndView;
         }
-        if (enterprisePo.getCheckState() == null) {
+        if (enterprisePo.getCheckState() == null || enterprisePo.getCheckState() == CheckStateType.NO_PASS) {
             modelAndView.setViewName("hr_info_complete");
         } else {
             modelAndView.addObject("errorMessage", "您已完善过企业信息！");
@@ -139,8 +134,8 @@ public class EnterpriseControllerImpl extends BaseControllerImpl<EnterpriseServi
     public ModelAndView register(String email, String code, HttpSession httpSession) {
         ModelAndView modelAndView = new ModelAndView();
         try {
-            String userName = service.register(email, code);
-            httpSession.setAttribute("userName", userName);
+            EnterpriseVo enterpriseVo = service.register(email, code);
+            httpSession.setAttribute("enterpriseVo", enterpriseVo);
             modelAndView.addObject("message", "您的账户已激活成功！");
         } catch (JobException e) {
             e.printStackTrace();
@@ -166,7 +161,9 @@ public class EnterpriseControllerImpl extends BaseControllerImpl<EnterpriseServi
         ModelAndView modelAndView = new ModelAndView();
         try {
             EnterprisePo enterprisePo = service.login(loginEnterpriseDto);
-            httpSession.setAttribute("enterpriseVo", service.getById(enterprisePo.getId()));
+            EnterpriseVo enterpriseVo = new EnterpriseVo();
+            BeanUtil.copyProperties(enterprisePo, enterpriseVo);
+            httpSession.setAttribute("enterpriseVo", enterpriseVo);
             if (StringUtils.isEmpty(enterprisePo.getCheckState())) {
                 modelAndView.setViewName("hr_info_complete");
             } else {
@@ -174,6 +171,8 @@ public class EnterpriseControllerImpl extends BaseControllerImpl<EnterpriseServi
                     modelAndView.addObject("errorMessage", "您的企业账户还未审核");
                 } else if (enterprisePo.getCheckState() == CheckStateType.NO_PASS) {
                     modelAndView.addObject("errorMessage", "您的企业账户未审核通过，请重新完善企业信息！");
+                    modelAndView.setViewName("hr_info_complete");
+                    return modelAndView;
                 } else {
                     modelAndView.setViewName("enterprise_homepage");
                     return modelAndView;
@@ -207,8 +206,8 @@ public class EnterpriseControllerImpl extends BaseControllerImpl<EnterpriseServi
     public ModelAndView resetPassword(String email, String code, HttpSession httpSession) {
         ModelAndView modelAndView = new ModelAndView();
         try {
-            String userName = service.resetPassword(email, code);
-            httpSession.setAttribute("userName", userName);
+            EnterpriseVo enterpriseVo = service.resetPassword(email, code);
+            httpSession.setAttribute("enterpriseVo", enterpriseVo);
             modelAndView.setViewName("enterprise_reset_password");
         } catch (Exception e) {
             e.printStackTrace();
@@ -372,10 +371,6 @@ public class EnterpriseControllerImpl extends BaseControllerImpl<EnterpriseServi
     @Override
     public PagedResult listProfessional(PageDto pageDto, HttpSession httpSession) {
         Object enterpriseObj = httpSession.getAttribute("enterpriseVo");
-        if (StringUtils.isEmpty(enterpriseObj)) {
-//            throw JobException.NOT_LOGGED_IN_EXCEPTION;
-            logger.error("您还未登录");
-        }
         EnterpriseVo enterpriseVo = (EnterpriseVo) enterpriseObj;
         PagedResult pagedResult = professionalService.list(pageDto, enterpriseVo.getId());
         return pagedResult;
@@ -665,7 +660,7 @@ public class EnterpriseControllerImpl extends BaseControllerImpl<EnterpriseServi
         HttpSession httpSession = httpServletRequest.getSession();
         ModelAndView modelAndView = new ModelAndView();
         if (exception instanceof MaxUploadSizeExceededException) {
-            modelAndView.addObject("errorMessage", "文件过大, 文件大小需小于1M");
+            modelAndView.addObject("errorMessage", "文件过大, 文件大小需小于3M");
             return addCampusRecruitment(httpSession, modelAndView);
         }
         return null;

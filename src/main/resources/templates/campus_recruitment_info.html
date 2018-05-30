@@ -43,13 +43,9 @@
                 </tbody>
             </table>
             <table id="professional_table" class="layui-table" lay-filter="roles"></table>
-            <i class="layui-icon">&#xe60c;</i>
         </div>
     </div>
-    <div class="layui-footer">
-        <!-- 底部固定区域 -->
-        © layui.com - 底部固定区域
-    </div>
+    <div th:replace="footer :: footer"></div>
 </div>
 <script type="text/javascript" th:src="@{~/layui/layui.all.js}"></script>
 <script type="text/javascript" th:src="@{~/js/jquery-3.3.1.min.js}"></script>
@@ -119,7 +115,8 @@
                             title: ['详情', 'font-size:18px;'],
                             type: 2,
                             content: 'http://localhost:8080/visitor/get-professional-by-id?professionalId='+ data.id,
-                            area: ['500px', '600px']
+                            area: ['500px', '600px'],
+                            maxmin: true
                         });
                     }
                 });
@@ -132,7 +129,7 @@
                 layer.open({
                     title: '确认投递信息',
                     type: 2,
-                    area: ['900px', '400px'],
+                    area: ['400px', '300px'],
                     content: ['http://localhost:8080/undergraduate/deliver-resume?professionalId=' + data.id + '&careerTalkOrCampusRecruitmentId=' + [[${campusRecruitmentVo.id}]], 'no'] //这里content是一个URL，如果你不想让iframe出现滚动条，你还可以content: ['http://sentsin.com', 'no']
                 });
             }

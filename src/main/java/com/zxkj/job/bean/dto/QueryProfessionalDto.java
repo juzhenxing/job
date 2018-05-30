@@ -18,4 +18,6 @@ public class QueryProfessionalDto {
 
     private ProvinceType province;
 
+    private String key;
+
 }

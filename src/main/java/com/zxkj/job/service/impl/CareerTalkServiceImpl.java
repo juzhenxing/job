@@ -64,8 +64,10 @@ public class CareerTalkServiceImpl extends BaseServiceImpl<CareerTalkMapper, Car
     public Boolean add(CareerTalkDto careerTalkDto, HttpSession httpSession) throws ParseException, IOException {
 //        Date startTime = DateUtil.formatDate(careerTalkDto.getStartTime(), "yyyy-MM-dd HH:mm");
 //        Date endTime = DateUtil.formatDate(careerTalkDto.getEndTime(), "yyyy-MM-dd HH:mm");
-        Date startTime = careerTalkDto.getStartTime();
-        Date endTime = careerTalkDto.getEndTime();
+        Date startTime = DateUtil.formatDate(careerTalkDto.getStartTime(), "yyyy-MM-dd HH:mm");
+        Date endTime = DateUtil.formatDate(careerTalkDto.getEndTime(), "yyyy-MM-dd HH:mm");
+        logger.error(startTime.toString());
+        logger.error(endTime.toString());
         if (startTime.after(endTime)) {
             throw JobException.WRONG_ENDTIME_EXCEPTION;
         }
@@ -173,6 +175,10 @@ public class CareerTalkServiceImpl extends BaseServiceImpl<CareerTalkMapper, Car
         EnterpriseVo enterpriseVo = (EnterpriseVo) httpSession.getAttribute("enterpriseVo");
         CareerTalkPo careerTalkPo = checkCareerTalkPo(careerTalkDto.getId(), enterpriseVo.getId());
         BeanUtil.copyProperties(careerTalkDto, careerTalkPo);
+        Date startTime = DateUtil.formatDate(careerTalkDto.getStartTime(), "yyyy-MM-dd HH:mm");
+        Date endTime = DateUtil.formatDate(careerTalkDto.getEndTime(), "yyyy-MM-dd HH:mm");
+        careerTalkPo.setStartTime(startTime);
+        careerTalkPo.setEndTime(endTime);
         MultipartFile generalRegulation = careerTalkDto.getPreachingText();
         String fileName = fileUtil.saveFile(generalRegulation);
         careerTalkPo.setPreachingTextFileName(fileName);
@@ -267,6 +273,9 @@ public class CareerTalkServiceImpl extends BaseServiceImpl<CareerTalkMapper, Car
         careerTalkVo.setProvince(careerTalkPo.getProvince().getName());
         careerTalkVo.setOperationType(careerTalkPo.getOperationType().getName());
         careerTalkVo.setCreateTime(careerTalkPo.getGmtCreate());
+        logger.error(careerTalkVo.getStartTime().toString());
+        logger.error(careerTalkVo.getEndTime().toString());
+        logger.error(careerTalkVo.getCreateTime().toString());
         List<CareerTalkProfessionalRPo> careerTalkProfessionalRPos = careerTalkProfessionalRService.listByCareerTalkId(careerTalkVo.getId());
         List<Long> professionalIds = careerTalkProfessionalRPos.parallelStream().map(e -> e.getProfessionalId()).collect(Collectors.toList());
         List<ProfessionalVo> professionalVoList = professionalService.listByProfessionalIds(professionalIds);

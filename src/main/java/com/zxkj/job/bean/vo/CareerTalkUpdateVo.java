@@ -16,10 +16,8 @@ import java.util.List;
 @Data
 public class CareerTalkUpdateVo extends BaseVo {
 
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
     private String startTime;
 
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
     private String endTime;
 
     private Integer province;

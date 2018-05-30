@@ -107,10 +107,6 @@ public interface VisitorController {
     @PostMapping("search")
     ModelAndView search(@NotBlank(message = "关键字不能为空") String key, ModelAndView modelAndView);
 
-    @GetMapping("list-campus-recruitment-by-professional-dto")
-    @ResponseBody
-    PagedResult listCampusRecruitmentByQueryProfessionalDto(QueryProfessionalDto queryProfessionalDto, PageDto pageDto);
-
     @GetMapping("get-career-talk-by-id")
     ModelAndView getCareerTalkById(Long careerTalkId, ModelAndView modelAndView, HttpSession httpSession);
 

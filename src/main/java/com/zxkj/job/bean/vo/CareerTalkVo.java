@@ -7,6 +7,7 @@ import com.zxkj.job.common.bean.BaseVo;
 import com.zxkj.job.enums.OperationType;
 import com.zxkj.job.enums.ProvinceType;
 import lombok.Data;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.Date;
 import java.util.List;
@@ -19,10 +20,10 @@ public class CareerTalkVo extends BaseVo {
 
     private Long enterpriseId;
 
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm", timezone="GMT+8")
     private Date startTime;
 
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm", timezone="GMT+8")
     private Date endTime;
 
     private String province;
@@ -39,7 +40,7 @@ public class CareerTalkVo extends BaseVo {
 
     private String operationType;
 
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm", timezone="GMT+8")
     private Date createTime;
 
     private String preachingTextFileName;

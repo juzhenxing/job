@@ -161,12 +161,13 @@
                             </select>
                         </div>
                     </div>
-                    <div class="layui-form-item">
-                        <label class="layui-form-label">邮箱</label>
-                        <div class="layui-input-block">
-                            <input type="email" name="email" th:value="${undergraduateVo.email}" autocomplete="off" class="layui-input" lay-verify="required" disabled>
-                        </div>
-                    </div>
+                    <!--<div class="layui-form-item">-->
+                        <!--<label class="layui-form-label">邮箱</label>-->
+                        <!--<div class="layui-input-block">-->
+                            <!--<input type="email" name="email" th:value="${undergraduateVo.email}" autocomplete="off" class="layui-input" lay-verify="required" disabled>-->
+                        <!--</div>-->
+                    <!--</div>-->
+                    <input type="hidden" name="email" th:value="${undergraduateVo.email}">
                     <div class="layui-form-item">
                         <label class="layui-form-label">毕业年份</label>
                         <div class="layui-input-block">
@@ -185,10 +186,7 @@
             <div class="layui-col-md3"></div>
         </div>
     </div>
-    <div class="layui-footer">
-        <!-- 底部固定区域 -->
-        © layui.com - 底部固定区域
-    </div>
+    <div th:replace="footer :: footer"></div>
 </div>
 <!-- alpha div -->
 <div id="maskLayer" style="display:none">

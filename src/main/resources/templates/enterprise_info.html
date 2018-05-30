@@ -157,7 +157,7 @@
         <div class="panel-body">
             <div class="form-group">
                 <label class="control-label col-xs-4">营业执照</label>
-                <div class="col-xs-8">
+                <div class="col-xs-8" id="layer-photos-demo">
                     <img th:src="@{'~/' + ${enterpriseVo.license} }" width="150px" onclick="enlargeImage(this);">
                 </div>
             </div>
@@ -167,7 +167,7 @@
 <script type="text/javascript" th:src="@{~/layui/layui.all.js}"></script>
 <script th:src="@{~/jquery-validation-1.14.0/dist/jquery.validate.min.js}"></script>
 <script th:src="@{~/jquery-validation-1.14.0/dist/additional-methods.min.js}"></script>
-<script>
+<script th:inline="javascript">
     toastr.options.positionClass = 'toast-top-center';
     toastr.options.timeOut = "1000";
     /*[+
@@ -176,6 +176,13 @@
             toastr.clear();
         }
     +]*/
+</script>
+<script>
+    //调用示例
+    layui.layer.photos({
+        photos: '#layer-photos-demo'
+        ,anim: 5 //0-6的选择，指定弹出图片动画类型，默认随机（请注意，3.0之前的版本用shift参数）
+    });
 </script>
 </body>
 </html>

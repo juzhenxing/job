@@ -17,6 +17,9 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 @Controller
 @RequestMapping("administrator")
@@ -44,8 +47,8 @@ public class AdministratorControllerImpl extends BaseControllerImpl<Administrato
     public ModelAndView register(@Valid AdministratorDto administratorDto) {
         ModelAndView modelAndView = new ModelAndView();
         try{
-            String email = service.register(administratorDto);
-            modelAndView.addObject("message", "我们已向您的邮箱"+email+"发送了一封激活邮件,请点击邮箱中的链接来激活您的账户！");
+            AdministratorPo administratorPo = service.register(administratorDto);
+            modelAndView.addObject("message", "我们已向您的邮箱"+administratorPo.getEmail()+"发送了一封激活邮件,请点击邮箱中的链接来激活您的账户！");
         }catch (Exception e){
             e.printStackTrace();
             modelAndView.addObject("errorMessage", e.getMessage());
@@ -58,8 +61,8 @@ public class AdministratorControllerImpl extends BaseControllerImpl<Administrato
     public ModelAndView register(String email, String code, HttpSession httpSession) {
         ModelAndView modelAndView = new ModelAndView();
         try{
-            String userName = service.register(email, code);
-            httpSession.setAttribute("userName", userName);
+            AdministratorPo administratorPo = service.register(email, code);
+            httpSession.setAttribute("administratorPo", administratorPo);
             modelAndView.addObject("message", "您的账户已激活成功！");
         }catch (JobException e){
             e.printStackTrace();
@@ -108,6 +111,20 @@ public class AdministratorControllerImpl extends BaseControllerImpl<Administrato
             modelAndView.setViewName("administrator_find_password");
         }
         return modelAndView;
+    }
+
+    @Override
+    public ModelMap reCheckIdentity(String email, HttpSession httpSession) {
+        ModelMap modelMap = new ModelMap();
+        try {
+            service.checkIdentity(email);
+            httpSession.setAttribute("emailKey", email);
+            modelMap.addAttribute("message", "验证码重新获取成功");
+        } catch (Exception e) {
+            e.printStackTrace();
+            modelMap.addAttribute("errorMessage", "验证码重新获取失败");
+        }
+        return modelMap;
     }
 
     @Override

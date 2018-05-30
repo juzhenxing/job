@@ -1,5 +1,6 @@
 package com.zxkj.job.bean.dto;
 
+import com.zxkj.job.enums.JobCategoryType;
 import com.zxkj.job.enums.ProvinceType;
 import lombok.Data;
 import org.springframework.web.multipart.MultipartFile;
@@ -15,6 +16,8 @@ import java.util.List;
 public class QueryCampusRecruitmentDto {
 
     private ProvinceType province;
+
+    private JobCategoryType jobCategoryType;
 
     private String key;
 

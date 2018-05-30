@@ -128,10 +128,7 @@ public class UndergraduateServiceImpl extends BaseServiceImpl<UndergraduateMappe
 
     @Override
     public Boolean infoUpdate(UndergraduateDto undergraduateDto, HttpSession httpSession) throws IOException, ParseException {
-       String email = httpSession.getAttribute("email").toString();
-       EntityWrapper entityWrapper = new EntityWrapper();
-       entityWrapper.eq("email", email);
-       UndergraduatePo undergraduatePo = super.selectOne(entityWrapper);
+       UndergraduatePo undergraduatePo = (UndergraduatePo)httpSession.getAttribute("undergraduatePo");
        if(undergraduatePo == null){
            throw JobException.NULL_UNDERGRADUATE_EXCEPTION;
        }
@@ -139,7 +136,11 @@ public class UndergraduateServiceImpl extends BaseServiceImpl<UndergraduateMappe
        String headUrl = fileUtil.saveFile(undergraduateDto.getHeadFile());
        undergraduatePo.setHeadUrl(headUrl);
        undergraduatePo.setGraduateYear(DateUtil.formatDate(undergraduateDto.getGraduateYear(), "yyyy-MM"));
-       return super.updateById(undergraduatePo);
+       if(super.updateById(undergraduatePo)){
+            httpSession.setAttribute("undergraduatePo", undergraduatePo);
+            return true;
+       }
+       return false;
     }
 
     @Override

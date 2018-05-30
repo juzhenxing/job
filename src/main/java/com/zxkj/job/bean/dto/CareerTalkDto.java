@@ -21,14 +21,10 @@ public class CareerTalkDto {
     private Long id;
 
     @NotNull(message = "宣讲开始时间不能为空")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm")
-    private Date startTime;
+    private String startTime;
 
     @NotNull(message = "宣讲结束时间不能为空")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm")
-    private Date endTime;
+    private String endTime;
 
     @NotNull(message = "省份不能为空")
     private ProvinceType province;

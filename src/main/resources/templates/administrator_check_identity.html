@@ -68,13 +68,17 @@
             }
         }
     });
-    $("reacquire").click(function(){
-        $.post("/administrator/check-identity",
+    $("#reacquire").click(function(){
+        $.post("/administrator/re-check-identity",
             {
                 email:[[${session.emailKey}]]
             },
             function(data,status){
-                alert("数据: \n" + data + "\n状态: " + status);
+                if (data.message != null) {
+                    toastr.success(data.message);
+                } else if (data.errorMessage != null) {
+                    toastr.error(data.errorMessage);
+                }
             });
     });
     toastr.options.positionClass = 'toast-top-center';

@@ -22,7 +22,7 @@ public class DeliveryInformationDto {
     @NotNull(message = "简历id不能为空")
     private Long resumeId;
 
-    @NotNull(message = "宣讲会id或校园招聘id不能为空")
+//    @NotNull(message = "宣讲会id或校园招聘id不能为空")
     private Long careerTalkOrCampusRecruitmentId;
 
 }

@@ -54,10 +54,7 @@
             </div>
         </div>
     </div>
-    <div class="layui-footer">
-        <!-- 底部固定区域 -->
-        © layui.com - 底部固定区域
-    </div>
+    <div th:replace="footer :: footer"></div>
 </div>
 <script type="text/html" id="barDemo">
     <a class="layui-btn layui-btn-xs" lay-event="edit" >修改投递简历</a>
@@ -68,7 +65,7 @@
 <script th:src="@{~/js/toastr.min.js}"></script>
 <script th:inline="javascript">
     toastr.options.positionClass = 'toast-top-center';
-    //    toastr.options.timeOut = "5000";
+    toastr.options.timeOut = "1000";
     /*[+
         if([[${errorMessage}]] != null){
             toastr.error([[${errorMessage}]]);
@@ -102,7 +99,7 @@
                         layer.open({
                             title: '修改投递简历',
                             type: 2,
-                            area: ['900px', '400px'],
+                            area: ['400px', '300px'],
                             content: ['http://localhost:8080/undergraduate/deliver-resume-update?deliveryInformationId=' + data.id, 'no'] //这里content是一个URL，如果你不想让iframe出现滚动条，你还可以content: ['http://sentsin.com', 'no']
                         });
                     }
@@ -118,6 +115,7 @@
                 resumeId: data.resumeId
             },
             function (data, status) {
+                console.log(data.message);
                 if (data.message != null) {
                     toastr.success(data.message);
                 } else if (data.errorMessage != null) {

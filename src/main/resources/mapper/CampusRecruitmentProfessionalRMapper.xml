@@ -2,31 +2,46 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.zxkj.job.mapper.CampusRecruitmentProfessionalRMapper">
 
-    <select id="selectPageByQueryProfessionalDto" resultType="com.zxkj.job.bean.po.CampusRecruitmentPo">
+    <select id="selectPageByQueryCampusRecruitmentDto" resultType="com.zxkj.job.bean.po.CampusRecruitmentPo">
         SELECT t_job_campus_recruitment.*
         FROM t_job_campus_recruitment, t_job_campus_recruitment_professional_r, t_job_professional
-        WHERE t_job_campus_recruitment.id = t_job_campus_recruitment_professional_r.campus_recruitment_id and t_job_professional.id = t_job_campus_recruitment_professional_r.professional_id
-        <if test="queryProfessionalDto.jobCategoryType != null">
-            and t_job_professional.type = #{queryProfessionalDto.jobCategoryType}
+        WHERE t_job_campus_recruitment.id = t_job_campus_recruitment_professional_r.campus_recruitment_id and
+        t_job_professional.id = t_job_campus_recruitment_professional_r.professional_id
+        <if test="queryCampusRecruitmentDto.jobCategoryType != null">
+            and t_job_professional.type = #{queryCampusRecruitmentDto.jobCategoryType}
         </if>
-        <if test="queryProfessionalDto.province != null">
-            <bind name="province" value="'%'+queryProfessionalDto.province.name+'%'"/>
+        <if test="queryCampusRecruitmentDto.province != null">
+            <bind name="province" value="'%'+queryCampusRecruitmentDto.province.name+'%'"/>
             and t_job_campus_recruitment.workplace like #{province}
         </if>
+        <if test="queryCampusRecruitmentDto.key != null">
+            <bind name="key" value="'%'+queryCampusRecruitmentDto.key+'%'"/>
+            and (t_job_professional.name like #{key} or t_job_campus_recruitment.title like #{key})
+        </if>
+        GROUP BY t_job_campus_recruitment.id
         LIMIT #{startLine}, #{pageSize};
     </select>
 
-    <select id="selectCountByQueryProfessionalDto" resultType="int">
+    <select id="selectCountByQueryCampusRecruitmentDto" resultType="int">
         SELECT COUNT(*)
-        FROM t_job_campus_recruitment, t_job_campus_recruitment_professional_r, t_job_professional
-        WHERE t_job_campus_recruitment.id = t_job_campus_recruitment_professional_r.campus_recruitment_id and t_job_professional.id = t_job_campus_recruitment_professional_r.professional_id
-        <if test="queryProfessionalDto.jobCategoryType != null">
-            and t_job_professional.type = #{queryProfessionalDto.jobCategoryType}
-        </if>
-        <if test="queryProfessionalDto.province != null">
-            <bind name="province" value="'%'+queryProfessionalDto.province.name+'%'"/>
-            and t_job_campus_recruitment.workplace like #{province}
-        </if>;
+        FROM (
+          SELECT t_job_campus_recruitment.*
+          FROM t_job_campus_recruitment, t_job_campus_recruitment_professional_r, t_job_professional
+          WHERE t_job_campus_recruitment.id = t_job_campus_recruitment_professional_r.campus_recruitment_id and
+          t_job_professional.id = t_job_campus_recruitment_professional_r.professional_id
+          <if test="queryCampusRecruitmentDto.jobCategoryType != null">
+              and t_job_professional.type = #{queryCampusRecruitmentDto.jobCategoryType}
+          </if>
+          <if test="queryCampusRecruitmentDto.province != null">
+              <bind name="province" value="'%'+queryCampusRecruitmentDto.province.name+'%'"/>
+              and t_job_campus_recruitment.workplace like #{province}
+          </if>
+          <if test="queryCampusRecruitmentDto.key != null">
+              <bind name="key" value="'%'+queryCampusRecruitmentDto.key+'%'"/>
+              and (t_job_professional.name like #{key} or t_job_campus_recruitment.title like #{key})
+          </if>
+          GROUP BY t_job_campus_recruitment.id
+        ) a;
     </select>
 
 </mapper>

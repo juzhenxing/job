@@ -20,13 +20,13 @@ public interface EnterpriseService extends IService<EnterprisePo> {
      */
     String add(SimpleEnterpriseDto simpleEnterpriseDto) throws MessagingException;
 
-    String register(String email, String code);
+    EnterpriseVo register(String email, String code);
 
     EnterprisePo login(LoginEnterpriseDto loginEnterpriseDto);
 
     Boolean requestPasswordReset(String email) throws MessagingException;
 
-    String resetPassword(String email, String code);
+    EnterpriseVo resetPassword(String email, String code);
 
     Boolean resetPasswordNext(String password, HttpSession httpSession);
 
@@ -47,5 +47,7 @@ public interface EnterpriseService extends IService<EnterprisePo> {
     EnterpriseVo getById(Long enterpriseId);
 
     EnterpriseVo getByUsernameOrEmail(String usernameOrEmail);
+
+    EnterpriseVo enterprisePoToVo(EnterprisePo enterprisePo);
 
 }
